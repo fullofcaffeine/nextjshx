@@ -14,7 +14,9 @@ coverage/
 .cache/
 .turbo/
 .nextjshx/
-haxe_libraries/
+src-gen/
+next-env.d.ts
+*.tsbuildinfo
 __pycache__/
 *.py[cod]
 *.log

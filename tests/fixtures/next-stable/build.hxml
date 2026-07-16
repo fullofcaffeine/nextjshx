@@ -1,0 +1,14 @@
+-lib genes-ts
+-cp tests/fixtures/next-stable/haxe
+--main FixtureMain
+
+# genes-ts still compiles on Haxe's JavaScript platform. A .tsx entry selects
+# split TypeScript/TSX output, and extensionless imports are owned by Next's
+# bundler resolution.
+-js tests/fixtures/next-stable/src-gen/index.tsx
+-D genes.ts
+-D genes.ts.no_extension
+# React 19 exposes JSX from the module rather than as a global namespace.
+-D genes.ts.jsx_import_source=react
+
+-dce full

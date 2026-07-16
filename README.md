@@ -12,23 +12,26 @@ public API, package shape, compatibility matrix, and license are not final.
 
 Prerequisites:
 
-- Node.js `>=20.9.0`
+- Node.js `20.19.3` or `24.18.0` for repository evidence (Next.js engine
+  floor: `>=20.9.0`)
 - Haxe `4.3.7`
 - Haxe formatter `1.18.0`
 - Gitleaks `8.30.0`
 - Beads (`bd`), `jq`, Git, and Python 3
 
 ```sh
-npm ci
-haxelib install formatter 1.18.0
+npm ci --ignore-scripts
+npx --no-install lix download
+npx --no-install haxelib install formatter 1.18.0 --quiet
 npm run hooks:install
 bd prime
 npm test
 ```
 
 The current root test validates the imported implementation plan, compatibility
-contract, and repository security tooling. Product, compiler, Next.js, and
-packed-consumer suites will be added by their owning Beads issues.
+contract, repository security tooling, and the stable Next.js build/runtime
+fixture. Broader product, compiler, and packed-consumer suites will be added by
+their owning Beads issues.
 
 ## Compatibility contract
 
@@ -48,6 +51,24 @@ without failing the stable-package lane, and accepts explicit paths through
 `NEXTJSHX_GENES_TS_DIR` and `NEXTJSHX_NEXT_UPSTREAM_DIR`. Use
 `npm run support:require-genes` or `npm run support:require-upstream` only when
 running those source-oracle lanes.
+
+## Stable integration fixture
+
+The required package lane compiles typed Haxe 4.3.7 through the exact
+genes-ts commit into split, extensionless ESM TS/TSX, then runs Next 16.2.10
+type generation, strict TypeScript 6.0.2 checking, a production build, and an
+HTTP smoke test on both supported Node lanes in CI.
+
+```sh
+npm run test:fixture:next-stable
+npm run test:fixture:next-stable:smoke
+```
+
+The dependency contract pins React and React DOM 19.2.7. It also locks the
+TypeScript compatibility wrapper's compiler core to 6.0.2 and overrides
+PostCSS to 8.5.10; `npm run security:audit` rejects moderate-or-higher audit
+findings, while the production fixture verifies those resolutions work with
+the pinned Next release.
 
 ## Architecture constraints
 

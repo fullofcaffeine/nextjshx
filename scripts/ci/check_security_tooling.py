@@ -23,6 +23,8 @@ GITLEAKS_CONFIG = ROOT / ".gitleaks.toml"
 PACKAGE = ROOT / "package.json"
 PACKAGE_LOCK = ROOT / "package-lock.json"
 HAXERC = ROOT / ".haxerc"
+GENES_LOCK = ROOT / "haxe_libraries/genes-ts.hxml"
+HELDER_LOCK = ROOT / "haxe_libraries/helder.set.hxml"
 EXPECTED_ACTIONS = {
     "actions/checkout": "9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0",
     "actions/setup-node": "249970729cb0ef3589644e2896645e5dc5ba9c38",
@@ -32,6 +34,17 @@ EXPECTED_FORMATTER_VERSION = "1.18.0"
 EXPECTED_HAXE_VERSION = "4.3.7"
 EXPECTED_LIX_VERSION = "17.0.2"
 EXPECTED_AJV_VERSION = "8.20.0"
+EXPECTED_NEXT_VERSION = "16.2.10"
+EXPECTED_REACT_VERSION = "19.2.7"
+EXPECTED_TYPESCRIPT_VERSION = "6.0.2"
+EXPECTED_TYPESCRIPT_SPEC = "npm:@typescript/typescript6@6.0.2"
+EXPECTED_POSTCSS_VERSION = "8.5.10"
+EXPECTED_NODE_TYPES_VERSION = "20.19.24"
+EXPECTED_REACT_TYPES_VERSION = "19.2.17"
+EXPECTED_REACT_DOM_TYPES_VERSION = "19.2.3"
+EXPECTED_GENES_VERSION = "1.32.0"
+EXPECTED_GENES_COMMIT = "1e7e323fdbda4c5b93689355294bd978e9170725"
+EXPECTED_HELDER_VERSION = "0.3.1"
 PUBLIC_PREFLIGHT_COMMAND = (
     "npm run format:haxe:check && npm run lint:whitespace && "
     "npm run security:gitleaks && npm run security:beads-history && "
@@ -40,6 +53,9 @@ PUBLIC_PREFLIGHT_COMMAND = (
 REQUIRED_IGNORES = {
     "node_modules/",
     ".next/",
+    "src-gen/",
+    "next-env.d.ts",
+    "*.tsbuildinfo",
     "dist/",
     "coverage/",
     ".cache/",
@@ -212,6 +228,7 @@ def validate_workflows() -> int:
         "  secret-scan:\n",
         "  haxe-format:\n",
         "  compatibility-contract:\n",
+        "  next-stable-fixture:\n",
         "  security-tooling:\n",
         "fetch-depth: 0",
         "bash scripts/ci/install-gitleaks.sh --install-dir",
@@ -220,6 +237,9 @@ def validate_workflows() -> int:
         f"npx --no-install haxelib install formatter {EXPECTED_FORMATTER_VERSION} --quiet",
         "npm run security:audit",
         "npm run test:support-matrix",
+        "npm run test:fixture:next-stable",
+        "npm run test:fixture:next-stable:smoke",
+        'NEXT_TELEMETRY_DISABLED: "1"',
         "npm run test:architecture",
         "npm run test:security-tooling",
     )
@@ -453,7 +473,7 @@ def validate_package_contract() -> None:
         "security:gitleaks": "bash scripts/security/run-gitleaks.sh",
         "security:gitleaks:staged": "bash scripts/security/run-gitleaks.sh --staged",
         "security:beads-history": "bash scripts/security/run-beads-gitleaks.sh",
-        "security:audit": "npm audit --audit-level=high",
+        "security:audit": "npm audit --audit-level=moderate",
         "hooks:install": "bash scripts/hooks/install.sh",
         "beads:push": "bash scripts/beads/push-safe.sh",
         "support:docs": "node scripts/compat/support-matrix.mjs docs --write",
@@ -467,9 +487,25 @@ def validate_package_contract() -> None:
         "test:architecture": "python3 scripts/ci/check_architecture_docs.py",
         "test:support-matrix": "node scripts/compat/support-matrix.mjs check",
         "test:security-tooling": "python3 scripts/ci/check_security_tooling.py",
+        "fixture:next:compile": "haxe tests/fixtures/next-stable/build.hxml",
+        "fixture:next:typegen": "next typegen tests/fixtures/next-stable",
+        "fixture:next:typecheck": (
+            "tsc6 --project tests/fixtures/next-stable/tsconfig.json --noEmit"
+        ),
+        "fixture:next:build": "next build tests/fixtures/next-stable",
+        "fixture:next:clean": "node scripts/fixtures/next-stable.mjs clean",
+        "test:fixture:next-stable": "node scripts/fixtures/next-stable.mjs verify",
+        "test:fixture:next-stable:smoke": (
+            "node scripts/fixtures/next-stable.mjs smoke"
+        ),
+        "test:fixture": (
+            "npm run test:fixture:next-stable && "
+            "npm run test:fixture:next-stable:smoke"
+        ),
         "test": (
             "npm run test:plan && npm run test:support-matrix && "
-            "npm run test:architecture && npm run test:security-tooling"
+            "npm run test:architecture && npm run test:security-tooling && "
+            "npm run test:fixture"
         ),
         "public:preflight": PUBLIC_PREFLIGHT_COMMAND,
     }
@@ -479,12 +515,27 @@ def validate_package_contract() -> None:
     if package.get("engines") != {"node": ">=20.9.0"}:
         raise SecurityToolingFailure("package.json must retain the Next.js Node floor")
     expected_dev_dependencies = {
+        "@types/node": EXPECTED_NODE_TYPES_VERSION,
+        "@types/react": EXPECTED_REACT_TYPES_VERSION,
+        "@types/react-dom": EXPECTED_REACT_DOM_TYPES_VERSION,
         "ajv": EXPECTED_AJV_VERSION,
         "lix": EXPECTED_LIX_VERSION,
+        "next": EXPECTED_NEXT_VERSION,
+        "react": EXPECTED_REACT_VERSION,
+        "react-dom": EXPECTED_REACT_VERSION,
+        "typescript": EXPECTED_TYPESCRIPT_SPEC,
     }
     if package.get("devDependencies") != expected_dev_dependencies:
         raise SecurityToolingFailure(
-            "package.json must pin the reviewed Ajv and Lix versions"
+            "package.json must pin the reviewed toolchain and fixture dependencies"
+        )
+    expected_overrides = {
+        "@typescript/old": f"npm:typescript@{EXPECTED_TYPESCRIPT_VERSION}",
+        "postcss": EXPECTED_POSTCSS_VERSION,
+    }
+    if package.get("overrides") != expected_overrides:
+        raise SecurityToolingFailure(
+            "package.json must retain the reviewed TypeScript and PostCSS overrides"
         )
 
     package_lock = read_json(PACKAGE_LOCK)
@@ -492,21 +543,80 @@ def validate_package_contract() -> None:
     if not isinstance(packages, dict):
         raise SecurityToolingFailure("package-lock.json has no packages map")
     root_lock = packages.get("")
-    ajv_lock = packages.get("node_modules/ajv")
-    lix_lock = packages.get("node_modules/lix")
     if (
         not isinstance(root_lock, dict)
         or root_lock.get("devDependencies") != expected_dev_dependencies
     ):
         raise SecurityToolingFailure("package-lock root drifted from reviewed pins")
-    if not isinstance(ajv_lock, dict) or ajv_lock.get("version") != EXPECTED_AJV_VERSION:
-        raise SecurityToolingFailure("package-lock did not resolve the exact Ajv version")
-    if not isinstance(lix_lock, dict) or lix_lock.get("version") != EXPECTED_LIX_VERSION:
-        raise SecurityToolingFailure("package-lock did not resolve the exact Lix version")
+
+    expected_lock_versions = {
+        "node_modules/@types/node": EXPECTED_NODE_TYPES_VERSION,
+        "node_modules/@types/react": EXPECTED_REACT_TYPES_VERSION,
+        "node_modules/@types/react-dom": EXPECTED_REACT_DOM_TYPES_VERSION,
+        "node_modules/ajv": EXPECTED_AJV_VERSION,
+        "node_modules/lix": EXPECTED_LIX_VERSION,
+        "node_modules/next": EXPECTED_NEXT_VERSION,
+        "node_modules/postcss": EXPECTED_POSTCSS_VERSION,
+        "node_modules/react": EXPECTED_REACT_VERSION,
+        "node_modules/react-dom": EXPECTED_REACT_VERSION,
+        "node_modules/typescript": EXPECTED_TYPESCRIPT_VERSION,
+        "node_modules/typescript/node_modules/@typescript/old": (
+            EXPECTED_TYPESCRIPT_VERSION
+        ),
+    }
+    for path, version in expected_lock_versions.items():
+        entry = packages.get(path)
+        if not isinstance(entry, dict) or entry.get("version") != version:
+            raise SecurityToolingFailure(
+                f"package-lock did not resolve {path} to exact version {version}"
+            )
+
+    typescript_lock = packages.get("node_modules/typescript")
+    if (
+        not isinstance(typescript_lock, dict)
+        or typescript_lock.get("name") != "@typescript/typescript6"
+    ):
+        raise SecurityToolingFailure("package-lock lost the TypeScript 6 wrapper alias")
 
     haxerc = read_json(HAXERC)
     if haxerc != {"version": EXPECTED_HAXE_VERSION, "resolveLibs": "scoped"}:
         raise SecurityToolingFailure("the Haxe toolchain contract drifted")
+
+
+def validate_haxe_locks() -> None:
+    genes = read_text(GENES_LOCK)
+    genes_fragments = (
+        (
+            'lix --silent download "gh://github.com/fullofcaffeine/genes-ts#'
+            f'{EXPECTED_GENES_COMMIT}"'
+        ),
+        f"genes-ts/{EXPECTED_GENES_VERSION}/github/{EXPECTED_GENES_COMMIT}",
+        f"-D genes-ts={EXPECTED_GENES_VERSION}",
+        "-lib helder.set",
+        "--macro genes.Generator.use()",
+        "--macro genes.react.InlineMarkup.enable()",
+    )
+    for fragment in genes_fragments:
+        if fragment not in genes:
+            raise SecurityToolingFailure(
+                f"genes-ts Lix lock lost reviewed content: {fragment}"
+            )
+    if re.search(r"(?m)^-cp (?!\$\{HAXE_LIBCACHE\}/)", genes):
+        raise SecurityToolingFailure("genes-ts Lix lock contains a non-cache classpath")
+
+    helder = read_text(HELDER_LOCK)
+    helder_fragments = (
+        f'lix --silent download "haxelib:/helder.set#{EXPECTED_HELDER_VERSION}"',
+        f"helder.set/{EXPECTED_HELDER_VERSION}/haxelib/src",
+        f"-D helder.set={EXPECTED_HELDER_VERSION}",
+    )
+    for fragment in helder_fragments:
+        if fragment not in helder:
+            raise SecurityToolingFailure(
+                f"helder.set Lix lock lost reviewed content: {fragment}"
+            )
+    if re.search(r"(?m)^-cp (?!\$\{HAXE_LIBCACHE\}/)", helder):
+        raise SecurityToolingFailure("helder.set Lix lock contains a non-cache classpath")
 
 
 def validate_docs_and_modes() -> None:
@@ -526,6 +636,10 @@ def validate_docs_and_modes() -> None:
         "support_matrix.json",
         "npm run test:support-matrix",
         "npm run support:discover",
+        "npx --no-install lix download",
+        "npm run test:fixture:next-stable",
+        "npm run test:fixture:next-stable:smoke",
+        "PostCSS to 8.5.10",
     ):
         if fragment not in readme:
             raise SecurityToolingFailure(f"README.md lost compatibility guidance: {fragment}")
@@ -550,6 +664,7 @@ def validate_docs_and_modes() -> None:
         "scripts/ci/check_architecture_docs.py",
         "scripts/ci/install-gitleaks.sh",
         "scripts/compat/support-matrix.mjs",
+        "scripts/fixtures/next-stable.mjs",
         "scripts/lint/hx_format_guard.sh",
         "scripts/lint/local_path_guard_staged.sh",
         "scripts/lint/whitespace_guard.sh",
@@ -567,13 +682,15 @@ def main() -> int:
         validate_hook_wiring()
         scanned_files = validate_ignores_and_tracked_files()
         validate_package_contract()
+        validate_haxe_locks()
         validate_docs_and_modes()
         print(
             "security-tooling: OK: "
             f"Gitleaks {version} ({digest}), {action_count} commit-pinned Action uses, "
             f"{scanned_files} tracked text files checked for path leaks, "
             f"formatter {EXPECTED_FORMATTER_VERSION}, Git/Dolt/decoded-Beads gates, "
-            "credential ignores, dependency audit wiring, and disclosure policy"
+            "credential ignores, exact stable-fixture pins, dependency audit wiring, "
+            "and disclosure policy"
         )
         return 0
     except (

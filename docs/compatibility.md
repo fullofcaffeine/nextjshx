@@ -14,22 +14,20 @@ Repository status: **foundation-only**. A declared version is a reproducible tar
 | React / React DOM | 19.2.7 / 19.2.7 | React 19 primary lane. |
 | TypeScript | 6.0.2 | Pinned to the exact version shared by the observed genes-ts and Next.js source manifests; Next stable accepts workspace-owned TypeScript. |
 | Haxe | 4.3.7 | Pinned by `.haxerc`. |
-| genes-ts | 1.32.0 at `1e7e323fdbda4c5b93689355294bd978e9170725` | The inspected sibling source is the implementation oracle and supersedes the older 1.27-era planning input; integration support remains unclaimed until the stable fixture is green. |
+| genes-ts | 1.32.0 at `1e7e323fdbda4c5b93689355294bd978e9170725` | The inspected sibling source is the implementation oracle and supersedes the older 1.27-era planning input; the required stable-package fixture is verified against this exact commit. |
 | Node.js | floor 20.9.0; baseline 20.19.3; current LTS 24.18.0 (Krypton) | CI contract: 20.19.3, 24.18.0. |
 
 ## Evidence lanes
 
 | Lane | Required | Status | Next.js | Node.js | Implemented evidence | Owning bead |
 | --- | --- | --- | --- | --- | --- | --- |
-| stable-package | yes | declared | 16.2.10 | 20.19.3, 24.18.0 | `npm run test:support-matrix` | `nxhx-f34.1.5` |
+| stable-package | yes | verified | 16.2.10 | 20.19.3, 24.18.0 | `npm run test:support-matrix`, `npm run test:fixture:next-stable`, `npm run test:fixture:next-stable:smoke` | `nxhx-f34.1.5` |
 | source-upstream | no | observed | 16.3.0-canary.87 | 24.18.0 | `npm run support:require-upstream` | `nxhx-f34.1.6` |
 
 A `declared` lane has reproducible identities and contract checks but no framework support claim. An `observed` source lane has a matching local oracle identity but remains non-blocking. A lane becomes `verified` only after its real Next build and smoke evidence pass.
 
 Planned fixture commands:
 
-- `npm run test:fixture:next-stable` (stable-package, owned by `nxhx-f34.1.5`)
-- `npm run test:fixture:next-stable:smoke` (stable-package, owned by `nxhx-f34.1.5`)
 - `npm run test:fixture:next-upstream` (source-upstream, owned by `nxhx-f34.1.6`)
 
 ## Read-only source discovery

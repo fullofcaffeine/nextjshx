@@ -60,14 +60,14 @@
       "gitDescribe": "v1.32.0-8-g1e7e323",
       "haxeVersion": "4.3.7",
       "typescriptSpec": "npm:@typescript/typescript6@6.0.2",
-      "baselineReason": "The inspected sibling source is the implementation oracle and supersedes the older 1.27-era planning input; integration support remains unclaimed until the stable fixture is green."
+      "baselineReason": "The inspected sibling source is the implementation oracle and supersedes the older 1.27-era planning input; the required stable-package fixture is verified against this exact commit."
     }
   },
   "lanes": [
     {
       "id": "stable-package",
       "required": true,
-      "status": "declared",
+      "status": "verified",
       "purpose": "Release-blocking compatibility lane using the exact published stable Next.js package and both supported Node CI versions.",
       "versions": {
         "next": "16.2.10",
@@ -83,12 +83,11 @@
       },
       "commands": {
         "implemented": [
-          "npm run test:support-matrix"
-        ],
-        "planned": [
+          "npm run test:support-matrix",
           "npm run test:fixture:next-stable",
           "npm run test:fixture:next-stable:smoke"
-        ]
+        ],
+        "planned": []
       },
       "completionIssue": "nxhx-f34.1.5"
     },

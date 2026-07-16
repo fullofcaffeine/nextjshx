@@ -187,6 +187,21 @@ function assertSemanticContract(matrix) {
     throw new MatrixFailure("source-upstream lane and Next upstream version disagree");
   }
 
+  if (stableLane.status === "verified") {
+    const requiredEvidence = [
+      "npm run test:fixture:next-stable",
+      "npm run test:fixture:next-stable:smoke"
+    ];
+    for (const command of requiredEvidence) {
+      if (!stableLane.commands.implemented.includes(command)) {
+        throw new MatrixFailure(`verified stable-package lane lost evidence: ${command}`);
+      }
+      if (stableLane.commands.planned.includes(command)) {
+        throw new MatrixFailure(`verified stable-package evidence remains planned: ${command}`);
+      }
+    }
+  }
+
   const genesIdentity = matrix.sourceOracles.genesTs.identity;
   for (const field of ["name", "version", "commit", "haxeVersion", "typescriptSpec"]) {
     if (genesIdentity[field] !== genesTs[field]) {

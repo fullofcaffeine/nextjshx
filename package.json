@@ -14,7 +14,7 @@
     "security:gitleaks": "bash scripts/security/run-gitleaks.sh",
     "security:gitleaks:staged": "bash scripts/security/run-gitleaks.sh --staged",
     "security:beads-history": "bash scripts/security/run-beads-gitleaks.sh",
-    "security:audit": "npm audit --audit-level=high",
+    "security:audit": "npm audit --audit-level=moderate",
     "hooks:install": "bash scripts/hooks/install.sh",
     "beads:push": "bash scripts/beads/push-safe.sh",
     "support:docs": "node scripts/compat/support-matrix.mjs docs --write",
@@ -25,11 +25,30 @@
     "test:plan": "python3 nextjshx-seed-beads.py --dry-run",
     "test:support-matrix": "node scripts/compat/support-matrix.mjs check",
     "test:security-tooling": "python3 scripts/ci/check_security_tooling.py",
-    "test": "npm run test:plan && npm run test:support-matrix && npm run test:architecture && npm run test:security-tooling",
+    "fixture:next:compile": "haxe tests/fixtures/next-stable/build.hxml",
+    "fixture:next:typegen": "next typegen tests/fixtures/next-stable",
+    "fixture:next:typecheck": "tsc6 --project tests/fixtures/next-stable/tsconfig.json --noEmit",
+    "fixture:next:build": "next build tests/fixtures/next-stable",
+    "fixture:next:clean": "node scripts/fixtures/next-stable.mjs clean",
+    "test:fixture:next-stable": "node scripts/fixtures/next-stable.mjs verify",
+    "test:fixture:next-stable:smoke": "node scripts/fixtures/next-stable.mjs smoke",
+    "test:fixture": "npm run test:fixture:next-stable && npm run test:fixture:next-stable:smoke",
+    "test": "npm run test:plan && npm run test:support-matrix && npm run test:architecture && npm run test:security-tooling && npm run test:fixture",
     "public:preflight": "npm run format:haxe:check && npm run lint:whitespace && npm run security:gitleaks && npm run security:beads-history && npm run security:audit && npm test"
   },
   "devDependencies": {
+    "@types/node": "20.19.24",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
     "ajv": "8.20.0",
-    "lix": "17.0.2"
+    "lix": "17.0.2",
+    "next": "16.2.10",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "typescript": "npm:@typescript/typescript6@6.0.2"
+  },
+  "overrides": {
+    "@typescript/old": "npm:typescript@6.0.2",
+    "postcss": "8.5.10"
   }
 }

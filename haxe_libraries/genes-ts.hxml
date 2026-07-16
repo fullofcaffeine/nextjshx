@@ -1,0 +1,9 @@
+# @install: lix --silent download "gh://github.com/fullofcaffeine/genes-ts#1e7e323fdbda4c5b93689355294bd978e9170725" into genes-ts/1.32.0/github/1e7e323fdbda4c5b93689355294bd978e9170725
+-lib helder.set
+-cp ${HAXE_LIBCACHE}/genes-ts/1.32.0/github/1e7e323fdbda4c5b93689355294bd978e9170725/src
+-D genes-ts=1.32.0
+-D js-es=6
+--macro genes.Generator.use()
+--macro genes.js.Async.enable()
+--macro genes.react.InlineMarkup.enable()
+--macro addMetadata('@:genes.disableNativeAccessors', 'haxe.Exception')
