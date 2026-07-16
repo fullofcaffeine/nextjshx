@@ -51,6 +51,9 @@ running those source-oracle lanes.
 
 ## Architecture constraints
 
+[Architecture](docs/architecture.md) and its accepted ADRs are normative for
+implementation decisions.
+
 - Next.js remains the runtime, router, compiler, bundler, and deployment model.
 - `nextjs.raw.*` models supported public Next.js APIs faithfully.
 - `nextjs.*` adds typed Haxe ergonomics without hiding native semantics.

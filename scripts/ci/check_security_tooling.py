@@ -220,6 +220,7 @@ def validate_workflows() -> int:
         f"npx --no-install haxelib install formatter {EXPECTED_FORMATTER_VERSION} --quiet",
         "npm run security:audit",
         "npm run test:support-matrix",
+        "npm run test:architecture",
         "npm run test:security-tooling",
     )
     for fragment in required_fragments:
@@ -259,6 +260,7 @@ def validate_hook_wiring() -> None:
         'scripts/lint/whitespace_guard.sh" --staged',
         'scripts/security/run-gitleaks.sh" --staged',
         "scripts/compat/support-matrix.mjs",
+        "scripts/ci/check_architecture_docs.py",
         "(issues|interactions)\\.jsonl",
         "scripts/ci/check_security_tooling.py",
     ):
@@ -462,11 +464,12 @@ def validate_package_contract() -> None:
         "support:require-upstream": (
             "node scripts/compat/support-matrix.mjs discover --require-upstream"
         ),
+        "test:architecture": "python3 scripts/ci/check_architecture_docs.py",
         "test:support-matrix": "node scripts/compat/support-matrix.mjs check",
         "test:security-tooling": "python3 scripts/ci/check_security_tooling.py",
         "test": (
             "npm run test:plan && npm run test:support-matrix && "
-            "npm run test:security-tooling"
+            "npm run test:architecture && npm run test:security-tooling"
         ),
         "public:preflight": PUBLIC_PREFLIGHT_COMMAND,
     }
@@ -544,6 +547,7 @@ def validate_docs_and_modes() -> None:
         "scripts/hooks/pre-commit",
         "scripts/hooks/pre-push",
         "scripts/beads/push-safe.sh",
+        "scripts/ci/check_architecture_docs.py",
         "scripts/ci/install-gitleaks.sh",
         "scripts/compat/support-matrix.mjs",
         "scripts/lint/hx_format_guard.sh",

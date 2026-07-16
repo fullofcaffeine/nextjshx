@@ -5,6 +5,9 @@ NextJsHx is in foundation work and has no supported release yet. Read
 before changing architecture, compiler behavior, generated ownership, or public
 API.
 
+Read the normative [architecture](docs/architecture.md) and accepted ADRs before
+changing an established integration or ownership contract.
+
 Security vulnerabilities follow the private process in
 [SECURITY.md](SECURITY.md). Never put vulnerability details, live credentials,
 private data, or exploit payloads in a GitHub issue, pull request, CI log,

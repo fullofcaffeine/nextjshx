@@ -1,0 +1,82 @@
+# Architecture
+
+NextJsHx is a typed Haxe authoring layer for ordinary Next.js applications. Its
+core build path is:
+
+```text
+Haxe source
+  → Haxe type checking and NextJsHx build macros
+  → genes-ts split ESM TypeScript/TSX
+  → narrow Next-native convention adapters
+  → next typegen and strict TypeScript
+  → next dev/build/start
+```
+
+Next.js remains the runtime, router, React Server Components implementation,
+compiler, bundler, and deployment model. NextJsHx owns typed declarations,
+compile-time validation, adapter intent, and explicitly manifest-owned generated
+files. It does not introduce a parallel router or application runtime.
+
+## Normative sources
+
+The sources have distinct responsibilities:
+
+1. [The PRD](../nextjshx-prd.md) defines the product and default architecture.
+2. Accepted [architecture decision records](adr/README.md) refine or supersede
+   the PRD for their stated scope.
+3. [The support matrix](../support_matrix.json) records exact compatibility and
+   evidence identities.
+4. Beads records live work, dependencies, ownership, and completion evidence.
+
+An implementation must not silently change an accepted decision. Material
+changes require a superseding ADR and linked Beads work.
+
+## Accepted decisions
+
+| ADR | Decision | Consequence |
+| --- | --- | --- |
+| [0001](adr/0001-adapter-first-app-router-integration.md) | Adapter-first App Router integration | Next convention files are narrow, deterministic, manifest-owned adapters unless a future direct-emission path satisfies the recorded admission criteria. |
+
+## System boundaries
+
+### Haxe and genes-ts
+
+- Application behavior is authored in app-owned `.hx` files.
+- NextJsHx macros validate supported Next contracts and emit a deterministic
+  adapter plan.
+- genes-ts emits strict split ESM TypeScript/TSX implementation modules.
+- Generic compiler gaps are reduced and fixed in genes-ts without adding
+  Next-specific concepts to the compiler.
+
+### Next convention adapters
+
+- Adapters materialize exact App Router paths, directives, default exports,
+  named exports, and public TypeScript signatures.
+- Adapters contain no business logic and delegate to genes-ts output.
+- NextJsHx owns only files named in its validated ownership manifest. A
+  directory is never treated as wholly owned.
+- Existing native files remain application-owned and collisions fail closed.
+
+### Next.js validation
+
+- `next typegen` supplies route-aware helpers such as `PageProps`,
+  `LayoutProps`, and `RouteContext`.
+- Strict TypeScript checks the generated bridge against Next's public contract.
+- `next build` remains a mandatory integration oracle; Haxe validation does not
+  replace it.
+
+## Non-negotiable invariants
+
+- Generated output is short, deterministic, formatted, and reviewable.
+- No broad cast, `any`, `Dynamic`, or `untyped` seam is used to silence a
+  framework mismatch.
+- No native route, config file, asset, environment file, or deployment file is
+  overwritten implicitly.
+- Server/client boundaries use native React and Next directives and module
+  behavior.
+- Compiler changes remain generic and pass genes-ts TypeScript and classic-JS
+  evidence.
+- The support matrix distinguishes declared targets from verified support.
+
+Live architecture work remains in Beads. This document indexes accepted
+contracts; it is not a second backlog.

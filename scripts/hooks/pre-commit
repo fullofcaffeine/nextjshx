@@ -24,7 +24,7 @@ if [[ -d "$ROOT_DIR/.beads" ]] && command -v bd >/dev/null 2>&1; then
 fi
 
 STAGED_FILES="$(git diff --cached --name-only --diff-filter=ACMR || true)"
-GOVERNANCE_PATTERN='^(\.beads/(hooks/(pre-commit|pre-push)|(issues|interactions)\.jsonl)|\.github/(dependabot\.yml|workflows/)|\.gitignore|\.gitleaks\.toml|AGENTS\.md|CONTRIBUTING\.md|README\.md|SECURITY\.md|docs/compatibility\.md|package(-lock)?\.json|schemas/|support_matrix\.json|scripts/(beads/|ci/|compat/|hooks/|lint/|security/))'
+GOVERNANCE_PATTERN='^(\.beads/(hooks/(pre-commit|pre-push)|(issues|interactions)\.jsonl)|\.github/(dependabot\.yml|workflows/)|\.gitignore|\.gitleaks\.toml|AGENTS\.md|CONTRIBUTING\.md|README\.md|SECURITY\.md|docs/(architecture\.md|adr/|compatibility\.md)|package(-lock)?\.json|schemas/|support_matrix\.json|scripts/(beads/|ci/|compat/|hooks/|lint/|security/))'
 
 while IFS= read -r staged_file; do
   if [[ -n "$staged_file" ]] && printf '%s\n' "$staged_file" | grep -Eq "$GOVERNANCE_PATTERN"; then
@@ -83,6 +83,9 @@ done < <(
 
 echo "[pre-commit] Validating the compatibility matrix and generated documentation..."
 node "$ROOT_DIR/scripts/compat/support-matrix.mjs" check
+
+echo "[pre-commit] Validating architecture decisions and indexes..."
+python3 "$ROOT_DIR/scripts/ci/check_architecture_docs.py"
 
 echo "[pre-commit] Running staged secret scan..."
 bash "$ROOT_DIR/scripts/security/run-gitleaks.sh" --staged

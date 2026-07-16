@@ -107,4 +107,5 @@ jobs:
         run: |
           npm run test:plan
           npm run test:support-matrix
+          npm run test:architecture
           npm run lint:whitespace
