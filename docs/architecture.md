@@ -36,12 +36,19 @@ changes require a superseding ADR and linked Beads work.
 | ADR | Decision | Consequence |
 | --- | --- | --- |
 | [0001](adr/0001-adapter-first-app-router-integration.md) | Adapter-first App Router integration | Next convention files are narrow, deterministic, manifest-owned adapters unless a future direct-emission path satisfies the recorded admission criteria. |
+| [0002](adr/0002-public-namespace-and-app-router-authoring.md) | Public namespace and App Router authoring syntax | Raw Next bindings remain available under `nextjs.raw.*`; semantic APIs and per-type `@:next.*` declarations produce typed adapter intent without a manually maintained route registry. |
 
 ## System boundaries
 
 ### Haxe and genes-ts
 
 - Application behavior is authored in app-owned `.hx` files.
+- Faithful public Next bindings live under `nextjs.raw.*`; supported semantic
+  APIs live under `nextjs.*`, while `nextjs._internal.*` and `nextjshx.*` are
+  not application-facing compatibility surfaces.
+- One annotated application class declares one route or module boundary.
+  Metadata paths are relative to the discovered App Router root and are never
+  inferred solely from the Haxe package.
 - NextJsHx macros validate supported Next contracts and emit a deterministic
   adapter plan.
 - genes-ts emits strict split ESM TypeScript/TSX implementation modules.
@@ -52,6 +59,9 @@ changes require a superseding ADR and linked Beads work.
 
 - Adapters materialize exact App Router paths, directives, default exports,
   named exports, and public TypeScript signatures.
+- Client components and Server Functions are consumed through macro-backed
+  typed references to their generated boundary adapters, not raw implementation
+  imports.
 - Adapters contain no business logic and delegate to genes-ts output.
 - NextJsHx owns only files named in its validated ownership manifest. A
   directory is never treated as wholly owned.
@@ -74,6 +84,8 @@ changes require a superseding ADR and linked Beads work.
   overwritten implicitly.
 - Server/client boundaries use native React and Next directives and module
   behavior.
+- Route declarations are per-type; any aggregate route façade is generated from
+  the validated manifest and is never a manually maintained registry.
 - Compiler changes remain generic and pass genes-ts TypeScript and classic-JS
   evidence.
 - The support matrix distinguishes declared targets from verified support.

@@ -15,6 +15,7 @@ ARCHITECTURE = ROOT / "docs/architecture.md"
 README = ROOT / "README.md"
 CONTRIBUTING = ROOT / "CONTRIBUTING.md"
 ADAPTER_ADR = ADR_ROOT / "0001-adapter-first-app-router-integration.md"
+AUTHORING_ADR = ADR_ROOT / "0002-public-namespace-and-app-router-authoring.md"
 ADR_NAME = re.compile(r"^(?P<number>[0-9]{4})-[a-z0-9]+(?:-[a-z0-9]+)*\.md$")
 DATE = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
 
@@ -127,6 +128,35 @@ def validate_adapter_decision() -> None:
     )
 
 
+def validate_authoring_decision() -> None:
+    source = read_text(AUTHORING_ADR)
+    require_fragments(
+        source,
+        AUTHORING_ADR,
+        (
+            "### Namespace split",
+            "`nextjs.raw.*`",
+            "`nextjs._internal.*`",
+            "`nextjshx.*`",
+            "### Per-type App Router declarations",
+            '@:next.page("todos/[id]")',
+            '@:next.layout("")',
+            '@:next.route("api/todos/[id]")',
+            '@:next.clientComponent("todos/_components/TodoToggle")',
+            '@:next.serverFunctions("todos/actions")',
+            "ClientComponent.ref(TodoToggle)",
+            "ServerFunction.ref(TodoActions.createTodo)",
+            "### Faithful raw escape hatch",
+            "### No manually maintained route registry",
+            "### Explicitly deferred syntax",
+            "### Raw externs only",
+            "### Semantic wrappers only",
+            "### Central manually maintained route registry",
+            "nxhx-f34.1.4",
+        ),
+    )
+
+
 def main() -> int:
     try:
         architecture = read_text(ARCHITECTURE)
@@ -156,6 +186,7 @@ def main() -> int:
             validate_adr(path, index, architecture) == "Accepted" for path in files
         )
         validate_adapter_decision()
+        validate_authoring_decision()
         noun = "ADR" if len(files) == 1 else "ADRs"
         print(
             f"architecture-docs: OK: {len(files)} {noun} checked, "
