@@ -25,6 +25,13 @@
     "test:plan": "python3 nextjshx-seed-beads.py --dry-run",
     "test:support-matrix": "node scripts/compat/support-matrix.mjs check",
     "test:security-tooling": "python3 scripts/ci/check_security_tooling.py",
+    "test:haxe:positive": "node scripts/testing/haxe-fixtures.mjs positive",
+    "test:haxe:negative": "node scripts/testing/haxe-fixtures.mjs negative",
+    "test:haxe": "node scripts/testing/haxe-fixtures.mjs all",
+    "test:snapshots": "node scripts/testing/snapshots.mjs verify",
+    "test:snapshots:update": "node scripts/testing/snapshots.mjs update",
+    "test:package-shape": "node scripts/testing/package-shape.mjs",
+    "test:harness": "npm run test:haxe && npm run test:snapshots && npm run test:package-shape",
     "fixture:next:compile": "haxe tests/fixtures/next-stable/build.hxml",
     "fixture:next:typegen": "next typegen tests/fixtures/next-stable",
     "fixture:next:typecheck": "tsc6 --project tests/fixtures/next-stable/tsconfig.json --noEmit",
@@ -33,7 +40,7 @@
     "test:fixture:next-stable": "node scripts/fixtures/next-stable.mjs verify",
     "test:fixture:next-stable:smoke": "node scripts/fixtures/next-stable.mjs smoke",
     "test:fixture": "npm run test:fixture:next-stable && npm run test:fixture:next-stable:smoke",
-    "test": "npm run test:plan && npm run test:support-matrix && npm run test:architecture && npm run test:security-tooling && npm run test:fixture",
+    "test": "npm run test:plan && npm run test:support-matrix && npm run test:architecture && npm run test:security-tooling && npm run test:harness && npm run test:fixture",
     "public:preflight": "npm run format:haxe:check && npm run lint:whitespace && npm run security:gitleaks && npm run security:beads-history && npm run security:audit && npm test"
   },
   "devDependencies": {

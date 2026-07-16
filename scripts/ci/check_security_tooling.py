@@ -25,6 +25,11 @@ PACKAGE_LOCK = ROOT / "package-lock.json"
 HAXERC = ROOT / ".haxerc"
 GENES_LOCK = ROOT / "haxe_libraries/genes-ts.hxml"
 HELDER_LOCK = ROOT / "haxe_libraries/helder.set.hxml"
+HAXE_FIXTURES = ROOT / "tests/haxe/fixtures.json"
+HAXE_FIXTURES_SCHEMA = ROOT / "schemas/haxe-fixtures.schema.json"
+PACKAGE_SHAPE_ARTIFACT = ROOT / "tests/package-shape/npm-artifact/package.json"
+PACKAGE_SHAPE_TSCONFIG = ROOT / "tests/package-shape/consumer/tsconfig.json"
+NEXT_FIXTURE_TSCONFIG = ROOT / "tests/fixtures/next-stable/tsconfig.json"
 EXPECTED_ACTIONS = {
     "actions/checkout": "9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0",
     "actions/setup-node": "249970729cb0ef3589644e2896645e5dc5ba9c38",
@@ -229,6 +234,7 @@ def validate_workflows() -> int:
         "  haxe-format:\n",
         "  compatibility-contract:\n",
         "  next-stable-fixture:\n",
+        "  baseline-test-harness:\n",
         "  security-tooling:\n",
         "fetch-depth: 0",
         "bash scripts/ci/install-gitleaks.sh --install-dir",
@@ -239,6 +245,7 @@ def validate_workflows() -> int:
         "npm run test:support-matrix",
         "npm run test:fixture:next-stable",
         "npm run test:fixture:next-stable:smoke",
+        "npm run test:harness",
         'NEXT_TELEMETRY_DISABLED: "1"',
         "npm run test:architecture",
         "npm run test:security-tooling",
@@ -487,6 +494,16 @@ def validate_package_contract() -> None:
         "test:architecture": "python3 scripts/ci/check_architecture_docs.py",
         "test:support-matrix": "node scripts/compat/support-matrix.mjs check",
         "test:security-tooling": "python3 scripts/ci/check_security_tooling.py",
+        "test:haxe:positive": "node scripts/testing/haxe-fixtures.mjs positive",
+        "test:haxe:negative": "node scripts/testing/haxe-fixtures.mjs negative",
+        "test:haxe": "node scripts/testing/haxe-fixtures.mjs all",
+        "test:snapshots": "node scripts/testing/snapshots.mjs verify",
+        "test:snapshots:update": "node scripts/testing/snapshots.mjs update",
+        "test:package-shape": "node scripts/testing/package-shape.mjs",
+        "test:harness": (
+            "npm run test:haxe && npm run test:snapshots && "
+            "npm run test:package-shape"
+        ),
         "fixture:next:compile": "haxe tests/fixtures/next-stable/build.hxml",
         "fixture:next:typegen": "next typegen tests/fixtures/next-stable",
         "fixture:next:typecheck": (
@@ -505,7 +522,7 @@ def validate_package_contract() -> None:
         "test": (
             "npm run test:plan && npm run test:support-matrix && "
             "npm run test:architecture && npm run test:security-tooling && "
-            "npm run test:fixture"
+            "npm run test:harness && npm run test:fixture"
         ),
         "public:preflight": PUBLIC_PREFLIGHT_COMMAND,
     }
@@ -619,6 +636,105 @@ def validate_haxe_locks() -> None:
         raise SecurityToolingFailure("helder.set Lix lock contains a non-cache classpath")
 
 
+def validate_test_harness() -> None:
+    schema = read_json(HAXE_FIXTURES_SCHEMA)
+    if schema.get("$id") != "https://nextjshx.dev/schemas/haxe-fixtures.schema.json":
+        raise SecurityToolingFailure("Haxe fixture schema identity drifted")
+
+    fixtures = read_json(HAXE_FIXTURES)
+    if fixtures.get("$schema") != "../../schemas/haxe-fixtures.schema.json":
+        raise SecurityToolingFailure("Haxe fixtures lost their local schema reference")
+    positive = fixtures.get("positive")
+    negative = fixtures.get("negative")
+    if not isinstance(positive, list) or not isinstance(negative, list):
+        raise SecurityToolingFailure("Haxe fixture contract must contain both evidence layers")
+    expected_negative = {
+        "exitCode": 1,
+        "code": "NXHX-CONFIG-0001",
+        "file": "tests/negative/diagnostic-contract/Main.hx",
+        "line": 3,
+        "characterStart": 3,
+        "characterEnd": 27,
+        "message": (
+            "The baseline negative fixture deliberately rejects this declaration."
+        ),
+    }
+    if not any(
+        isinstance(item, dict)
+        and item.get("id") == "next-stable-component"
+        and item.get("build") == "tests/fixtures/next-stable/build.hxml"
+        for item in positive
+    ):
+        raise SecurityToolingFailure("positive Haxe fixture baseline drifted")
+    if not any(
+        isinstance(item, dict)
+        and item.get("id") == "diagnostic-contract"
+        and item.get("expected") == expected_negative
+        for item in negative
+    ):
+        raise SecurityToolingFailure("negative diagnostic-and-position baseline drifted")
+
+    diagnostic_probe = read_text(ROOT / "tests/negative/support/DiagnosticProbe.hx")
+    for fragment in ("NXHX-CONFIG-0001", "Context.currentPos()", "Context.error"):
+        if fragment not in diagnostic_probe:
+            raise SecurityToolingFailure(
+                f"negative diagnostic probe lost required behavior: {fragment}"
+            )
+
+    for label, config_path, require_no_emit_on_error in (
+        ("stable Next fixture", NEXT_FIXTURE_TSCONFIG, False),
+        ("packed consumer", PACKAGE_SHAPE_TSCONFIG, True),
+    ):
+        config = read_json(config_path)
+        options = config.get("compilerOptions")
+        if not isinstance(options, dict):
+            raise SecurityToolingFailure(f"{label} has no TypeScript compiler options")
+        if options.get("strict") is not True or options.get("skipLibCheck") is not False:
+            raise SecurityToolingFailure(
+                f"{label} must retain strict TypeScript with library checks enabled"
+            )
+        if require_no_emit_on_error and options.get("noEmitOnError") is not True:
+            raise SecurityToolingFailure(f"{label} must refuse emission on type errors")
+
+    artifact = read_json(PACKAGE_SHAPE_ARTIFACT)
+    if (
+        artifact.get("name") != "@nextjshx/package-shape-fixture"
+        or artifact.get("version") != "0.0.0"
+        or artifact.get("files") != ["dist"]
+        or "scripts" in artifact
+        or "dependencies" in artifact
+    ):
+        raise SecurityToolingFailure("local package-shape artifact contract drifted")
+
+    harness_fragments = {
+        "scripts/testing/haxe-fixtures.mjs": (
+            "must emit exactly one NXHX diagnostic",
+            "characterStart",
+            "characterEnd",
+            "Ajv2020",
+        ),
+        "scripts/testing/snapshots.mjs": (
+            "snapshot updates are disabled in CI",
+            "missing",
+            "extra",
+            "mismatch",
+        ),
+        "scripts/testing/package-shape.mjs": (
+            '"--ignore-scripts"',
+            '"--offline"',
+            "packed file allowlist drifted",
+            "TSC_BIN",
+        ),
+    }
+    for relative, fragments in harness_fragments.items():
+        source = read_text(ROOT / relative)
+        for fragment in fragments:
+            if fragment not in source:
+                raise SecurityToolingFailure(
+                    f"{relative} lost required harness behavior: {fragment}"
+                )
+
+
 def validate_docs_and_modes() -> None:
     security = read_text(ROOT / "SECURITY.md")
     for fragment in (
@@ -639,6 +755,8 @@ def validate_docs_and_modes() -> None:
         "npx --no-install lix download",
         "npm run test:fixture:next-stable",
         "npm run test:fixture:next-stable:smoke",
+        "npm run test:harness",
+        "docs/testing-strategy.md",
         "PostCSS to 8.5.10",
     ):
         if fragment not in readme:
@@ -653,6 +771,19 @@ def validate_docs_and_modes() -> None:
             raise SecurityToolingFailure(
                 f"compatibility documentation lost required statement: {fragment}"
             )
+    testing = read_text(ROOT / "docs/testing-strategy.md")
+    for fragment in (
+        "npm run test:haxe:positive",
+        "npm run test:haxe:negative",
+        "npm run test:snapshots:update",
+        "npm run test:package-shape",
+        "skipLibCheck: false",
+        "lifecycle scripts disabled",
+    ):
+        if fragment not in testing:
+            raise SecurityToolingFailure(
+                f"testing strategy lost required statement: {fragment}"
+            )
 
     for relative in (
         ".beads/hooks/pre-commit",
@@ -665,6 +796,9 @@ def validate_docs_and_modes() -> None:
         "scripts/ci/install-gitleaks.sh",
         "scripts/compat/support-matrix.mjs",
         "scripts/fixtures/next-stable.mjs",
+        "scripts/testing/haxe-fixtures.mjs",
+        "scripts/testing/package-shape.mjs",
+        "scripts/testing/snapshots.mjs",
         "scripts/lint/hx_format_guard.sh",
         "scripts/lint/local_path_guard_staged.sh",
         "scripts/lint/whitespace_guard.sh",
@@ -683,14 +817,15 @@ def main() -> int:
         scanned_files = validate_ignores_and_tracked_files()
         validate_package_contract()
         validate_haxe_locks()
+        validate_test_harness()
         validate_docs_and_modes()
         print(
             "security-tooling: OK: "
             f"Gitleaks {version} ({digest}), {action_count} commit-pinned Action uses, "
             f"{scanned_files} tracked text files checked for path leaks, "
             f"formatter {EXPECTED_FORMATTER_VERSION}, Git/Dolt/decoded-Beads gates, "
-            "credential ignores, exact stable-fixture pins, dependency audit wiring, "
-            "and disclosure policy"
+            "credential ignores, exact stable-fixture pins, fail-closed test harness, "
+            "dependency audit wiring, and disclosure policy"
         )
         return 0
     except (

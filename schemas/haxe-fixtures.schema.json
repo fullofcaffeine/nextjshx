@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nextjshx.dev/schemas/haxe-fixtures.schema.json",
+  "title": "NextJsHx Haxe fixture contract",
+  "description": "Positive build cases and exact expected-failure diagnostics for the reusable Haxe fixture runner.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "positive",
+    "negative"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../../schemas/haxe-fixtures.schema.json"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "positive": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/positiveCase"
+      }
+    },
+    "negative": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/negativeCase"
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "repositoryPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:\\\\)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+    },
+    "positiveCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "build"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "build": {
+          "$ref": "#/$defs/repositoryPath"
+        }
+      }
+    },
+    "negativeCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "build",
+        "expected"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "build": {
+          "$ref": "#/$defs/repositoryPath"
+        },
+        "expected": {
+          "$ref": "#/$defs/expectedDiagnostic"
+        }
+      }
+    },
+    "expectedDiagnostic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exitCode",
+        "code",
+        "file",
+        "line",
+        "characterStart",
+        "characterEnd",
+        "message"
+      ],
+      "properties": {
+        "exitCode": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "code": {
+          "type": "string",
+          "pattern": "^NXHX-[A-Z]+(?:-[A-Z]+)*-[0-9]{4}$"
+        },
+        "file": {
+          "$ref": "#/$defs/repositoryPath"
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "characterStart": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "characterEnd": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "message": {
+          "type": "string",
+          "minLength": 20
+        }
+      }
+    }
+  }
+}

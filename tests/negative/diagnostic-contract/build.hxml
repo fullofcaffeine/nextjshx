@@ -1,0 +1,4 @@
+-cp tests/negative/support
+-cp tests/negative/diagnostic-contract
+-main Main
+-js tests/negative/diagnostic-contract/out/index.js

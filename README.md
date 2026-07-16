@@ -70,6 +70,20 @@ PostCSS to 8.5.10; `npm run security:audit` rejects moderate-or-higher audit
 findings, while the production fixture verifies those resolutions work with
 the pinned Next release.
 
+## Reusable test harness
+
+The baseline harness provides positive Haxe compilation, exact expected-failure
+diagnostics with source positions, complete generated-tree snapshots, and an
+offline packed-artifact consumer:
+
+```sh
+npm run test:harness
+npm run test:snapshots:update # only for an intentional, reviewed update
+```
+
+Fixture authoring and snapshot review rules are documented in
+[docs/testing-strategy.md](docs/testing-strategy.md).
+
 ## Architecture constraints
 
 [Architecture](docs/architecture.md) and its accepted ADRs are normative for

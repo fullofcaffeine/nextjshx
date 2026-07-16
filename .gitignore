@@ -9,6 +9,8 @@ node_modules/
 .next/
 out/
 dist/
+!tests/package-shape/npm-artifact/dist/
+!tests/package-shape/npm-artifact/dist/**
 build/
 coverage/
 .cache/

@@ -113,6 +113,28 @@ jobs:
       - name: Smoke-test the production server
         run: npm run test:fixture:next-stable:smoke
 
+  baseline-test-harness:
+    name: Positive, negative, snapshot, and package-shape harness
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 20.19.3
+          cache: npm
+
+      - name: Install locked dependencies and Haxe libraries
+        run: |
+          npm ci --ignore-scripts
+          npx --no-install lix download
+
+      - name: Run the reusable evidence harness
+        run: npm run test:harness
+
   security-tooling:
     name: Security tooling and bootstrap policy
     runs-on: ubuntu-latest

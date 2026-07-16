@@ -1,0 +1,16 @@
+{
+  "name": "@nextjshx/package-shape-fixture",
+  "version": "0.0.0",
+  "description": "Local-only artifact used to prove the NextJsHx packed-consumer harness.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ]
+}

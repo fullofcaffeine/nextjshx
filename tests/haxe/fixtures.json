@@ -1,0 +1,25 @@
+{
+  "$schema": "../../schemas/haxe-fixtures.schema.json",
+  "schemaVersion": 1,
+  "positive": [
+    {
+      "id": "next-stable-component",
+      "build": "tests/fixtures/next-stable/build.hxml"
+    }
+  ],
+  "negative": [
+    {
+      "id": "diagnostic-contract",
+      "build": "tests/negative/diagnostic-contract/build.hxml",
+      "expected": {
+        "exitCode": 1,
+        "code": "NXHX-CONFIG-0001",
+        "file": "tests/negative/diagnostic-contract/Main.hx",
+        "line": 3,
+        "characterStart": 3,
+        "characterEnd": 27,
+        "message": "The baseline negative fixture deliberately rejects this declaration."
+      }
+    }
+  ]
+}
