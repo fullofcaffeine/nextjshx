@@ -1,0 +1,28 @@
+{
+  "name": "nextjshx",
+  "version": "0.0.0-development",
+  "private": true,
+  "description": "Typed Haxe authoring for Next.js through genes-ts and Next-native adapters.",
+  "packageManager": "npm@10.8.2",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "format:haxe": "bash scripts/lint/hx_format_guard.sh --write",
+    "format:haxe:check": "bash scripts/lint/hx_format_guard.sh",
+    "lint:whitespace": "bash scripts/lint/whitespace_guard.sh --tracked",
+    "security:gitleaks": "bash scripts/security/run-gitleaks.sh",
+    "security:gitleaks:staged": "bash scripts/security/run-gitleaks.sh --staged",
+    "security:beads-history": "bash scripts/security/run-beads-gitleaks.sh",
+    "security:audit": "npm audit --audit-level=high",
+    "hooks:install": "bash scripts/hooks/install.sh",
+    "beads:push": "bash scripts/beads/push-safe.sh",
+    "test:plan": "python3 nextjshx-seed-beads.py --dry-run",
+    "test:security-tooling": "python3 scripts/ci/check_security_tooling.py",
+    "test": "npm run test:plan && npm run test:security-tooling",
+    "public:preflight": "npm run format:haxe:check && npm run lint:whitespace && npm run security:gitleaks && npm run security:beads-history && npm run security:audit && npm test"
+  },
+  "devDependencies": {
+    "lix": "17.0.2"
+  }
+}

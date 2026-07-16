@@ -1,0 +1,4 @@
+c0315798c4f97ca36b6ce4b4ca0862e8f886e2136a0467a3b8256554968419ce  nextjshx-prd.md
+daa4a282e60ba57dc8b30f6a604fe27de0483a625657605ce4fd6f9f576c5886  nextjshx-beads-seed.json
+e872140deba668d3844b8b9e5045902a9b13d04528f2bcb522328e1f425fca41  nextjshx-beads-seed.md
+e8e2a2c8ccc54fcae3497263da74257b6b5a02cb69dfb77fcbb6cf3356df9a1a  nextjshx-seed-beads.py

@@ -53,18 +53,23 @@ bd close <id>         # Complete work
 
 ## Build & Test
 
-_Add your build and test commands here_
-
 ```bash
-# Example:
-# npm install
-# npm test
+npm ci
+npm test
+npm run format:haxe:check
+npm run public:preflight
 ```
 
 ## Architecture Overview
 
-_Add a brief overview of your project architecture_
+NextJsHx compiles typed Haxe through `genes-ts`, then generates narrow,
+manifest-owned TypeScript/TSX adapters for Next.js App Router conventions. The
+result remains an ordinary Next.js application. Public APIs are split between a
+faithful `nextjs.raw.*` binding layer and typed `nextjs.*` ergonomics.
 
 ## Conventions & Patterns
 
-_Add your project-specific conventions here_
+Read and follow [AGENTS.md](AGENTS.md). In particular: use Beads for durable
+tracking, keep sibling repositories read-only, avoid untyped escape hatches,
+make generic compiler fixes in `genes-ts`, and require executable evidence for
+capability claims.
