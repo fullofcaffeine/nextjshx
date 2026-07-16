@@ -26,9 +26,28 @@ bd prime
 npm test
 ```
 
-The current root test validates the imported implementation plan. Product,
-compiler, Next.js, and packed-consumer suites will be added by their owning
-Beads issues.
+The current root test validates the imported implementation plan, compatibility
+contract, and repository security tooling. Product, compiler, Next.js, and
+packed-consumer suites will be added by their owning Beads issues.
+
+## Compatibility contract
+
+[support_matrix.json](support_matrix.json) is the machine-readable source of
+truth for exact toolchain, framework, and evidence-lane identities. Its
+human-readable view is generated at
+[docs/compatibility.md](docs/compatibility.md).
+
+```sh
+npm run test:support-matrix
+npm run support:discover
+```
+
+The first command needs no sibling repository. Discovery optionally validates
+read-only genes-ts and Next.js source checkouts, reports missing checkouts
+without failing the stable-package lane, and accepts explicit paths through
+`NEXTJSHX_GENES_TS_DIR` and `NEXTJSHX_NEXT_UPSTREAM_DIR`. Use
+`npm run support:require-genes` or `npm run support:require-upstream` only when
+running those source-oracle lanes.
 
 ## Architecture constraints
 

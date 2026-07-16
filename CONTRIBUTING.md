@@ -56,6 +56,19 @@ issue data with a raw `bd dolt push`.
 - Treat sibling repositories as read-only references unless explicitly
   authorized.
 
+The exact version and evidence contract lives in
+[support_matrix.json](support_matrix.json). Validate it without requiring any
+sibling checkout:
+
+```sh
+npm run test:support-matrix
+npm run support:discover
+```
+
+Edit the matrix rather than its generated documentation, then run
+`npm run support:docs`. Source-oracle jobs must opt in with
+`npm run support:require-genes` or `npm run support:require-upstream`.
+
 ## Before closing work
 
 Run the issue-owned tests and the root gates:

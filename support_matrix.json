@@ -1,0 +1,198 @@
+{
+  "$schema": "./schemas/support-matrix.schema.json",
+  "schemaVersion": 1,
+  "updated": "2026-07-16",
+  "releaseStatus": "foundation-only",
+  "evidencePolicy": {
+    "stablePackageLane": "required",
+    "sourceUpstreamLane": "optional",
+    "supportMeaning": "A declared version is a reproducible target, not a support claim. Support begins only after the lane's real Next fixture and smoke evidence are green."
+  },
+  "toolchain": {
+    "node": {
+      "engine": ">=20.9.0",
+      "minimumVersion": "20.9.0",
+      "baselineVersion": "20.19.3",
+      "currentLts": {
+        "version": "24.18.0",
+        "codename": "Krypton",
+        "observedOn": "2026-07-16"
+      },
+      "ciVersions": [
+        "20.19.3",
+        "24.18.0"
+      ]
+    },
+    "haxe": {
+      "version": "4.3.7",
+      "config": ".haxerc"
+    },
+    "typescript": {
+      "version": "6.0.2",
+      "selection": "Pinned to the exact version shared by the observed genes-ts and Next.js source manifests; Next stable accepts workspace-owned TypeScript."
+    }
+  },
+  "framework": {
+    "next": {
+      "stable": {
+        "range": "16.2.x",
+        "version": "16.2.10",
+        "nodeEngine": ">=20.9.0",
+        "reactPeer": "^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0",
+        "reactDomPeer": "^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0"
+      },
+      "upstream": {
+        "version": "16.3.0-canary.87",
+        "commit": "491f78099c3ea23be14e66c6d848b50204590e90",
+        "gitDescribe": "v16.3.0-canary.87-11-g491f78099c",
+        "blocking": false
+      }
+    },
+    "react": {
+      "version": "19.2.7",
+      "domVersion": "19.2.7",
+      "majorLane": 19
+    },
+    "genesTs": {
+      "name": "genes-ts",
+      "version": "1.32.0",
+      "commit": "1e7e323fdbda4c5b93689355294bd978e9170725",
+      "gitDescribe": "v1.32.0-8-g1e7e323",
+      "haxeVersion": "4.3.7",
+      "typescriptSpec": "npm:@typescript/typescript6@6.0.2",
+      "baselineReason": "The inspected sibling source is the implementation oracle and supersedes the older 1.27-era planning input; integration support remains unclaimed until the stable fixture is green."
+    }
+  },
+  "lanes": [
+    {
+      "id": "stable-package",
+      "required": true,
+      "status": "declared",
+      "purpose": "Release-blocking compatibility lane using the exact published stable Next.js package and both supported Node CI versions.",
+      "versions": {
+        "next": "16.2.10",
+        "react": "19.2.7",
+        "reactDom": "19.2.7",
+        "typescript": "6.0.2",
+        "haxe": "4.3.7",
+        "genesTs": "1.32.0",
+        "node": [
+          "20.19.3",
+          "24.18.0"
+        ]
+      },
+      "commands": {
+        "implemented": [
+          "npm run test:support-matrix"
+        ],
+        "planned": [
+          "npm run test:fixture:next-stable",
+          "npm run test:fixture:next-stable:smoke"
+        ]
+      },
+      "completionIssue": "nxhx-f34.1.5"
+    },
+    {
+      "id": "source-upstream",
+      "required": false,
+      "status": "observed",
+      "purpose": "Non-blocking early-warning lane against an explicitly configured read-only Next.js source checkout.",
+      "versions": {
+        "next": "16.3.0-canary.87",
+        "react": "19.2.7",
+        "reactDom": "19.2.7",
+        "typescript": "6.0.2",
+        "haxe": "4.3.7",
+        "genesTs": "1.32.0",
+        "node": [
+          "24.18.0"
+        ]
+      },
+      "commands": {
+        "implemented": [
+          "npm run support:require-upstream"
+        ],
+        "planned": [
+          "npm run test:fixture:next-upstream"
+        ]
+      },
+      "completionIssue": "nxhx-f34.1.6"
+    }
+  ],
+  "sourceOracles": {
+    "genesTs": {
+      "environmentVariable": "NEXTJSHX_GENES_TS_DIR",
+      "candidates": [
+        "../genes"
+      ],
+      "requiredFiles": [
+        "haxelib.json",
+        "package.json",
+        ".haxerc"
+      ],
+      "identity": {
+        "name": "genes-ts",
+        "version": "1.32.0",
+        "commit": "1e7e323fdbda4c5b93689355294bd978e9170725",
+        "haxeVersion": "4.3.7",
+        "typescriptSpec": "npm:@typescript/typescript6@6.0.2"
+      }
+    },
+    "nextUpstream": {
+      "environmentVariable": "NEXTJSHX_NEXT_UPSTREAM_DIR",
+      "candidates": [
+        "../nextjs",
+        "../next.js"
+      ],
+      "requiredFiles": [
+        "packages/next/package.json"
+      ],
+      "identity": {
+        "version": "16.3.0-canary.87",
+        "commit": "491f78099c3ea23be14e66c6d848b50204590e90",
+        "nodeEngine": ">=20.9.0",
+        "typescriptVersion": "6.0.2"
+      }
+    }
+  },
+  "scope": {
+    "runtimes": [
+      {
+        "name": "Node.js",
+        "status": "primary",
+        "reason": "The first supported App Router vertical slices target the standard Next.js Node runtime."
+      },
+      {
+        "name": "Edge Runtime",
+        "status": "excluded",
+        "reason": "Edge compatibility requires a separate API and runtime audit and is not part of the initial support claim."
+      }
+    ],
+    "bundlers": [
+      {
+        "name": "Turbopack",
+        "status": "primary",
+        "reason": "The pinned stable Next.js release uses the framework's current default bundler path."
+      },
+      {
+        "name": "webpack",
+        "status": "compatibility",
+        "reason": "A focused compatibility lane may be added after the stable Turbopack vertical slice is proven."
+      }
+    ],
+    "included": [
+      "Next.js App Router",
+      "Server Components by default",
+      "Explicit client components and Server Functions",
+      "Generated narrow convention adapters",
+      "Published stable Next.js package as the blocking lane"
+    ],
+    "exclusions": [
+      "Pages Router parity",
+      "Replacing the Next.js runtime, router, compiler, or bundler",
+      "Canary failures as release blockers",
+      "Implicit ownership of native TypeScript or JavaScript route files",
+      "A public compatibility promise before real fixture evidence exists"
+    ]
+  }
+}

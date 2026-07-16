@@ -31,6 +31,7 @@ EXPECTED_GITLEAKS_VERSION = "8.30.0"
 EXPECTED_FORMATTER_VERSION = "1.18.0"
 EXPECTED_HAXE_VERSION = "4.3.7"
 EXPECTED_LIX_VERSION = "17.0.2"
+EXPECTED_AJV_VERSION = "8.20.0"
 PUBLIC_PREFLIGHT_COMMAND = (
     "npm run format:haxe:check && npm run lint:whitespace && "
     "npm run security:gitleaks && npm run security:beads-history && "
@@ -210,6 +211,7 @@ def validate_workflows() -> int:
         "permissions:\n  contents: read",
         "  secret-scan:\n",
         "  haxe-format:\n",
+        "  compatibility-contract:\n",
         "  security-tooling:\n",
         "fetch-depth: 0",
         "bash scripts/ci/install-gitleaks.sh --install-dir",
@@ -217,6 +219,7 @@ def validate_workflows() -> int:
         "npx --no-install lix download",
         f"npx --no-install haxelib install formatter {EXPECTED_FORMATTER_VERSION} --quiet",
         "npm run security:audit",
+        "npm run test:support-matrix",
         "npm run test:security-tooling",
     )
     for fragment in required_fragments:
@@ -255,6 +258,8 @@ def validate_hook_wiring() -> None:
         "scripts/lint/local_path_guard_staged.sh",
         'scripts/lint/whitespace_guard.sh" --staged',
         'scripts/security/run-gitleaks.sh" --staged',
+        "scripts/compat/support-matrix.mjs",
+        "(issues|interactions)\\.jsonl",
         "scripts/ci/check_security_tooling.py",
     ):
         if fragment not in pre_commit:
@@ -449,8 +454,20 @@ def validate_package_contract() -> None:
         "security:audit": "npm audit --audit-level=high",
         "hooks:install": "bash scripts/hooks/install.sh",
         "beads:push": "bash scripts/beads/push-safe.sh",
+        "support:docs": "node scripts/compat/support-matrix.mjs docs --write",
+        "support:discover": "node scripts/compat/support-matrix.mjs discover",
+        "support:require-genes": (
+            "node scripts/compat/support-matrix.mjs discover --require-genes"
+        ),
+        "support:require-upstream": (
+            "node scripts/compat/support-matrix.mjs discover --require-upstream"
+        ),
+        "test:support-matrix": "node scripts/compat/support-matrix.mjs check",
         "test:security-tooling": "python3 scripts/ci/check_security_tooling.py",
-        "test": "npm run test:plan && npm run test:security-tooling",
+        "test": (
+            "npm run test:plan && npm run test:support-matrix && "
+            "npm run test:security-tooling"
+        ),
         "public:preflight": PUBLIC_PREFLIGHT_COMMAND,
     }
     for name, command in expected_scripts.items():
@@ -458,19 +475,29 @@ def validate_package_contract() -> None:
             raise SecurityToolingFailure(f"package.json lost {name}: {command}")
     if package.get("engines") != {"node": ">=20.9.0"}:
         raise SecurityToolingFailure("package.json must retain the Next.js Node floor")
-    if package.get("devDependencies") != {"lix": EXPECTED_LIX_VERSION}:
-        raise SecurityToolingFailure("package.json must pin the reviewed Lix version")
+    expected_dev_dependencies = {
+        "ajv": EXPECTED_AJV_VERSION,
+        "lix": EXPECTED_LIX_VERSION,
+    }
+    if package.get("devDependencies") != expected_dev_dependencies:
+        raise SecurityToolingFailure(
+            "package.json must pin the reviewed Ajv and Lix versions"
+        )
 
     package_lock = read_json(PACKAGE_LOCK)
     packages = package_lock.get("packages")
     if not isinstance(packages, dict):
         raise SecurityToolingFailure("package-lock.json has no packages map")
     root_lock = packages.get("")
+    ajv_lock = packages.get("node_modules/ajv")
     lix_lock = packages.get("node_modules/lix")
-    if not isinstance(root_lock, dict) or root_lock.get("devDependencies") != {
-        "lix": EXPECTED_LIX_VERSION
-    }:
-        raise SecurityToolingFailure("package-lock root drifted from the Lix pin")
+    if (
+        not isinstance(root_lock, dict)
+        or root_lock.get("devDependencies") != expected_dev_dependencies
+    ):
+        raise SecurityToolingFailure("package-lock root drifted from reviewed pins")
+    if not isinstance(ajv_lock, dict) or ajv_lock.get("version") != EXPECTED_AJV_VERSION:
+        raise SecurityToolingFailure("package-lock did not resolve the exact Ajv version")
     if not isinstance(lix_lock, dict) or lix_lock.get("version") != EXPECTED_LIX_VERSION:
         raise SecurityToolingFailure("package-lock did not resolve the exact Lix version")
 
@@ -491,7 +518,24 @@ def validate_docs_and_modes() -> None:
         if fragment not in security:
             raise SecurityToolingFailure(f"SECURITY.md lost required statement: {fragment}")
     read_text(ROOT / "CONTRIBUTING.md")
-    read_text(ROOT / "README.md")
+    readme = read_text(ROOT / "README.md")
+    for fragment in (
+        "support_matrix.json",
+        "npm run test:support-matrix",
+        "npm run support:discover",
+    ):
+        if fragment not in readme:
+            raise SecurityToolingFailure(f"README.md lost compatibility guidance: {fragment}")
+    compatibility = read_text(ROOT / "docs/compatibility.md")
+    for fragment in (
+        "machine-readable matrix is the source of truth",
+        "Sibling repositories are optional tooling oracles",
+        "npm run support:require-upstream",
+    ):
+        if fragment not in compatibility:
+            raise SecurityToolingFailure(
+                f"compatibility documentation lost required statement: {fragment}"
+            )
 
     for relative in (
         ".beads/hooks/pre-commit",
@@ -501,6 +545,7 @@ def validate_docs_and_modes() -> None:
         "scripts/hooks/pre-push",
         "scripts/beads/push-safe.sh",
         "scripts/ci/install-gitleaks.sh",
+        "scripts/compat/support-matrix.mjs",
         "scripts/lint/hx_format_guard.sh",
         "scripts/lint/local_path_guard_staged.sh",
         "scripts/lint/whitespace_guard.sh",

@@ -1,0 +1,630 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nextjshx.dev/schemas/support-matrix.schema.json",
+  "title": "NextJsHx support matrix",
+  "description": "Schema for the machine-readable NextJsHx compatibility and evidence contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "updated",
+    "releaseStatus",
+    "evidencePolicy",
+    "toolchain",
+    "framework",
+    "lanes",
+    "sourceOracles",
+    "scope"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "./schemas/support-matrix.schema.json"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "updated": {
+      "$ref": "#/$defs/date"
+    },
+    "releaseStatus": {
+      "enum": [
+        "foundation-only",
+        "preview",
+        "supported"
+      ]
+    },
+    "evidencePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stablePackageLane",
+        "sourceUpstreamLane",
+        "supportMeaning"
+      ],
+      "properties": {
+        "stablePackageLane": {
+          "const": "required"
+        },
+        "sourceUpstreamLane": {
+          "const": "optional"
+        },
+        "supportMeaning": {
+          "type": "string",
+          "minLength": 40
+        }
+      }
+    },
+    "toolchain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "node",
+        "haxe",
+        "typescript"
+      ],
+      "properties": {
+        "node": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "engine",
+            "minimumVersion",
+            "baselineVersion",
+            "currentLts",
+            "ciVersions"
+          ],
+          "properties": {
+            "engine": {
+              "type": "string",
+              "pattern": "^>=[0-9]+\\.[0-9]+\\.[0-9]+$"
+            },
+            "minimumVersion": {
+              "$ref": "#/$defs/semver"
+            },
+            "baselineVersion": {
+              "$ref": "#/$defs/semver"
+            },
+            "currentLts": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "version",
+                "codename",
+                "observedOn"
+              ],
+              "properties": {
+                "version": {
+                  "$ref": "#/$defs/semver"
+                },
+                "codename": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "observedOn": {
+                  "$ref": "#/$defs/date"
+                }
+              }
+            },
+            "ciVersions": {
+              "type": "array",
+              "minItems": 2,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/semver"
+              }
+            }
+          }
+        },
+        "haxe": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "config"
+          ],
+          "properties": {
+            "version": {
+              "$ref": "#/$defs/semver"
+            },
+            "config": {
+              "const": ".haxerc"
+            }
+          }
+        },
+        "typescript": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "selection"
+          ],
+          "properties": {
+            "version": {
+              "$ref": "#/$defs/semver"
+            },
+            "selection": {
+              "type": "string",
+              "minLength": 40
+            }
+          }
+        }
+      }
+    },
+    "framework": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "next",
+        "react",
+        "genesTs"
+      ],
+      "properties": {
+        "next": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "stable",
+            "upstream"
+          ],
+          "properties": {
+            "stable": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "range",
+                "version",
+                "nodeEngine",
+                "reactPeer",
+                "reactDomPeer"
+              ],
+              "properties": {
+                "range": {
+                  "type": "string",
+                  "pattern": "^[0-9]+\\.[0-9]+\\.x$"
+                },
+                "version": {
+                  "$ref": "#/$defs/semver"
+                },
+                "nodeEngine": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reactPeer": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reactDomPeer": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "upstream": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "version",
+                "commit",
+                "gitDescribe",
+                "blocking"
+              ],
+              "properties": {
+                "version": {
+                  "$ref": "#/$defs/semver"
+                },
+                "commit": {
+                  "$ref": "#/$defs/commit"
+                },
+                "gitDescribe": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "blocking": {
+                  "const": false
+                }
+              }
+            }
+          }
+        },
+        "react": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "domVersion",
+            "majorLane"
+          ],
+          "properties": {
+            "version": {
+              "$ref": "#/$defs/semver"
+            },
+            "domVersion": {
+              "$ref": "#/$defs/semver"
+            },
+            "majorLane": {
+              "const": 19
+            }
+          }
+        },
+        "genesTs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "version",
+            "commit",
+            "gitDescribe",
+            "haxeVersion",
+            "typescriptSpec",
+            "baselineReason"
+          ],
+          "properties": {
+            "name": {
+              "const": "genes-ts"
+            },
+            "version": {
+              "$ref": "#/$defs/semver"
+            },
+            "commit": {
+              "$ref": "#/$defs/commit"
+            },
+            "gitDescribe": {
+              "type": "string",
+              "minLength": 1
+            },
+            "haxeVersion": {
+              "$ref": "#/$defs/semver"
+            },
+            "typescriptSpec": {
+              "type": "string",
+              "minLength": 1
+            },
+            "baselineReason": {
+              "type": "string",
+              "minLength": 40
+            }
+          }
+        }
+      }
+    },
+    "lanes": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/lane"
+      }
+    },
+    "sourceOracles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "genesTs",
+        "nextUpstream"
+      ],
+      "properties": {
+        "genesTs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "environmentVariable",
+            "candidates",
+            "requiredFiles",
+            "identity"
+          ],
+          "properties": {
+            "environmentVariable": {
+              "const": "NEXTJSHX_GENES_TS_DIR"
+            },
+            "candidates": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/siblingPath"
+              }
+            },
+            "requiredFiles": {
+              "type": "array",
+              "minItems": 3,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/repositoryPath"
+              }
+            },
+            "identity": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "version",
+                "commit",
+                "haxeVersion",
+                "typescriptSpec"
+              ],
+              "properties": {
+                "name": {
+                  "const": "genes-ts"
+                },
+                "version": {
+                  "$ref": "#/$defs/semver"
+                },
+                "commit": {
+                  "$ref": "#/$defs/commit"
+                },
+                "haxeVersion": {
+                  "$ref": "#/$defs/semver"
+                },
+                "typescriptSpec": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        },
+        "nextUpstream": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "environmentVariable",
+            "candidates",
+            "requiredFiles",
+            "identity"
+          ],
+          "properties": {
+            "environmentVariable": {
+              "const": "NEXTJSHX_NEXT_UPSTREAM_DIR"
+            },
+            "candidates": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/siblingPath"
+              }
+            },
+            "requiredFiles": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/repositoryPath"
+              }
+            },
+            "identity": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "version",
+                "commit",
+                "nodeEngine",
+                "typescriptVersion"
+              ],
+              "properties": {
+                "version": {
+                  "$ref": "#/$defs/semver"
+                },
+                "commit": {
+                  "$ref": "#/$defs/commit"
+                },
+                "nodeEngine": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "typescriptVersion": {
+                  "$ref": "#/$defs/semver"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtimes",
+        "bundlers",
+        "included",
+        "exclusions"
+      ],
+      "properties": {
+        "runtimes": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/scopeItem"
+          }
+        },
+        "bundlers": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/scopeItem"
+          }
+        },
+        "included": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "exclusions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "repositoryPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:\\\\)"
+    },
+    "siblingPath": {
+      "type": "string",
+      "pattern": "^\\.\\./[^/].*$"
+    },
+    "commandSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "implemented",
+        "planned"
+      ],
+      "properties": {
+        "implemented": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^npm run [a-z0-9:-]+$"
+          }
+        },
+        "planned": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^npm run [a-z0-9:-]+$"
+          }
+        }
+      }
+    },
+    "lane": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "required",
+        "status",
+        "purpose",
+        "versions",
+        "commands",
+        "completionIssue"
+      ],
+      "properties": {
+        "id": {
+          "enum": [
+            "stable-package",
+            "source-upstream"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "status": {
+          "enum": [
+            "declared",
+            "observed",
+            "verified"
+          ]
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 30
+        },
+        "versions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "next",
+            "react",
+            "reactDom",
+            "typescript",
+            "haxe",
+            "genesTs",
+            "node"
+          ],
+          "properties": {
+            "next": {
+              "$ref": "#/$defs/semver"
+            },
+            "react": {
+              "$ref": "#/$defs/semver"
+            },
+            "reactDom": {
+              "$ref": "#/$defs/semver"
+            },
+            "typescript": {
+              "$ref": "#/$defs/semver"
+            },
+            "haxe": {
+              "$ref": "#/$defs/semver"
+            },
+            "genesTs": {
+              "$ref": "#/$defs/semver"
+            },
+            "node": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/semver"
+              }
+            }
+          }
+        },
+        "commands": {
+          "$ref": "#/$defs/commandSet"
+        },
+        "completionIssue": {
+          "type": "string",
+          "pattern": "^nxhx-[a-z0-9.]+$"
+        }
+      }
+    },
+    "scopeItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "status",
+        "reason"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "primary",
+            "compatibility",
+            "deferred",
+            "excluded"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 20
+        }
+      }
+    }
+  }
+}

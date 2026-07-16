@@ -17,12 +17,18 @@
     "security:audit": "npm audit --audit-level=high",
     "hooks:install": "bash scripts/hooks/install.sh",
     "beads:push": "bash scripts/beads/push-safe.sh",
+    "support:docs": "node scripts/compat/support-matrix.mjs docs --write",
+    "support:discover": "node scripts/compat/support-matrix.mjs discover",
+    "support:require-genes": "node scripts/compat/support-matrix.mjs discover --require-genes",
+    "support:require-upstream": "node scripts/compat/support-matrix.mjs discover --require-upstream",
     "test:plan": "python3 nextjshx-seed-beads.py --dry-run",
+    "test:support-matrix": "node scripts/compat/support-matrix.mjs check",
     "test:security-tooling": "python3 scripts/ci/check_security_tooling.py",
-    "test": "npm run test:plan && npm run test:security-tooling",
+    "test": "npm run test:plan && npm run test:support-matrix && npm run test:security-tooling",
     "public:preflight": "npm run format:haxe:check && npm run lint:whitespace && npm run security:gitleaks && npm run security:beads-history && npm run security:audit && npm test"
   },
   "devDependencies": {
+    "ajv": "8.20.0",
     "lix": "17.0.2"
   }
 }
