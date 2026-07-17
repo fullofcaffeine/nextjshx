@@ -6,6 +6,7 @@ core build path is:
 ```text
 Haxe source
   → Haxe type checking and NextJsHx build macros
+  → validated route patterns and exact parameter bindings
   → validated, versioned adapter plan
   → genes-ts split ESM TypeScript/TSX
   → narrow Next-native convention adapters
@@ -50,6 +51,8 @@ changes require a superseding ADR and linked Beads work.
 - One annotated application class declares one route or module boundary.
   Metadata paths are relative to the discovered App Router root and are never
   inferred solely from the Haxe package.
+- Route declarations first pass the closed, fail-closed path and exact params
+  contract documented in the [route-pattern reference](route-patterns.md).
 - NextJsHx macros validate supported Next contracts and emit a deterministic
   adapter plan. Its closed schema and canonical ordering are documented in the
   [adapter-plan reference](adapter-plan.md).

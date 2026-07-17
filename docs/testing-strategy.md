@@ -11,13 +11,14 @@ than inventing one-off runners.
 npm run test:haxe:positive
 npm run test:haxe:negative
 npm run test:adapter-plan
+npm run test:routes
 npm run test:snapshots
 npm run test:package-shape
 npm run test:compiler-gaps
 npm run test:harness
 ```
 
-`test:harness` runs all six layers. The root `npm test` also runs the strict
+`test:harness` runs all seven layers. The root `npm test` also runs the strict
 Next fixture and production HTTP smoke, so it remains the complete local gate.
 
 ## Positive and negative Haxe fixtures
@@ -52,6 +53,27 @@ fail with one exact `NXHX-PLAN-DUPLICATE-0001` diagnostic at the canonical
 conflicting source range while leaving that sentinel unchanged. This proves
 complete plan validation precedes plan publication; it does not grant
 permission to write an App Router target.
+
+## Route-pattern evidence
+
+`npm run test:routes` parses root, static, dynamic, catch-all, optional
+catch-all, String-backed abstract, and codec-backed domain routes from real
+typed Haxe declarations. Forward and reverse registration orders must produce
+the same canonical model and match
+[route-patterns-v1.json](../tests/snapshots/route-patterns-v1.json). The builds
+use `--no-output`, and the runner rejects both application JavaScript and an
+absolute compiler-host path in the result.
+
+The negative matrix compiles one failure at a time and compares the exact
+source file, line, character or line range, stable diagnostic code, and
+message. It covers unsafe and malformed paths, deferred route groups,
+unsupported slots and interception markers, duplicate or misplaced params,
+missing and extra fields, every wrong cardinality, optional fields, and invalid
+or missing codecs. The fixture classpath includes the installed genes-ts source
+directly so optional catch-all evidence checks the actual
+`genes.ts.Undefinable<Array<String>>` type without activating runtime code
+generation. The normative contract is documented in
+[route-patterns.md](route-patterns.md).
 
 ## Generated snapshots
 

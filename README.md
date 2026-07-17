@@ -29,9 +29,9 @@ npm test
 ```
 
 The current root test validates the imported implementation plan, compatibility
-contract, repository security tooling, deterministic adapter-plan schema, and
-the stable Next.js build/runtime fixture. Broader product suites will be added
-by their owning Beads issues.
+contract, repository security tooling, deterministic adapter-plan schema,
+closed route-pattern and params contract, and the stable Next.js build/runtime
+fixture. Broader product suites will be added by their owning Beads issues.
 
 ## Compatibility contract
 
@@ -74,13 +74,14 @@ the pinned Next release.
 
 The baseline harness provides positive Haxe compilation, exact expected-failure
 diagnostics with source positions, deterministic adapter-plan evidence,
-complete generated-tree snapshots, and an offline packed-artifact consumer. It
-also compiles framework-neutral genes-ts gap repros through TypeScript and
-classic JavaScript output:
+route-pattern and exact params validation, complete generated-tree snapshots,
+and an offline packed-artifact consumer. It also compiles framework-neutral
+genes-ts gap repros through TypeScript and classic JavaScript output:
 
 ```sh
 npm run test:harness
 npm run test:adapter-plan
+npm run test:routes
 npm run test:snapshots:update # only for an intentional, reviewed update
 ```
 
@@ -90,6 +91,8 @@ findings, current workarounds, and upstream ownership are recorded in the
 [genes-ts compiler gap inventory](docs/compiler-gap-inventory.md).
 The versioned plan contract and its validation boundary are documented in the
 [adapter-plan reference](docs/adapter-plan.md).
+The accepted App Router path grammar, exact params types, and codec boundary are
+documented in the [route-pattern reference](docs/route-patterns.md).
 
 ## Architecture constraints
 

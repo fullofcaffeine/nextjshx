@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "routes": [
+    {
+      "filesystemPath": "",
+      "publicPath": "/",
+      "segments": [],
+      "parameters": []
+    },
+    {
+      "filesystemPath": "about",
+      "publicPath": "/about",
+      "segments": [
+        {
+          "source": "about",
+          "kind": "static",
+          "segmentIndex": 1
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "filesystemPath": "archive/[[...slug]]",
+      "publicPath": "/archive/[[...slug]]",
+      "segments": [
+        {
+          "source": "archive",
+          "kind": "static",
+          "segmentIndex": 1
+        },
+        {
+          "source": "[[...slug]]",
+          "kind": "optional-catch-all",
+          "segmentIndex": 2
+        }
+      ],
+      "parameters": [
+        {
+          "name": "slug",
+          "kind": "optional-catch-all",
+          "segmentIndex": 2,
+          "haxeType": "genes.ts.Undefinable<Array<String>>",
+          "codecType": null
+        }
+      ]
+    },
+    {
+      "filesystemPath": "docs/[...slug]",
+      "publicPath": "/docs/[...slug]",
+      "segments": [
+        {
+          "source": "docs",
+          "kind": "static",
+          "segmentIndex": 1
+        },
+        {
+          "source": "[...slug]",
+          "kind": "catch-all",
+          "segmentIndex": 2
+        }
+      ],
+      "parameters": [
+        {
+          "name": "slug",
+          "kind": "catch-all",
+          "segmentIndex": 2,
+          "haxeType": "Array<String>",
+          "codecType": null
+        }
+      ]
+    },
+    {
+      "filesystemPath": "orders/[id]",
+      "publicPath": "/orders/[id]",
+      "segments": [
+        {
+          "source": "orders",
+          "kind": "static",
+          "segmentIndex": 1
+        },
+        {
+          "source": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 2
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "kind": "single",
+          "segmentIndex": 2,
+          "haxeType": "route_fixture.NumericId",
+          "codecType": "route_fixture.NumericIdCodec"
+        }
+      ]
+    },
+    {
+      "filesystemPath": "teams/[teamId]/members/[memberId]",
+      "publicPath": "/teams/[teamId]/members/[memberId]",
+      "segments": [
+        {
+          "source": "teams",
+          "kind": "static",
+          "segmentIndex": 1
+        },
+        {
+          "source": "[teamId]",
+          "kind": "dynamic",
+          "segmentIndex": 2
+        },
+        {
+          "source": "members",
+          "kind": "static",
+          "segmentIndex": 3
+        },
+        {
+          "source": "[memberId]",
+          "kind": "dynamic",
+          "segmentIndex": 4
+        }
+      ],
+      "parameters": [
+        {
+          "name": "teamId",
+          "kind": "single",
+          "segmentIndex": 2,
+          "haxeType": "route_fixture.TodoId",
+          "codecType": null
+        },
+        {
+          "name": "memberId",
+          "kind": "single",
+          "segmentIndex": 4,
+          "haxeType": "String",
+          "codecType": null
+        }
+      ]
+    },
+    {
+      "filesystemPath": "todos/[id]",
+      "publicPath": "/todos/[id]",
+      "segments": [
+        {
+          "source": "todos",
+          "kind": "static",
+          "segmentIndex": 1
+        },
+        {
+          "source": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 2
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "kind": "single",
+          "segmentIndex": 2,
+          "haxeType": "String",
+          "codecType": null
+        }
+      ]
+    }
+  ]
+}

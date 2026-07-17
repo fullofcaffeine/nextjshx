@@ -1,0 +1,6 @@
+-cp src
+-cp tests/route-patterns/src
+-main route_fixture.NoRuntime
+-js tests/route-patterns/.tmp/application.js
+--no-output
+--macro route_fixture.RouteFixture.emit('tests/route-patterns/.tmp/forward.json', 'forward')
