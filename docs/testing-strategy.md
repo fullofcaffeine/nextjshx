@@ -12,10 +12,11 @@ npm run test:haxe:positive
 npm run test:haxe:negative
 npm run test:snapshots
 npm run test:package-shape
+npm run test:compiler-gaps
 npm run test:harness
 ```
 
-`test:harness` runs all four layers. The root `npm test` also runs the strict
+`test:harness` runs all five layers. The root `npm test` also runs the strict
 Next fixture and production HTTP smoke, so it remains the complete local gate.
 
 ## Positive and negative Haxe fixtures
@@ -66,6 +67,19 @@ TypeScript, and executes the emitted ESM.
 The current artifact is a deliberately tiny harness self-test. The release
 packaging Bead will point the same clean-consumer flow at the real npm CLI and
 Haxelib artifacts once those packages exist.
+
+## Generic compiler-gap evidence
+
+`npm run test:compiler-gaps` compiles the same framework-neutral Haxe source
+through genes-ts TypeScript and classic JavaScript/declaration profiles. Strict
+TypeScript consumers validate both. The runner records missing output shapes
+as deliberate drift assertions, so adopting a new compiler commit requires an
+explicit inventory review rather than silently changing the evidence.
+
+The [compiler gap inventory](compiler-gap-inventory.md) records each reduced
+input, desired TypeScript and JavaScript output, current output, workaround,
+risk, priority, and owning Bead. Repro source must not contain downstream
+framework names or paths.
 
 ## Compiler-upstream changes
 

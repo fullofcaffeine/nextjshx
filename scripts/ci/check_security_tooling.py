@@ -29,6 +29,8 @@ HAXE_FIXTURES = ROOT / "tests/haxe/fixtures.json"
 HAXE_FIXTURES_SCHEMA = ROOT / "schemas/haxe-fixtures.schema.json"
 PACKAGE_SHAPE_ARTIFACT = ROOT / "tests/package-shape/npm-artifact/package.json"
 PACKAGE_SHAPE_TSCONFIG = ROOT / "tests/package-shape/consumer/tsconfig.json"
+COMPILER_GAPS_TS_TSCONFIG = ROOT / "tests/compiler-gaps/tsconfig.typescript.json"
+COMPILER_GAPS_CLASSIC_TSCONFIG = ROOT / "tests/compiler-gaps/tsconfig.classic.json"
 NEXT_FIXTURE_TSCONFIG = ROOT / "tests/fixtures/next-stable/tsconfig.json"
 EXPECTED_ACTIONS = {
     "actions/checkout": "9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0",
@@ -500,9 +502,10 @@ def validate_package_contract() -> None:
         "test:snapshots": "node scripts/testing/snapshots.mjs verify",
         "test:snapshots:update": "node scripts/testing/snapshots.mjs update",
         "test:package-shape": "node scripts/testing/package-shape.mjs",
+        "test:compiler-gaps": "node scripts/testing/compiler-gaps.mjs",
         "test:harness": (
             "npm run test:haxe && npm run test:snapshots && "
-            "npm run test:package-shape"
+            "npm run test:package-shape && npm run test:compiler-gaps"
         ),
         "fixture:next:compile": "haxe tests/fixtures/next-stable/build.hxml",
         "fixture:next:typegen": "next typegen tests/fixtures/next-stable",
@@ -681,9 +684,44 @@ def validate_test_harness() -> None:
                 f"negative diagnostic probe lost required behavior: {fragment}"
             )
 
+    stable_build = read_text(ROOT / "tests/fixtures/next-stable/build.hxml")
+    for fragment in (
+        "-D genes.ts",
+        "-D genes.ts.no_extension",
+        "-D genes.ts.jsx_import_source=react",
+        "--macro include('app')",
+        "-dce full",
+    ):
+        if fragment not in stable_build:
+            raise SecurityToolingFailure(
+                f"stable fixture lost its external-entry contract: {fragment}"
+            )
+    hello_view = read_text(
+        ROOT / "tests/fixtures/next-stable/haxe/app/HelloView.hx"
+    )
+    if "@:keep" not in hello_view:
+        raise SecurityToolingFailure("TS-imported fixture component lost narrow DCE retention")
+    fixture_main = read_text(ROOT / "tests/fixtures/next-stable/haxe/FixtureMain.hx")
+    if "HelloView" in fixture_main:
+        raise SecurityToolingFailure("stable fixture restored a fake Haxe reachability call")
+
+    compiler_gap_builds = {
+        "tests/compiler-gaps/build-typescript.hxml": ("-D genes.ts", "-dce full"),
+        "tests/compiler-gaps/build-classic.hxml": ("-D dts", "-dce full"),
+    }
+    for relative, fragments in compiler_gap_builds.items():
+        source = read_text(ROOT / relative)
+        for fragment in fragments:
+            if fragment not in source:
+                raise SecurityToolingFailure(
+                    f"{relative} lost dual-output gap evidence: {fragment}"
+                )
+
     for label, config_path, require_no_emit_on_error in (
         ("stable Next fixture", NEXT_FIXTURE_TSCONFIG, False),
         ("packed consumer", PACKAGE_SHAPE_TSCONFIG, True),
+        ("compiler-gap TypeScript profile", COMPILER_GAPS_TS_TSCONFIG, False),
+        ("compiler-gap classic consumer", COMPILER_GAPS_CLASSIC_TSCONFIG, False),
     ):
         config = read_json(config_path)
         options = config.get("compilerOptions")
@@ -724,6 +762,12 @@ def validate_test_harness() -> None:
             '"--offline"',
             "packed file allowlist drifted",
             "TSC_BIN",
+        ),
+        "scripts/testing/compiler-gaps.mjs": (
+            "verifyFrameworkNeutralSource",
+            "unexpectedly gained a directive",
+            "unexpectedly gained a default export",
+            "UnretainedEntry",
         ),
     }
     for relative, fragments in harness_fragments.items():
@@ -777,12 +821,29 @@ def validate_docs_and_modes() -> None:
         "npm run test:haxe:negative",
         "npm run test:snapshots:update",
         "npm run test:package-shape",
+        "npm run test:compiler-gaps",
         "skipLibCheck: false",
         "lifecycle scripts disabled",
     ):
         if fragment not in testing:
             raise SecurityToolingFailure(
                 f"testing strategy lost required statement: {fragment}"
+            )
+
+    compiler_gaps = read_text(ROOT / "docs/compiler-gap-inventory.md")
+    for fragment in (
+        "GENES-GAP-DIR-001",
+        "GENES-GAP-DCE-001",
+        "GENES-GAP-EXP-001",
+        "GENES-CAP-JSX-001",
+        EXPECTED_GENES_COMMIT,
+        "nxhx-f34.2.2",
+        "nxhx-f34.2.3",
+        "nxhx-f34.2.4",
+    ):
+        if fragment not in compiler_gaps:
+            raise SecurityToolingFailure(
+                f"compiler-gap inventory lost required evidence: {fragment}"
             )
 
     for relative in (
@@ -796,6 +857,7 @@ def validate_docs_and_modes() -> None:
         "scripts/ci/install-gitleaks.sh",
         "scripts/compat/support-matrix.mjs",
         "scripts/fixtures/next-stable.mjs",
+        "scripts/testing/compiler-gaps.mjs",
         "scripts/testing/haxe-fixtures.mjs",
         "scripts/testing/package-shape.mjs",
         "scripts/testing/snapshots.mjs",

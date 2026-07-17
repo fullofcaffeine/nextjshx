@@ -9,6 +9,13 @@ The build selects genes-ts's generic `genes.ts.jsx_import_source=react`
 profile because React 19 exposes the `JSX` type namespace from its module
 rather than relying on an ambient global.
 
+`HelloView` is marked with narrow standard-Haxe `@:keep` metadata because its
+only caller is the authored TypeScript adapter, which Haxe cannot discover or
+count for DCE. The build includes the owning Haxe package so the module is
+typed; `@:keep` then selects the external entry while full DCE stays enabled.
+This uses genes-ts's documented application interop policy and does not execute
+a fake Haxe call.
+
 The verification command performs a clean Haxe compile, checks the generated
 module/import shape, runs `next typegen`, runs strict TypeScript, and builds the
 app with the pinned stable Next.js package. The smoke command starts that

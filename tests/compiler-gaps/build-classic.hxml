@@ -1,0 +1,8 @@
+-lib genes-ts
+-cp tests/compiler-gaps/src
+-main compiler_gaps.Main
+-js tests/compiler-gaps/out/classic/index.js
+-D dts
+-D js-es=6
+-dce full
+--macro include('compiler_gaps')

@@ -11,4 +11,8 @@
 # React 19 exposes JSX from the module rather than as a global namespace.
 -D genes.ts.jsx_import_source=react
 
+# The authored TypeScript adapter cannot make its Haxe module enter the typed
+# graph. Include the owning package; @:keep selects the external entry while
+# full DCE remains free to remove unmarked declarations.
+--macro include('app')
 -dce full

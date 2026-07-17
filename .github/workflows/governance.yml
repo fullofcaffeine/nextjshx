@@ -114,7 +114,7 @@ jobs:
         run: npm run test:fixture:next-stable:smoke
 
   baseline-test-harness:
-    name: Positive, negative, snapshot, and package-shape harness
+    name: Positive, negative, snapshot, package-shape, and compiler-gap harness
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

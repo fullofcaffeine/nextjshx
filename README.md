@@ -74,7 +74,8 @@ the pinned Next release.
 
 The baseline harness provides positive Haxe compilation, exact expected-failure
 diagnostics with source positions, complete generated-tree snapshots, and an
-offline packed-artifact consumer:
+offline packed-artifact consumer. It also compiles framework-neutral genes-ts
+gap repros through TypeScript and classic JavaScript output:
 
 ```sh
 npm run test:harness
@@ -82,7 +83,9 @@ npm run test:snapshots:update # only for an intentional, reviewed update
 ```
 
 Fixture authoring and snapshot review rules are documented in
-[docs/testing-strategy.md](docs/testing-strategy.md).
+[docs/testing-strategy.md](docs/testing-strategy.md). The prioritized compiler
+findings, current workarounds, and upstream ownership are recorded in the
+[genes-ts compiler gap inventory](docs/compiler-gap-inventory.md).
 
 ## Architecture constraints
 
