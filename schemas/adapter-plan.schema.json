@@ -1,0 +1,387 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nextjshx.dev/schemas/adapter-plan.schema.json",
+  "title": "NextJsHx adapter plan",
+  "description": "The deterministic, pre-render plan produced from typed Haxe App Router declarations.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "toolchain",
+    "intents"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://nextjshx.dev/schemas/adapter-plan.schema.json"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "toolchain": {
+      "$ref": "#/$defs/toolchain"
+    },
+    "intents": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/intent"
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "portablePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//).+$"
+    },
+    "toolchain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nextjshx",
+        "haxe",
+        "genesTs",
+        "next"
+      ],
+      "properties": {
+        "nextjshx": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "haxe": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "genesTs": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "next": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "position": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "file",
+        "startLine",
+        "startCharacter",
+        "endLine",
+        "endCharacter"
+      ],
+      "properties": {
+        "file": {
+          "$ref": "#/$defs/portablePath"
+        },
+        "startLine": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "startCharacter": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "endLine": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "endCharacter": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "typeName",
+        "fieldName",
+        "typePosition",
+        "fieldPosition",
+        "metadataPosition"
+      ],
+      "properties": {
+        "typeName": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "fieldName": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "typePosition": {
+          "$ref": "#/$defs/position"
+        },
+        "fieldPosition": {
+          "$ref": "#/$defs/position"
+        },
+        "metadataPosition": {
+          "$ref": "#/$defs/position"
+        }
+      }
+    },
+    "implementation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "modulePath",
+        "symbol"
+      ],
+      "properties": {
+        "modulePath": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "symbol": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "import": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "modulePath",
+        "symbol",
+        "alias",
+        "typeOnly"
+      ],
+      "properties": {
+        "modulePath": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "symbol": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "alias": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/nonEmptyString"
+            }
+          ]
+        },
+        "typeOnly": {
+          "type": "boolean"
+        }
+      }
+    },
+    "export": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "name",
+        "sourceField",
+        "signature"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "default",
+            "named"
+          ]
+        },
+        "name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceField": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "signature": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "default"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "name": {
+                "const": "default"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "name": {
+                "not": {
+                  "const": "default"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "configValue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "string"
+            },
+            "value": {
+              "$ref": "#/$defs/nonEmptyString"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "integer"
+            },
+            "value": {
+              "type": "integer"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "boolean"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "string-array"
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "value": {
+          "$ref": "#/$defs/configValue"
+        }
+      }
+    },
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source",
+        "segmentPath",
+        "targetPath",
+        "implementation",
+        "imports",
+        "directives",
+        "exports",
+        "config"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "page",
+            "layout",
+            "route-handler",
+            "client-component",
+            "server-function",
+            "proxy"
+          ]
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "segmentPath": {
+          "anyOf": [
+            {
+              "const": ""
+            },
+            {
+              "$ref": "#/$defs/portablePath"
+            }
+          ]
+        },
+        "targetPath": {
+          "$ref": "#/$defs/portablePath"
+        },
+        "implementation": {
+          "$ref": "#/$defs/implementation"
+        },
+        "imports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/import"
+          },
+          "uniqueItems": true
+        },
+        "directives": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "uniqueItems": true
+        },
+        "exports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/export"
+          }
+        },
+        "config": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/config"
+          }
+        }
+      }
+    }
+  }
+}

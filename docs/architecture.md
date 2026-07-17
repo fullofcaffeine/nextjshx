@@ -6,6 +6,7 @@ core build path is:
 ```text
 Haxe source
   → Haxe type checking and NextJsHx build macros
+  → validated, versioned adapter plan
   → genes-ts split ESM TypeScript/TSX
   → narrow Next-native convention adapters
   → next typegen and strict TypeScript
@@ -50,7 +51,8 @@ changes require a superseding ADR and linked Beads work.
   Metadata paths are relative to the discovered App Router root and are never
   inferred solely from the Haxe package.
 - NextJsHx macros validate supported Next contracts and emit a deterministic
-  adapter plan.
+  adapter plan. Its closed schema and canonical ordering are documented in the
+  [adapter-plan reference](adapter-plan.md).
 - genes-ts emits strict split ESM TypeScript/TSX implementation modules.
 - Generic compiler gaps are reduced and fixed in genes-ts without adding
   Next-specific concepts to the compiler.

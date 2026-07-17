@@ -1,0 +1,163 @@
+{
+  "$schema": "https://nextjshx.dev/schemas/adapter-plan.schema.json",
+  "schemaVersion": 1,
+  "toolchain": {
+    "nextjshx": "0.0.0-development",
+    "haxe": "4.3.7",
+    "genesTs": "1.32.0+1e7e323fdbda4c5b93689355294bd978e9170725",
+    "next": "16.2.10"
+  },
+  "intents": [
+    {
+      "kind": "page",
+      "source": {
+        "typeName": "adapter_plan.PageDeclaration",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/adapter-plan/src/adapter_plan/PageDeclaration.hx",
+          "startLine": 4,
+          "startCharacter": 1,
+          "endLine": 12,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/adapter-plan/src/adapter_plan/PageDeclaration.hx",
+          "startLine": 5,
+          "startCharacter": 2,
+          "endLine": 7,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/adapter-plan/src/adapter_plan/PageDeclaration.hx",
+          "startLine": 3,
+          "startCharacter": 1,
+          "endLine": 3,
+          "endCharacter": 21
+        }
+      },
+      "segmentPath": "todos/[id]",
+      "targetPath": "todos/[id]/page.tsx",
+      "implementation": {
+        "modulePath": "../../../../src-gen/adapter_plan/PageDeclaration",
+        "symbol": "PageDeclaration"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../src-gen/adapter_plan/PageDeclaration",
+          "symbol": "PageDeclaration",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "next",
+          "symbol": "PageProps",
+          "alias": "RoutePageProps",
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: PageProps<\"/todos/[id]\">) => ReactNode"
+        },
+        {
+          "kind": "named",
+          "name": "revalidate",
+          "sourceField": "revalidate",
+          "signature": "number"
+        }
+      ],
+      "config": [
+        {
+          "name": "dynamicParams",
+          "value": {
+            "kind": "boolean",
+            "value": true
+          }
+        },
+        {
+          "name": "preferredRegion",
+          "value": {
+            "kind": "string-array",
+            "value": ["iad1", "sfo1"]
+          }
+        },
+        {
+          "name": "revalidate",
+          "value": {
+            "kind": "integer",
+            "value": 60
+          }
+        },
+        {
+          "name": "runtime",
+          "value": {
+            "kind": "string",
+            "value": "nodejs"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "client-component",
+      "source": {
+        "typeName": "adapter_plan.ClientDeclaration",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/adapter-plan/src/adapter_plan/ClientDeclaration.hx",
+          "startLine": 4,
+          "startCharacter": 1,
+          "endLine": 8,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/adapter-plan/src/adapter_plan/ClientDeclaration.hx",
+          "startLine": 5,
+          "startCharacter": 2,
+          "endLine": 7,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/adapter-plan/src/adapter_plan/ClientDeclaration.hx",
+          "startLine": 3,
+          "startCharacter": 1,
+          "endLine": 3,
+          "endCharacter": 21
+        }
+      },
+      "segmentPath": "todos/_components/TodoToggle",
+      "targetPath": "todos/_components/TodoToggle.tsx",
+      "implementation": {
+        "modulePath": "../../../src-gen/adapter_plan/ClientDeclaration",
+        "symbol": "ClientDeclaration"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../src-gen/adapter_plan/ClientDeclaration",
+          "symbol": "ClientDeclaration",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "ComponentType",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": ["use client", "use strict"],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "ComponentType<ClientProps>"
+        }
+      ],
+      "config": []
+    }
+  ]
+}

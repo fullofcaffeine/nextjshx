@@ -10,13 +10,14 @@ than inventing one-off runners.
 ```sh
 npm run test:haxe:positive
 npm run test:haxe:negative
+npm run test:adapter-plan
 npm run test:snapshots
 npm run test:package-shape
 npm run test:compiler-gaps
 npm run test:harness
 ```
 
-`test:harness` runs all five layers. The root `npm test` also runs the strict
+`test:harness` runs all six layers. The root `npm test` also runs the strict
 Next fixture and production HTTP smoke, so it remains the complete local gate.
 
 ## Positive and negative Haxe fixtures
@@ -35,6 +36,22 @@ Keep negative fixtures focused on one contract. When adding one:
 3. Add the exact expected diagnostic to `tests/haxe/fixtures.json`.
 4. Run `npm run test:haxe:negative` and review the failure before accepting any
    expectation change.
+
+## Adapter-plan evidence
+
+`npm run test:adapter-plan` produces the schema-v1 plan from real typed Haxe
+declarations without generating or executing application JavaScript. Forward
+and reverse registration orders must produce identical bytes, and the result
+must validate against
+[schemas/adapter-plan.schema.json](../schemas/adapter-plan.schema.json) and the
+reviewed snapshot. The fixture also checks repository-relative type, field, and
+metadata ranges.
+
+The duplicate-target case starts with sentinel plan bytes. Compilation must
+fail with one exact `NXHX-PLAN-DUPLICATE-0001` diagnostic at the canonical
+conflicting source range while leaving that sentinel unchanged. This proves
+complete plan validation precedes plan publication; it does not grant
+permission to write an App Router target.
 
 ## Generated snapshots
 

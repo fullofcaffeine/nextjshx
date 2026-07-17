@@ -1,0 +1,6 @@
+-cp src
+-cp tests/adapter-plan/src
+-main adapter_plan.NoRuntime
+-js tests/adapter-plan/.tmp/application.js
+--no-output
+--macro adapter_plan.PlanFixture.emit('tests/adapter-plan/.tmp/duplicate.json', 'duplicate')

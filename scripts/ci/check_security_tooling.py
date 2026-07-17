@@ -499,13 +499,15 @@ def validate_package_contract() -> None:
         "test:haxe:positive": "node scripts/testing/haxe-fixtures.mjs positive",
         "test:haxe:negative": "node scripts/testing/haxe-fixtures.mjs negative",
         "test:haxe": "node scripts/testing/haxe-fixtures.mjs all",
+        "test:adapter-plan": "node scripts/testing/adapter-plan.mjs",
         "test:snapshots": "node scripts/testing/snapshots.mjs verify",
         "test:snapshots:update": "node scripts/testing/snapshots.mjs update",
         "test:package-shape": "node scripts/testing/package-shape.mjs",
         "test:compiler-gaps": "node scripts/testing/compiler-gaps.mjs",
         "test:harness": (
-            "npm run test:haxe && npm run test:snapshots && "
-            "npm run test:package-shape && npm run test:compiler-gaps"
+            "npm run test:haxe && npm run test:adapter-plan && "
+            "npm run test:snapshots && npm run test:package-shape && "
+            "npm run test:compiler-gaps"
         ),
         "fixture:next:compile": "haxe tests/fixtures/next-stable/build.hxml",
         "fixture:next:typegen": "next typegen tests/fixtures/next-stable",
@@ -751,6 +753,12 @@ def validate_test_harness() -> None:
             "characterEnd",
             "Ajv2020",
         ),
+        "scripts/testing/adapter-plan.mjs": (
+            "registration order changed adapter-plan bytes",
+            "adapter-plan schema accepted",
+            "--no-output unexpectedly published application JavaScript",
+            "NXHX-PLAN-DUPLICATE-0001",
+        ),
         "scripts/testing/snapshots.mjs": (
             "snapshot updates are disabled in CI",
             "missing",
@@ -800,6 +808,7 @@ def validate_docs_and_modes() -> None:
         "npm run test:fixture:next-stable",
         "npm run test:fixture:next-stable:smoke",
         "npm run test:harness",
+        "npm run test:adapter-plan",
         "docs/testing-strategy.md",
         "PostCSS to 8.5.10",
     ):
@@ -819,6 +828,7 @@ def validate_docs_and_modes() -> None:
     for fragment in (
         "npm run test:haxe:positive",
         "npm run test:haxe:negative",
+        "npm run test:adapter-plan",
         "npm run test:snapshots:update",
         "npm run test:package-shape",
         "npm run test:compiler-gaps",
