@@ -5,7 +5,7 @@ valid adapter plan and correct rendered bytes do not grant permission to write
 an application file. The pure ownership preflight must succeed before the
 transactional publisher performs any live mutation.
 
-## Manifest v1
+## Manifest v2
 
 The machine-readable contract is
 [generated-output-manifest.schema.json](../schemas/generated-output-manifest.schema.json).
@@ -14,10 +14,20 @@ The configured `.nextjshx/manifest.json` has this canonical shape:
 ```json
 {
   "protocol": "nextjshx.generated-output",
-  "version": 1,
+  "version": 2,
   "generation": "64-lowercase-hex-characters",
   "nextVersion": "16.2.12",
   "genesVersion": "1.37.1+commit",
+  "outputProfile": {
+    "language": "typescript",
+    "intent": "reviewable",
+    "profileVersion": 1,
+    "sourceMaps": "external",
+    "sourcesContent": true,
+    "declarations": "public",
+    "jsxRuntime": "automatic"
+  },
+  "outputProfileFingerprint": "64-lowercase-hex-characters",
   "outputs": [
     {
       "path": "src/app/todos/[id]/page.tsx",
@@ -30,12 +40,19 @@ The configured `.nextjshx/manifest.json` has this canonical shape:
 ```
 
 Output records are sorted bytewise by project-relative path. Paths differing
-only by case are rejected for cross-filesystem safety. `generation` is the
-SHA-256 of each sorted `path`, a NUL byte, its recorded digest, and a newline.
-It therefore identifies the complete path-to-bytes state without depending on
+only by case are rejected for cross-filesystem safety.
+`outputProfileFingerprint` is the SHA-256 of the normalized output profile.
+`generation` is the SHA-256 of that profile fingerprint followed by each
+sorted `path`, a NUL byte, its recorded digest, and a newline. It therefore
+identifies the complete profile-and-path-to-bytes state without depending on
 JSON whitespace, source names, or array input order. Unknown protocol versions,
-unknown keys, duplicates, non-canonical ordering, and inconsistent generation
-digests fail closed.
+unknown keys, duplicates, non-canonical ordering, mismatched profile
+fingerprints, and inconsistent generation digests fail closed.
+
+Manifest v1 remains readable for the bounded config-v1 migration window. It is
+validated with its original digest algorithm and normalized in memory to the
+legacy TypeScript/reviewable profile. Reading never rewrites it; the next
+ordinary successful publication records manifest v2 transactionally.
 
 A missing manifest means NextJsHx owns no live output. A malformed manifest is
 preserved for inspection and is never treated like a missing manifest.
@@ -44,9 +61,10 @@ preserved for inspection and is never treated like a missing manifest.
 
 Preflight receives the canonical project root, configured manifest path,
 explicit project-relative output-root allowlist, an optional exact-file
-allowlist, exact Next and Genes versions, and the complete intended adapter
-bytes. It only reads filesystem metadata and content. It does not create
-directories, write adapters, remove stale files, or replace the manifest.
+allowlist, exact Next and Genes versions, the effective output profile, and the
+complete intended adapter bytes. It only reads filesystem metadata and
+content. It does not create directories, write adapters, remove stale files,
+or replace the manifest.
 
 Before returning a plan, it:
 

@@ -5,13 +5,13 @@ package root. It never imports JavaScript, evaluates JSON5, expands environment
 variables, or executes package scripts while loading configuration.
 
 The machine-readable schema is
-[nextjshx-config.schema.json](../schemas/nextjshx-config.schema.json). Version 1
+[nextjshx-config.schema.json](../schemas/nextjshx-config.schema.json). Version 2
 uses this complete shape:
 
 ```json
 {
-  "$schema": "https://nextjshx.dev/schemas/config-v1.json",
-  "schemaVersion": 1,
+  "$schema": "https://nextjshx.dev/schemas/config-v2.json",
+  "schemaVersion": 2,
   "appRoot": "src/app",
   "boundaries": {
     "maxDirectDependencies": 8,
@@ -20,7 +20,7 @@ uses this complete shape:
   "haxe": {
     "hxml": "build.hxml",
     "generatedRoot": "src-gen",
-    "defines": ["genes.ts", "genes.ts.no_extension"],
+    "defines": ["myapp.feature=enabled"],
     "extraInputs": ["schema/domain.json"]
   },
   "next": {
@@ -32,17 +32,49 @@ uses this complete shape:
   },
   "output": {
     "manifest": ".nextjshx/manifest.json",
-    "format": "project"
+    "format": "project",
+    "language": "typescript",
+    "intent": "reviewable",
+    "profileVersion": 1,
+    "sourceMaps": "external",
+    "sourcesContent": true,
+    "declarations": "public",
+    "jsxRuntime": "automatic"
   }
 }
 ```
 
 `schemaVersion`, `haxe`, `next`, and `output` are required. `$schema` is
-optional, but when present it must identify schema version 1. `appRoot` is
+optional, but when present it must identify schema version 2. `appRoot` is
 optional only to support safe discovery during initialization: exactly one of
 `app/` and `src/app/` must exist when it is omitted. `next.upstreamDir` is an
 optional read-only source oracle and may contain parent segments; it never
 becomes a runtime or publication dependency.
+
+The output language and output intent are independent, explicit build policy:
+
+- `language` is `"typescript"` or `"javascript"`;
+- `intent` is `"reviewable"` or `"optimized"`;
+- `profileVersion` pins the released meaning of that pair and is currently `1`;
+- `sourceMaps` is `"external"`, `"inline"`, or `"none"`;
+- `sourcesContent` controls whether source content is embedded in maps;
+- `declarations` is `"public"`, `"all"`, or `"none"`; and
+- `jsxRuntime` is `"automatic"` or `"classic"`.
+
+The CLI uses the same configured profile for development, checking, testing,
+and production builds. It never silently changes intent for production.
+TypeScript plus reviewable output is the schema-v2 default emitted by
+`nextjshx init`. The selected profile deterministically supplies genes-ts
+compiler defines; those implementation details are no longer application
+configuration.
+
+Schema-v1 files remain readable for a bounded migration window. The loader
+derives an equivalent reviewable TypeScript or JavaScript profile from the
+formerly configured, supported genes-ts defines. Contradictory or custom
+compiler policies fail instead of being guessed. Loading v1 returns a migration
+report that lists compiler-owned defines to remove and preserves only
+application-owned defines. Reading the file does not rewrite it; an explicit
+migration command will own publication in a later tooling slice.
 
 `haxe.extraInputs` is optional and defaults to an empty array. It names
 project-relative files or directories that affect Haxe generation but are not
@@ -73,7 +105,9 @@ application package, and cannot contain absolute, dot, parent, empty, or
 backslash segments. `next.package` is an npm dependency name rather than a
 filesystem path or URL. The ownership manifest remains a JSON control file
 under `.nextjshx/`. Haxe defines use compact `name` or `name=value` syntax and
-must be unique. `nextjshx.adapter-plan-output`,
+must be unique. All `genes.*`, `dts`, and `nextjshx.*` compiler mechanism
+defines are reserved in schema v2. In particular,
+`nextjshx.adapter-plan-output`,
 `nextjshx.boundary-plan-output`, `nextjshx.app-root`,
 `nextjshx.generated-root`, `nextjshx.cache-components`,
 `nextjshx.experimental.cache-private`, and

@@ -1,12 +1,18 @@
 import { createHash } from "node:crypto";
 
+import {
+  DEFAULT_OUTPUT_PROFILE,
+  type OutputProfile,
+  outputProfileFingerprint,
+} from "./config.js";
 import { ownershipFailure } from "./ownership-diagnostic.js";
 import { validateOutputPath } from "./ownership-path.js";
 
 export const OUTPUT_MANIFEST_PROTOCOL = "nextjshx.generated-output";
-export const OUTPUT_MANIFEST_VERSION = 1 as const;
+export const OUTPUT_MANIFEST_VERSION = 2 as const;
+export const LEGACY_OUTPUT_MANIFEST_VERSION = 1 as const;
 export const OUTPUT_MANIFEST_SCHEMA_ID =
-  "https://nextjshx.dev/schemas/generated-output-manifest-v1.json";
+  "https://nextjshx.dev/schemas/generated-output-manifest-v2.json";
 
 export interface GeneratedOutputRecord {
   readonly path: string;
@@ -21,6 +27,8 @@ export interface GeneratedOutputManifest {
   readonly generation: string;
   readonly nextVersion: string;
   readonly genesVersion: string;
+  readonly outputProfile: OutputProfile;
+  readonly outputProfileFingerprint: string;
   readonly outputs: readonly GeneratedOutputRecord[];
 }
 
@@ -37,9 +45,28 @@ const MANIFEST_KEYS = [
   "generation",
   "genesVersion",
   "nextVersion",
+  "outputProfile",
+  "outputProfileFingerprint",
   "outputs",
   "protocol",
   "version",
+];
+const LEGACY_MANIFEST_KEYS = [
+  "generation",
+  "genesVersion",
+  "nextVersion",
+  "outputs",
+  "protocol",
+  "version",
+];
+const OUTPUT_PROFILE_KEYS = [
+  "declarations",
+  "intent",
+  "jsxRuntime",
+  "language",
+  "profileVersion",
+  "sourceMaps",
+  "sourcesContent",
 ];
 const OUTPUT_KEYS = ["kind", "path", "sha256", "source"];
 const SHA256 = /^[0-9a-f]{64}$/;
@@ -107,6 +134,79 @@ function stringValue(value: unknown, subject: string): string {
   return value;
 }
 
+function profileLiteral<const Value extends string>(
+  value: unknown,
+  subject: string,
+  allowed: readonly Value[],
+): Value {
+  if (typeof value !== "string" || !allowed.includes(value as Value)) {
+    ownershipFailure(
+      "NXHX-OWNERSHIP-MANIFEST-0001",
+      `${subject} is not a supported output-profile value.`,
+      subject,
+      allowed.map((entry) => JSON.stringify(entry)).join(" or "),
+      JSON.stringify(value),
+      "Restore the exact configured output profile before touching generated files.",
+    );
+  }
+  return value as Value;
+}
+
+function parseOutputProfile(value: unknown, subject: string): OutputProfile {
+  const profile = objectValue(value, subject);
+  closedKeys(profile, OUTPUT_PROFILE_KEYS, subject);
+  requiredKeys(profile, OUTPUT_PROFILE_KEYS, subject);
+  if (profile.profileVersion !== 1) {
+    ownershipFailure(
+      "NXHX-OWNERSHIP-MANIFEST-0001",
+      `${subject}.profileVersion is unsupported.`,
+      `${subject}.profileVersion`,
+      "the integer 1",
+      JSON.stringify(profile.profileVersion),
+      "Use a CLI that supports the recorded profile contract or migrate it explicitly.",
+    );
+  }
+  if (typeof profile.sourcesContent !== "boolean") {
+    ownershipFailure(
+      "NXHX-OWNERSHIP-MANIFEST-0001",
+      `${subject}.sourcesContent must be a boolean.`,
+      `${subject}.sourcesContent`,
+      "true or false",
+      JSON.stringify(profile.sourcesContent),
+      "Restore the exact configured source-map policy before touching generated files.",
+    );
+  }
+  return Object.freeze({
+    language: profileLiteral(
+      profile.language,
+      `${subject}.language`,
+      ["typescript", "javascript"] as const,
+    ),
+    intent: profileLiteral(
+      profile.intent,
+      `${subject}.intent`,
+      ["reviewable", "optimized"] as const,
+    ),
+    profileVersion: 1,
+    sourceMaps: profileLiteral(
+      profile.sourceMaps,
+      `${subject}.sourceMaps`,
+      ["external", "inline", "none"] as const,
+    ),
+    sourcesContent: profile.sourcesContent,
+    declarations: profileLiteral(
+      profile.declarations,
+      `${subject}.declarations`,
+      ["public", "all", "none"] as const,
+    ),
+    jsxRuntime: profileLiteral(
+      profile.jsxRuntime,
+      `${subject}.jsxRuntime`,
+      ["automatic", "classic"] as const,
+    ),
+  });
+}
+
 function outputRecord(value: unknown, index: number): GeneratedOutputRecord {
   const subject = `$.outputs[${index}]`;
   const record = objectValue(value, subject);
@@ -153,12 +253,27 @@ function outputRecord(value: unknown, index: number): GeneratedOutputRecord {
   });
 }
 
-export function manifestGeneration(outputs: readonly GeneratedOutputIdentity[]): string {
+function legacyManifestGeneration(
+  outputs: readonly GeneratedOutputIdentity[],
+): string {
   const canonical = [...outputs]
     .sort((left, right) => Buffer.from(left.path).compare(Buffer.from(right.path)))
     .map((output) => `${output.path}\0${output.sha256}\n`)
     .join("");
   return createHash("sha256").update(canonical, "utf8").digest("hex");
+}
+
+export function manifestGeneration(
+  outputProfileFingerprintValue: string,
+  outputs: readonly GeneratedOutputIdentity[],
+): string {
+  const canonical = [...outputs]
+    .sort((left, right) => Buffer.from(left.path).compare(Buffer.from(right.path)))
+    .map((output) => `${output.path}\0${output.sha256}\n`)
+    .join("");
+  return createHash("sha256")
+    .update(`${outputProfileFingerprintValue}\n${canonical}`, "utf8")
+    .digest("hex");
 }
 
 function assertCanonicalOutputs(outputs: readonly GeneratedOutputRecord[]): void {
@@ -200,6 +315,7 @@ function assertCanonicalOutputs(outputs: readonly GeneratedOutputRecord[]): void
 export function createGeneratedOutputManifest(
   nextVersion: string,
   genesVersion: string,
+  outputProfile: OutputProfile,
   outputs: readonly GeneratedOutputIdentity[],
 ): GeneratedOutputManifest {
   const canonical = outputs
@@ -221,20 +337,43 @@ export function createGeneratedOutputManifest(
       "Record the exact Next.js and Genes versions without paths or log text.",
     );
   }
+  const validatedOutputProfile = parseOutputProfile(
+    outputProfile,
+    "outputProfile",
+  );
+  const fingerprint = outputProfileFingerprint(validatedOutputProfile);
   return Object.freeze({
     protocol: OUTPUT_MANIFEST_PROTOCOL,
     version: OUTPUT_MANIFEST_VERSION,
-    generation: manifestGeneration(canonical),
+    generation: manifestGeneration(fingerprint, canonical),
     nextVersion: validatedNextVersion,
     genesVersion: validatedGenesVersion,
+    outputProfile: validatedOutputProfile,
+    outputProfileFingerprint: fingerprint,
     outputs: Object.freeze(canonical),
   });
 }
 
 export function parseGeneratedOutputManifest(decoded: unknown): GeneratedOutputManifest {
   const manifest = objectValue(decoded, "$");
-  closedKeys(manifest, MANIFEST_KEYS, "$");
-  requiredKeys(manifest, MANIFEST_KEYS, "$");
+  requiredKeys(manifest, ["version"], "$");
+  if (
+    manifest.version !== OUTPUT_MANIFEST_VERSION &&
+    manifest.version !== LEGACY_OUTPUT_MANIFEST_VERSION
+  ) {
+    ownershipFailure(
+      "NXHX-OWNERSHIP-VERSION-0002",
+      `Manifest version ${JSON.stringify(manifest.version)} is not supported.`,
+      "$.version",
+      `the integer ${LEGACY_OUTPUT_MANIFEST_VERSION} or ${OUTPUT_MANIFEST_VERSION}`,
+      JSON.stringify(manifest.version),
+      "Use a compatible CLI or explicitly migrate the manifest before touching live outputs.",
+    );
+  }
+  const legacy = manifest.version === LEGACY_OUTPUT_MANIFEST_VERSION;
+  const manifestKeys = legacy ? LEGACY_MANIFEST_KEYS : MANIFEST_KEYS;
+  closedKeys(manifest, manifestKeys, "$");
+  requiredKeys(manifest, manifestKeys, "$");
   if (manifest.protocol !== OUTPUT_MANIFEST_PROTOCOL) {
     ownershipFailure(
       "NXHX-OWNERSHIP-MANIFEST-0001",
@@ -243,16 +382,6 @@ export function parseGeneratedOutputManifest(decoded: unknown): GeneratedOutputM
       OUTPUT_MANIFEST_PROTOCOL,
       JSON.stringify(manifest.protocol),
       "Use the configured NextJsHx manifest; never treat an unrelated JSON file as ownership proof.",
-    );
-  }
-  if (manifest.version !== OUTPUT_MANIFEST_VERSION) {
-    ownershipFailure(
-      "NXHX-OWNERSHIP-VERSION-0002",
-      `Manifest version ${JSON.stringify(manifest.version)} is not supported.`,
-      "$.version",
-      `the integer ${OUTPUT_MANIFEST_VERSION}`,
-      JSON.stringify(manifest.version),
-      "Use a compatible CLI or explicitly migrate the manifest before touching live outputs.",
     );
   }
   if (!Array.isArray(manifest.outputs)) {
@@ -268,7 +397,32 @@ export function parseGeneratedOutputManifest(decoded: unknown): GeneratedOutputM
   const outputs = manifest.outputs.map(outputRecord);
   assertCanonicalOutputs(outputs);
   const generation = stringValue(manifest.generation, "$.generation");
-  const expectedGeneration = manifestGeneration(outputs);
+  const outputProfile = legacy
+    ? DEFAULT_OUTPUT_PROFILE
+    : parseOutputProfile(manifest.outputProfile, "$.outputProfile");
+  const fingerprint = outputProfileFingerprint(outputProfile);
+  if (!legacy) {
+    const recordedFingerprint = stringValue(
+      manifest.outputProfileFingerprint,
+      "$.outputProfileFingerprint",
+    );
+    if (
+      !SHA256.test(recordedFingerprint) ||
+      recordedFingerprint !== fingerprint
+    ) {
+      ownershipFailure(
+        "NXHX-OWNERSHIP-GENERATION-0011",
+        "The output-profile fingerprint does not match the recorded profile.",
+        "$.outputProfileFingerprint",
+        fingerprint,
+        recordedFingerprint,
+        "Restore the manifest from the exact configured profile before publishing output.",
+      );
+    }
+  }
+  const expectedGeneration = legacy
+    ? legacyManifestGeneration(outputs)
+    : manifestGeneration(fingerprint, outputs);
   if (!SHA256.test(generation) || generation !== expectedGeneration) {
     ownershipFailure(
       "NXHX-OWNERSHIP-GENERATION-0011",
@@ -294,9 +448,11 @@ export function parseGeneratedOutputManifest(decoded: unknown): GeneratedOutputM
   return Object.freeze({
     protocol: OUTPUT_MANIFEST_PROTOCOL,
     version: OUTPUT_MANIFEST_VERSION,
-    generation,
+    generation: manifestGeneration(fingerprint, outputs),
     nextVersion,
     genesVersion,
+    outputProfile,
+    outputProfileFingerprint: fingerprint,
     outputs: Object.freeze(outputs),
   });
 }
@@ -305,6 +461,7 @@ export function encodeGeneratedOutputManifest(manifest: GeneratedOutputManifest)
   const canonical = createGeneratedOutputManifest(
     manifest.nextVersion,
     manifest.genesVersion,
+    manifest.outputProfile,
     manifest.outputs,
   );
   if (canonical.generation !== manifest.generation) {

@@ -18,6 +18,7 @@ import { fileURLToPath } from "node:url";
 import { Ajv2020, type AnySchemaObject } from "ajv/dist/2020.js";
 
 import {
+  DEFAULT_OUTPUT_PROFILE,
   type PlannedGeneratedOutput,
   type PublicationDiagnosticCode,
   type PublicationFaultPoint,
@@ -79,6 +80,7 @@ function options(
     allowedOutputFiles: [],
     nextVersion: "16.2.12",
     genesVersion: "1.37.1+test",
+    outputProfile: DEFAULT_OUTPUT_PROFILE,
     outputs: fixtures.map(output),
     formatter: identityFormatter,
     ...extra,

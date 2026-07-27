@@ -14,6 +14,7 @@ import {
   createGeneratedOutputManifest,
   parseGeneratedOutputManifest,
 } from "./manifest.js";
+import type { OutputProfile } from "./config.js";
 import { ownershipFailure } from "./ownership-diagnostic.js";
 import {
   validateOutputPath,
@@ -54,6 +55,7 @@ export interface OwnershipPreflightOptions {
   readonly allowedOutputFiles?: readonly string[];
   readonly nextVersion: string;
   readonly genesVersion: string;
+  readonly outputProfile: OutputProfile;
   readonly outputs: readonly PlannedGeneratedOutput[];
 }
 
@@ -494,6 +496,7 @@ export function preflightOwnershipTransfer(
   const intendedManifest = createGeneratedOutputManifest(
     options.nextVersion,
     options.genesVersion,
+    options.outputProfile,
     options.outputs.map((output) => ({
       path: validateOutputPath(output.path, "planned output path"),
       kind: output.kind,
@@ -730,6 +733,7 @@ export function preflightGeneratedOutputs(
   const intendedManifest = createGeneratedOutputManifest(
     options.nextVersion,
     options.genesVersion,
+    options.outputProfile,
     intendedRecords,
   );
   const previousManifest = readPreviousManifest(absoluteManifest);

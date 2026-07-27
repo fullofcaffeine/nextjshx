@@ -23,6 +23,7 @@ import {
   readAdapterPlan,
 } from "./adapter-plan.js";
 import { type BoundaryPlan, readBoundaryPlan } from "./boundary-plan.js";
+import { effectiveHaxeDefines, effectiveOutputProfile } from "./config.js";
 import {
   mdxComponentsOutputPathForAppRoot,
   proxyOutputPathForAppRoot,
@@ -81,7 +82,6 @@ const TYPESCRIPT_VERSION = "6.0.2";
 const GENES_TS_IDENTITY = "1.38.2+f0ffa29e6d49fe81541977c6a3aae6b80000cec6";
 const NEXT_UPSTREAM_VERSION = "16.3.0-canary.87";
 const NEXT_UPSTREAM_COMMIT = "491f78099c3ea23be14e66c6d848b50204590e90";
-const REQUIRED_HAXE_DEFINES = ["genes.ts", "genes.ts.no_extension"] as const;
 const PLAN_DEFINE = "nextjshx.adapter-plan-output";
 const BOUNDARY_PLAN_DEFINE = "nextjshx.boundary-plan-output";
 const APP_ROOT_DEFINE = "nextjshx.app-root";
@@ -379,7 +379,7 @@ function projectContext(options: CommandBaseOptions): ProjectContext {
       "NXHX-CLI-USAGE-0001",
       "This command requires nextjshx.config.json.",
       discovery.packageRoot,
-      "a valid schema-v1 config at the package root",
+      "a valid schema-v2 config or supported schema-v1 migration input at the package root",
       "config missing after required discovery",
       "Run nextjshx init or add the documented declarative config.",
     );
@@ -1032,7 +1032,7 @@ function collectCompilationPlans(
     args: [
       ...haxe.argsPrefix,
       context.config.haxe.hxml,
-      ...context.config.haxe.defines.flatMap((define) => ["-D", define]),
+      ...effectiveHaxeDefines(context.config).flatMap((define) => ["-D", define]),
       ...(context.config.next.cacheComponents
         ? ["-D", CACHE_COMPONENTS_DEFINE]
         : []),
@@ -1543,15 +1543,46 @@ function requireCurrentGeneratedTree(
   const changed = preflight.changes.filter(
     (change) => change.disposition !== "unchanged",
   );
-  if (changed.length > 0) {
+  const previous = preflight.previousManifest;
+  const intended = preflight.intendedManifest;
+  const manifestCurrent =
+    previous !== null &&
+    previous.generation === intended.generation &&
+    previous.nextVersion === intended.nextVersion &&
+    previous.genesVersion === intended.genesVersion &&
+    previous.outputProfileFingerprint === intended.outputProfileFingerprint;
+  const manifestDrift =
+    previous === null
+      ? ["manifest:missing"]
+      : [
+          ...(previous.generation === intended.generation
+            ? []
+            : ["manifest:generation"]),
+          ...(previous.nextVersion === intended.nextVersion
+            ? []
+            : [`next:${previous.nextVersion}->${intended.nextVersion}`]),
+          ...(previous.genesVersion === intended.genesVersion
+            ? []
+            : [`genes:${previous.genesVersion}->${intended.genesVersion}`]),
+          ...(previous.outputProfileFingerprint ===
+          intended.outputProfileFingerprint
+            ? []
+            : [
+                `profile:${previous.outputProfileFingerprint.slice(0, 12)}->${intended.outputProfileFingerprint.slice(0, 12)}`,
+              ]),
+        ];
+  if (changed.length > 0 || !manifestCurrent) {
     cliFailure(
       code,
-      `${command} refuses to validate stale or unpublished adapter bytes.`,
-      "generated adapter tree",
-      "every planned output classified unchanged against the verified manifest",
-      changed
-        .map((change) => `${change.disposition}:${change.path}`)
-        .join(", "),
+      `${command} refuses to validate stale or unpublished adapter identity.`,
+      "generated adapter tree and ownership manifest",
+      "every planned output and the configured output profile classified unchanged against the verified manifest",
+      [
+        ...changed.map(
+          (change) => `${change.disposition}:${change.path}`,
+        ),
+        ...(!manifestCurrent ? manifestDrift : []),
+      ].join(", "),
       "Run nextjshx generate, review the transaction result, then rerun this validation command.",
     );
   }
@@ -1674,6 +1705,7 @@ export async function runGenerateCommand(
     allowedOutputFiles: exactConventionOutputFiles(context),
     nextVersion: plan.toolchain.next,
     genesVersion: plan.toolchain.genesTs,
+    outputProfile: effectiveOutputProfile(context.config),
     outputs,
     ...(validate
       ? {
@@ -1790,6 +1822,7 @@ export async function runCleanCommand(
     allowedOutputFiles: exactConventionOutputFiles(context),
     nextVersion: manifest.nextVersion,
     genesVersion: manifest.genesVersion,
+    outputProfile: manifest.outputProfile,
     outputs: Object.freeze([]),
     ...(options.faultInjector === undefined
       ? {}
@@ -1830,6 +1863,7 @@ export async function runOwnershipTransferCommand(
     allowedOutputFiles: exactConventionOutputFiles(context),
     nextVersion: plan.toolchain.next,
     genesVersion: plan.toolchain.genesTs,
+    outputProfile: effectiveOutputProfile(context.config),
     outputs,
     transfer: Object.freeze({
       operation: options.operation,
@@ -1868,6 +1902,7 @@ export async function runTypecheckCommand(
     allowedOutputFiles: exactConventionOutputFiles(context),
     nextVersion: plan.toolchain.next,
     genesVersion: plan.toolchain.genesTs,
+    outputProfile: effectiveOutputProfile(context.config),
     outputs,
   });
   requireCurrentGeneratedTree(
@@ -2265,6 +2300,7 @@ export async function runRoutesCommand(
       allowedOutputFiles: exactConventionOutputFiles(context),
       nextVersion: plan.toolchain.next,
       genesVersion: plan.toolchain.genesTs,
+      outputProfile: effectiveOutputProfile(context.config),
       outputs,
     });
     requireCurrentGeneratedTree(
@@ -2496,6 +2532,7 @@ function inspectManifestCheck(context: ProjectContext): DoctorCheck {
       allowedOutputFiles: exactConventionOutputFiles(context),
       nextVersion: manifest.nextVersion,
       genesVersion: manifest.genesVersion,
+      outputProfile: manifest.outputProfile,
       outputs: manifest.outputs.map((output) => ({
         path: output.path,
         kind: output.kind,
@@ -2650,22 +2687,20 @@ function planDoctorChecks(
       ...PLAN_DIRECTORY.split("/"),
     );
     const residualPlans = readdirSync(planDirectory).sort();
-    const missingDefines = REQUIRED_HAXE_DEFINES.filter(
-      (define) => !context.config.haxe.defines.includes(define),
-    );
+    const effectiveDefines = effectiveHaxeDefines(context.config);
     return Object.freeze([
       doctorCheck(
         "NXHX-DOCTOR-PLAN-0010",
-        residualPlans.length === 0 && missingDefines.length === 0
+        residualPlans.length === 0
           ? "pass"
           : "fail",
         "Haxe adapter plan",
         `${plan.intents.length} canonical intent(s); genes-ts ${plan.toolchain.genesTs}; ` +
           `${residualPlans.length} stale plan artifact(s); ` +
-          `${missingDefines.length === 0 ? "required defines present" : `missing ${missingDefines.join(", ")}`}`,
-        residualPlans.length === 0 && missingDefines.length === 0
+          `${effectiveDefines.length} compiler/application define(s) derived`,
+        residualPlans.length === 0
           ? "No action required."
-          : "Restore required genes.ts defines and remove only proven-stale plan files after confirming no CLI process owns them.",
+          : "Remove only proven-stale plan files after confirming no CLI process owns them.",
       ),
     ]);
   } catch (error) {
@@ -3019,6 +3054,7 @@ export async function runBuildCommand(
     allowedOutputFiles: exactConventionOutputFiles(context),
     nextVersion: verificationPlan.toolchain.next,
     genesVersion: verificationPlan.toolchain.genesTs,
+    outputProfile: effectiveOutputProfile(context.config),
     outputs: verificationOutputs,
   });
   requireCurrentGeneratedTree(

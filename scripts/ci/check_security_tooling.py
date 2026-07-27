@@ -1378,18 +1378,18 @@ def validate_package_contract() -> None:
     config_schema = read_json(CONFIG_SCHEMA)
     if (
         config_schema.get("$id")
-        != "https://nextjshx.dev/schemas/config-v1.json"
+        != "https://nextjshx.dev/schemas/config-v2.json"
         or config_schema.get("additionalProperties") is not False
         or config_schema.get("properties", {})
         .get("schemaVersion", {})
         .get("const")
-        != 1
+        != 2
     ):
-        raise SecurityToolingFailure("NextJsHx config schema-v1 contract drifted")
+        raise SecurityToolingFailure("NextJsHx config schema-v2 contract drifted")
     output_manifest_schema = read_json(OUTPUT_MANIFEST_SCHEMA)
     if (
         output_manifest_schema.get("$id")
-        != "https://nextjshx.dev/schemas/generated-output-manifest-v1.json"
+        != "https://nextjshx.dev/schemas/generated-output-manifest-v2.json"
         or output_manifest_schema.get("additionalProperties") is not False
         or output_manifest_schema.get("properties", {})
         .get("protocol", {})
@@ -1398,9 +1398,9 @@ def validate_package_contract() -> None:
         or output_manifest_schema.get("properties", {})
         .get("version", {})
         .get("const")
-        != 1
+        != 2
     ):
-        raise SecurityToolingFailure("generated-output manifest schema-v1 drifted")
+        raise SecurityToolingFailure("generated-output manifest schema-v2 drifted")
     output_transaction_schema = read_json(OUTPUT_TRANSACTION_SCHEMA)
     if (
         output_transaction_schema.get("$id")
@@ -2225,12 +2225,16 @@ def validate_test_harness() -> None:
             '".next/types/**/*.ts"',
         ),
         "tools/cli/src/config.ts": (
-            "CONFIG_SCHEMA_VERSION = 1",
+            "CONFIG_SCHEMA_VERSION = 2",
+            "LEGACY_CONFIG_SCHEMA_VERSION = 1",
+            "effectiveOutputProfile",
+            "effectiveHaxeDefines",
             "assertClosedKeys",
             "JSON.parse(source)",
             "NXHX-CONFIG-PATH-0008",
             "experimentalCacheDirectivesValue",
-            "nextjshx.cache-components",
+            "isCompilerOwnedDefine",
+            'name.startsWith("nextjshx.")',
         ),
         "tools/cli/src/discovery.ts": (
             "findWorkspaceRoot",

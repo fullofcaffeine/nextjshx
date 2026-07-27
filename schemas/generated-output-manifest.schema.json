@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nextjshx.dev/schemas/generated-output-manifest-v1.json",
+  "$id": "https://nextjshx.dev/schemas/generated-output-manifest-v2.json",
   "title": "NextJsHx generated-output ownership manifest",
   "type": "object",
   "additionalProperties": false,
@@ -10,6 +10,8 @@
     "generation",
     "nextVersion",
     "genesVersion",
+    "outputProfile",
+    "outputProfileFingerprint",
     "outputs"
   ],
   "properties": {
@@ -17,7 +19,7 @@
       "const": "nextjshx.generated-output"
     },
     "version": {
-      "const": 1
+      "const": 2
     },
     "generation": {
       "$ref": "#/$defs/sha256"
@@ -27,6 +29,12 @@
     },
     "genesVersion": {
       "$ref": "#/$defs/toolVersion"
+    },
+    "outputProfile": {
+      "$ref": "#/$defs/outputProfile"
+    },
+    "outputProfileFingerprint": {
+      "$ref": "#/$defs/sha256"
     },
     "outputs": {
       "type": "array",
@@ -55,6 +63,59 @@
     "sha256": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$"
+    },
+    "outputProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "language",
+        "intent",
+        "profileVersion",
+        "sourceMaps",
+        "sourcesContent",
+        "declarations",
+        "jsxRuntime"
+      ],
+      "properties": {
+        "language": {
+          "enum": [
+            "typescript",
+            "javascript"
+          ]
+        },
+        "intent": {
+          "enum": [
+            "reviewable",
+            "optimized"
+          ]
+        },
+        "profileVersion": {
+          "const": 1
+        },
+        "sourceMaps": {
+          "enum": [
+            "external",
+            "inline",
+            "none"
+          ]
+        },
+        "sourcesContent": {
+          "type": "boolean"
+        },
+        "declarations": {
+          "enum": [
+            "public",
+            "all",
+            "none"
+          ]
+        },
+        "jsxRuntime": {
+          "enum": [
+            "automatic",
+            "classic"
+          ]
+        }
+      }
     },
     "output": {
       "type": "object",

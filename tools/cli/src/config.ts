@@ -1,11 +1,39 @@
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
 import { configFailure } from "./diagnostic.js";
 
 export const CONFIG_FILE_NAME = "nextjshx.config.json";
-export const CONFIG_SCHEMA_ID = "https://nextjshx.dev/schemas/config-v1.json";
-export const CONFIG_SCHEMA_VERSION = 1 as const;
+export const CONFIG_SCHEMA_ID = "https://nextjshx.dev/schemas/config-v2.json";
+export const CONFIG_SCHEMA_VERSION = 2 as const;
+export const LEGACY_CONFIG_SCHEMA_ID =
+  "https://nextjshx.dev/schemas/config-v1.json";
+export const LEGACY_CONFIG_SCHEMA_VERSION = 1 as const;
+
+export type OutputLanguage = "typescript" | "javascript";
+export type OutputIntent = "reviewable" | "optimized";
+export type SourceMapMode = "external" | "inline" | "none";
+export type DeclarationMode = "public" | "all" | "none";
+export type JsxRuntime = "automatic" | "classic";
+
+export interface OutputProfile {
+  readonly language: OutputLanguage;
+  readonly intent: OutputIntent;
+  readonly profileVersion: 1;
+  readonly sourceMaps: SourceMapMode;
+  readonly sourcesContent: boolean;
+  readonly declarations: DeclarationMode;
+  readonly jsxRuntime: JsxRuntime;
+}
+
+export interface ConfigMigrationReport {
+  readonly fromSchemaVersion: typeof LEGACY_CONFIG_SCHEMA_VERSION;
+  readonly toSchemaVersion: typeof CONFIG_SCHEMA_VERSION;
+  readonly effectiveProfile: OutputProfile;
+  readonly removedCompilerOwnedDefines: readonly string[];
+  readonly retainedApplicationDefines: readonly string[];
+}
 
 export interface HaxeConfig {
   readonly hxml: string;
@@ -27,6 +55,7 @@ export type ExperimentalCacheDirective = "private" | "remote";
 export interface OutputConfig {
   readonly manifest: string;
   readonly format: "project";
+  readonly profile?: OutputProfile;
 }
 
 export interface BoundaryReportConfig {
@@ -35,13 +64,16 @@ export interface BoundaryReportConfig {
 }
 
 export interface NextJsHxConfig {
-  readonly $schema?: typeof CONFIG_SCHEMA_ID;
-  readonly schemaVersion: typeof CONFIG_SCHEMA_VERSION;
+  readonly $schema?: typeof CONFIG_SCHEMA_ID | typeof LEGACY_CONFIG_SCHEMA_ID;
+  readonly schemaVersion:
+    | typeof CONFIG_SCHEMA_VERSION
+    | typeof LEGACY_CONFIG_SCHEMA_VERSION;
   readonly appRoot?: string;
   readonly boundaries: BoundaryReportConfig;
   readonly haxe: HaxeConfig;
   readonly next: NextConfig;
   readonly output: OutputConfig;
+  readonly migration?: ConfigMigrationReport;
 }
 
 type JsonObject = Record<string, unknown>;
@@ -64,16 +96,27 @@ const NEXT_KEYS = [
   "typedRoutes",
   "upstreamDir",
 ];
-const OUTPUT_KEYS = ["format", "manifest"];
-const RESERVED_HAXE_DEFINES = new Set([
-  "nextjshx.adapter-plan-output",
-  "nextjshx.boundary-plan-output",
-  "nextjshx.app-root",
-  "nextjshx.cache-components",
-  "nextjshx.experimental.cache-private",
-  "nextjshx.experimental.cache-remote",
-  "nextjshx.generated-root",
-]);
+const OUTPUT_KEYS_V1 = ["format", "manifest"];
+const OUTPUT_KEYS_V2 = [
+  "declarations",
+  "format",
+  "intent",
+  "jsxRuntime",
+  "language",
+  "manifest",
+  "profileVersion",
+  "sourceMaps",
+  "sourcesContent",
+];
+export const DEFAULT_OUTPUT_PROFILE: OutputProfile = Object.freeze({
+  language: "typescript",
+  intent: "reviewable",
+  profileVersion: 1,
+  sourceMaps: "external",
+  sourcesContent: true,
+  declarations: "public",
+  jsxRuntime: "automatic",
+});
 
 function objectValue(value: unknown, subject: string): JsonObject {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
@@ -143,6 +186,36 @@ function booleanValue(value: unknown, subject: string): boolean {
   return value;
 }
 
+function literalValue<const Value extends string>(
+  value: unknown,
+  subject: string,
+  allowed: readonly Value[],
+): Value {
+  if (typeof value !== "string" || !allowed.includes(value as Value)) {
+    configFailure(
+      "NXHX-CONFIG-VALUE-0007",
+      `${subject} is unsupported.`,
+      subject,
+      allowed.map((entry) => JSON.stringify(entry)).join(" or "),
+      "Select one documented literal; output policy never falls back silently.",
+    );
+  }
+  return value as Value;
+}
+
+function positiveInteger(value: unknown, subject: string): number {
+  if (!Number.isSafeInteger(value) || (value as number) <= 0) {
+    configFailure(
+      "NXHX-CONFIG-VALUE-0007",
+      `${subject} must be a positive safe integer.`,
+      subject,
+      "a positive profile contract version",
+      "Use profileVersion 1 for the currently defined output contract.",
+    );
+  }
+  return value as number;
+}
+
 function nonNegativeInteger(value: unknown, subject: string): number {
   if (!Number.isSafeInteger(value) || (value as number) < 0) {
     configFailure(
@@ -154,6 +227,55 @@ function nonNegativeInteger(value: unknown, subject: string): number {
     );
   }
   return value as number;
+}
+
+function outputProfile(output: JsonObject): OutputProfile {
+  const profileVersion = positiveInteger(
+    output.profileVersion,
+    "$.output.profileVersion",
+  );
+  if (profileVersion !== 1) {
+    configFailure(
+      "NXHX-CONFIG-VALUE-0007",
+      `$.output.profileVersion ${profileVersion} is unsupported.`,
+      "$.output.profileVersion",
+      "the integer 1",
+      "Keep the project pinned to a released profile contract until an explicit migration exists.",
+    );
+  }
+  const declarations = literalValue(
+    output.declarations,
+    "$.output.declarations",
+    ["public", "all", "none"] as const,
+  );
+  return Object.freeze({
+    language: literalValue(
+      output.language,
+      "$.output.language",
+      ["typescript", "javascript"] as const,
+    ),
+    intent: literalValue(
+      output.intent,
+      "$.output.intent",
+      ["reviewable", "optimized"] as const,
+    ),
+    profileVersion: 1,
+    sourceMaps: literalValue(
+      output.sourceMaps,
+      "$.output.sourceMaps",
+      ["external", "inline", "none"] as const,
+    ),
+    sourcesContent: booleanValue(
+      output.sourcesContent,
+      "$.output.sourcesContent",
+    ),
+    declarations,
+    jsxRuntime: literalValue(
+      output.jsxRuntime,
+      "$.output.jsxRuntime",
+      ["automatic", "classic"] as const,
+    ),
+  });
 }
 
 function experimentalCacheDirectivesValue(
@@ -248,7 +370,10 @@ function packageName(value: unknown, subject: string): string {
   return candidate;
 }
 
-function definesValue(value: unknown): readonly string[] {
+function definesValue(
+  value: unknown,
+  allowCompilerOwned = false,
+): readonly string[] {
   if (!Array.isArray(value)) {
     configFailure(
       "NXHX-CONFIG-VALUE-0007",
@@ -262,7 +387,8 @@ function definesValue(value: unknown): readonly string[] {
     const define = stringValue(entry, `$.haxe.defines[${index}]`);
     if (
       !/^[A-Za-z0-9_.-]+(?:=[^\s\u0000-\u001f\u007f]+)?$/.test(define) ||
-      RESERVED_HAXE_DEFINES.has(define.split("=", 1)[0] ?? "")
+      (!allowCompilerOwned &&
+        isCompilerOwnedDefine(defineName(define)))
     ) {
       configFailure(
         "NXHX-CONFIG-VALUE-0007",
@@ -284,6 +410,91 @@ function definesValue(value: unknown): readonly string[] {
     );
   }
   return Object.freeze(defines);
+}
+
+function defineName(define: string): string {
+  return define.split("=", 1)[0] ?? define;
+}
+
+function isCompilerOwnedDefine(name: string): boolean {
+  return (
+    name === "dts" ||
+    name.startsWith("genes.") ||
+    name.startsWith("nextjshx.")
+  );
+}
+
+function isSupportedLegacyCompilerDefine(define: string): boolean {
+  return (
+    [
+      "dts",
+      "genes.no_extension",
+      "genes.react.inline_markup",
+      "genes.react.jsx_runtime_module=react",
+      "genes.ts",
+      "genes.ts.jsx_classic",
+      "genes.ts.jsx_import_source=react",
+      "genes.ts.no_extension",
+    ].includes(define)
+  );
+}
+
+function legacyMigration(defines: readonly string[]): ConfigMigrationReport {
+  const compilerOwnedDefines = defines.filter((define) =>
+    isCompilerOwnedDefine(defineName(define)),
+  );
+  const unsupported = compilerOwnedDefines.filter(
+    (define) => !isSupportedLegacyCompilerDefine(define),
+  );
+  const importSource = compilerOwnedDefines.find((define) =>
+    define.startsWith("genes.ts.jsx_import_source="),
+  );
+  const classic = compilerOwnedDefines.includes("genes.ts.jsx_classic");
+  const typescript = compilerOwnedDefines.some(
+    (define) =>
+      defineName(define) === "genes.ts" ||
+      defineName(define).startsWith("genes.ts."),
+  );
+  const javascript = compilerOwnedDefines.some(
+    (define) =>
+      defineName(define) === "genes.no_extension" ||
+      defineName(define).startsWith("genes.react."),
+  );
+  if (
+    (typescript && javascript) ||
+    (classic && importSource !== undefined) ||
+    (importSource !== undefined &&
+      importSource !== "genes.ts.jsx_import_source=react") ||
+    unsupported.length > 0
+  ) {
+    configFailure(
+      "NXHX-CONFIG-VALUE-0007",
+      "Schema-v1 compiler defines do not map to one closed schema-v2 output profile.",
+      "$.haxe.defines",
+      "one unambiguous TypeScript or JavaScript profile using the React JSX runtime",
+      `Remove contradictory or unsupported compiler defines (${unsupported.join(", ") || "conflicting language/JSX settings"}) or migrate the custom compiler policy explicitly.`,
+    );
+  }
+  const effectiveProfile: OutputProfile = Object.freeze({
+    ...DEFAULT_OUTPUT_PROFILE,
+    language: javascript ? "javascript" : "typescript",
+    jsxRuntime: classic ? "classic" : "automatic",
+    declarations:
+      javascript && !compilerOwnedDefines.includes("dts") ? "none" : "public",
+  });
+  const removedCompilerOwnedDefines = defines.filter((define) =>
+    isCompilerOwnedDefine(defineName(define)),
+  );
+  const retainedApplicationDefines = defines.filter(
+    (define) => !isCompilerOwnedDefine(defineName(define)),
+  );
+  return Object.freeze({
+    fromSchemaVersion: LEGACY_CONFIG_SCHEMA_VERSION,
+    toSchemaVersion: CONFIG_SCHEMA_VERSION,
+    effectiveProfile,
+    removedCompilerOwnedDefines: Object.freeze(removedCompilerOwnedDefines),
+    retainedApplicationDefines: Object.freeze(retainedApplicationDefines),
+  });
 }
 
 function extraInputsValue(value: unknown): readonly string[] {
@@ -316,22 +527,30 @@ export function parseNextJsHxConfig(decoded: unknown): NextJsHxConfig {
   assertClosedKeys(root, ROOT_KEYS, "$");
   assertRequiredKeys(root, ["schemaVersion", "haxe", "next", "output"], "$");
 
-  if (root.schemaVersion !== CONFIG_SCHEMA_VERSION) {
+  if (
+    root.schemaVersion !== CONFIG_SCHEMA_VERSION &&
+    root.schemaVersion !== LEGACY_CONFIG_SCHEMA_VERSION
+  ) {
     configFailure(
       "NXHX-CONFIG-VERSION-0006",
-      `$.schemaVersion must be ${CONFIG_SCHEMA_VERSION}; received ${JSON.stringify(root.schemaVersion)}.`,
+      `$.schemaVersion must be ${LEGACY_CONFIG_SCHEMA_VERSION} or ${CONFIG_SCHEMA_VERSION}; received ${JSON.stringify(root.schemaVersion)}.`,
       "$.schemaVersion",
-      `the integer ${CONFIG_SCHEMA_VERSION}`,
-      "Migrate the config to the supported schema instead of letting the CLI guess.",
+      `the integer ${LEGACY_CONFIG_SCHEMA_VERSION} or ${CONFIG_SCHEMA_VERSION}`,
+      "Migrate through the bounded schema-v1 report or use the current schema-v2 configuration.",
     );
   }
-  if (Object.hasOwn(root, "$schema") && root.$schema !== CONFIG_SCHEMA_ID) {
+  const schemaVersion = root.schemaVersion;
+  const expectedSchema =
+    schemaVersion === CONFIG_SCHEMA_VERSION
+      ? CONFIG_SCHEMA_ID
+      : LEGACY_CONFIG_SCHEMA_ID;
+  if (Object.hasOwn(root, "$schema") && root.$schema !== expectedSchema) {
     configFailure(
       "NXHX-CONFIG-VERSION-0006",
-      `$.$schema must identify ${CONFIG_SCHEMA_ID}.`,
+      `$.$schema must identify ${expectedSchema}.`,
       "$.$schema",
-      CONFIG_SCHEMA_ID,
-      "Use the schema identifier matching schemaVersion 1, or omit the optional $schema key.",
+      expectedSchema,
+      `Use the schema identifier matching schemaVersion ${schemaVersion}, or omit the optional $schema key.`,
     );
   }
 
@@ -354,8 +573,10 @@ export function parseNextJsHxConfig(decoded: unknown): NextJsHxConfig {
   assertRequiredKeys(next, ["package", "typedRoutes"], "$.next");
 
   const output = objectValue(root.output, "$.output");
-  assertClosedKeys(output, OUTPUT_KEYS, "$.output");
-  assertRequiredKeys(output, OUTPUT_KEYS, "$.output");
+  const outputKeys =
+    schemaVersion === CONFIG_SCHEMA_VERSION ? OUTPUT_KEYS_V2 : OUTPUT_KEYS_V1;
+  assertClosedKeys(output, outputKeys, "$.output");
+  assertRequiredKeys(output, outputKeys, "$.output");
   const manifest = projectPath(output.manifest, "$.output.manifest");
   if (!manifest.startsWith(".nextjshx/") || !manifest.endsWith(".json")) {
     configFailure(
@@ -417,10 +638,22 @@ export function parseNextJsHxConfig(decoded: unknown): NextJsHxConfig {
       "Enable cacheComponents deliberately or remove the experimental cache capabilities.",
     );
   }
+  const parsedDefines = definesValue(
+    haxe.defines,
+    schemaVersion === LEGACY_CONFIG_SCHEMA_VERSION,
+  );
+  const migration =
+    schemaVersion === LEGACY_CONFIG_SCHEMA_VERSION
+      ? legacyMigration(parsedDefines)
+      : undefined;
+  const profile =
+    migration === undefined
+      ? outputProfile(output)
+      : migration.effectiveProfile;
 
   return Object.freeze({
-    ...(Object.hasOwn(root, "$schema") ? { $schema: CONFIG_SCHEMA_ID } : {}),
-    schemaVersion: CONFIG_SCHEMA_VERSION,
+    ...(Object.hasOwn(root, "$schema") ? { $schema: expectedSchema } : {}),
+    schemaVersion,
     ...(appRoot === undefined ? {} : { appRoot }),
     boundaries: Object.freeze({
       ...(Object.hasOwn(boundaries, "maxDirectDependencies")
@@ -443,7 +676,10 @@ export function parseNextJsHxConfig(decoded: unknown): NextJsHxConfig {
     haxe: Object.freeze({
       hxml,
       generatedRoot: projectPath(haxe.generatedRoot, "$.haxe.generatedRoot"),
-      defines: definesValue(haxe.defines),
+      defines:
+        migration === undefined
+          ? parsedDefines
+          : migration.retainedApplicationDefines,
       extraInputs: Object.hasOwn(haxe, "extraInputs")
         ? extraInputsValue(haxe.extraInputs)
         : Object.freeze([] as string[]),
@@ -455,8 +691,67 @@ export function parseNextJsHxConfig(decoded: unknown): NextJsHxConfig {
       cacheComponents,
       experimentalCacheDirectives,
     }),
-    output: Object.freeze({ manifest, format: "project" as const }),
+    output: Object.freeze({
+      manifest,
+      format: "project" as const,
+      profile,
+    }),
+    ...(migration === undefined ? {} : { migration }),
   });
+}
+
+export function effectiveOutputProfile(
+  config: NextJsHxConfig,
+): OutputProfile {
+  return config.output.profile ?? DEFAULT_OUTPUT_PROFILE;
+}
+
+export function outputProfileFingerprint(profile: OutputProfile): string {
+  const canonical = [
+    profile.language,
+    profile.intent,
+    profile.profileVersion.toString(10),
+    profile.sourceMaps,
+    profile.sourcesContent ? "true" : "false",
+    profile.declarations,
+    profile.jsxRuntime,
+  ].join("\0");
+  return createHash("sha256").update(canonical, "utf8").digest("hex");
+}
+
+export function effectiveOutputProfileFingerprint(
+  config: NextJsHxConfig,
+): string {
+  return outputProfileFingerprint(effectiveOutputProfile(config));
+}
+
+export function effectiveHaxeDefines(
+  config: NextJsHxConfig,
+): readonly string[] {
+  const profile = effectiveOutputProfile(config);
+  const compilerOwned =
+    profile.language === "typescript"
+      ? [
+          "genes.ts",
+          "genes.ts.no_extension",
+          ...(profile.jsxRuntime === "classic"
+            ? ["genes.ts.jsx_classic"]
+            : ["genes.ts.jsx_import_source=react"]),
+        ]
+      : [
+          "genes.no_extension",
+          "genes.react.inline_markup",
+          "genes.react.jsx_runtime_module=react",
+        ];
+  const declarationDefines =
+    profile.language === "javascript" && profile.declarations !== "none"
+      ? ["dts"]
+      : [];
+  return Object.freeze([
+    ...config.haxe.defines,
+    ...compilerOwned,
+    ...declarationDefines,
+  ]);
 }
 
 export function readNextJsHxConfig(configPath: string): NextJsHxConfig {

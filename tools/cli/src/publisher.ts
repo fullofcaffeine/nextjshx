@@ -1582,6 +1582,7 @@ export async function publishGeneratedOutputs(
       allowedOutputFiles: options.allowedOutputFiles ?? [],
       nextVersion: options.nextVersion,
       genesVersion: options.genesVersion,
+      outputProfile: options.outputProfile,
       outputs: formatted,
     };
     preflight =

@@ -20,6 +20,7 @@ import {
   type GeneratedOutputIdentity,
   type OwnershipDiagnosticCode,
   type OwnershipPreflightOptions,
+  DEFAULT_OUTPUT_PROFILE,
   OwnershipDiagnosticError,
   createGeneratedOutputManifest,
   encodeGeneratedOutputManifest,
@@ -70,6 +71,7 @@ function writeOwnedState(root: string, fixtures: readonly OwnedFixture[]): strin
   const manifest = createGeneratedOutputManifest(
     "16.2.12",
     "1.37.1+test",
+    DEFAULT_OUTPUT_PROFILE,
     fixtures.map(identity),
   );
   const manifestPath = path.join(root, MANIFEST_PATH);
@@ -92,6 +94,7 @@ function options(
     allowedOutputFiles,
     nextVersion: "16.2.12",
     genesVersion: "1.37.1+test",
+    outputProfile: DEFAULT_OUTPUT_PROFILE,
     outputs,
   };
 }
@@ -278,7 +281,7 @@ function expectDiagnostic(
   assert.fail(`expected ${code}`);
 }
 
-test("creates deterministic canonical schema-v1 manifest bytes", () => {
+test("creates deterministic canonical schema-v2 manifest bytes", () => {
   const decodedSchema: unknown = JSON.parse(readFileSync(MANIFEST_SCHEMA_PATH, "utf8"));
   assert(
     typeof decodedSchema === "object" && decodedSchema !== null && !Array.isArray(decodedSchema),
@@ -287,7 +290,12 @@ test("creates deterministic canonical schema-v1 manifest bytes", () => {
   const schema = decodedSchema as AnySchemaObject;
   const second = identity({ path: "src/app/z/page.tsx", content: "second\n" });
   const first = identity({ path: "src/app/a/page.tsx", content: "first\n" });
-  const manifest = createGeneratedOutputManifest("16.2.12", "1.37.1+test", [second, first]);
+  const manifest = createGeneratedOutputManifest(
+    "16.2.12",
+    "1.37.1+test",
+    DEFAULT_OUTPUT_PROFILE,
+    [second, first],
+  );
   const encoded = encodeGeneratedOutputManifest(manifest);
   const parsed = parseGeneratedOutputManifest(JSON.parse(encoded));
   const validate = new Ajv2020({ allErrors: true, strict: true }).compile(schema);
@@ -299,6 +307,57 @@ test("creates deterministic canonical schema-v1 manifest bytes", () => {
   assert.match(parsed.generation, /^[0-9a-f]{64}$/);
   assert.equal(encodeGeneratedOutputManifest(parsed), encoded);
   assert.equal(validate(JSON.parse(encoded)), true, JSON.stringify(validate.errors));
+});
+
+test("profile policy participates in manifest identity and legacy manifests migrate in memory", () => {
+  const output = identity({
+    path: "src/app/page.tsx",
+    content: "export default function Page() {}\n",
+  });
+  const optimized = Object.freeze({
+    ...DEFAULT_OUTPUT_PROFILE,
+    intent: "optimized" as const,
+  });
+  const reviewableManifest = createGeneratedOutputManifest(
+    "16.2.12",
+    "1.37.1+test",
+    DEFAULT_OUTPUT_PROFILE,
+    [output],
+  );
+  const optimizedManifest = createGeneratedOutputManifest(
+    "16.2.12",
+    "1.37.1+test",
+    optimized,
+    [output],
+  );
+  assert.notEqual(
+    reviewableManifest.outputProfileFingerprint,
+    optimizedManifest.outputProfileFingerprint,
+  );
+  assert.notEqual(reviewableManifest.generation, optimizedManifest.generation);
+
+  const legacyGeneration = createHash("sha256")
+    .update(`${output.path}\0${output.sha256}\n`, "utf8")
+    .digest("hex");
+  const legacy = {
+    protocol: "nextjshx.generated-output",
+    version: 1,
+    generation: legacyGeneration,
+    nextVersion: "16.2.12",
+    genesVersion: "1.37.1+test",
+    outputs: [output],
+  };
+  const migrated = parseGeneratedOutputManifest(legacy);
+  assert.equal(migrated.version, 2);
+  assert.deepEqual(migrated.outputProfile, DEFAULT_OUTPUT_PROFILE);
+  assert.equal(
+    migrated.outputProfileFingerprint,
+    reviewableManifest.outputProfileFingerprint,
+  );
+  assert.equal(
+    JSON.parse(encodeGeneratedOutputManifest(migrated)).version,
+    2,
+  );
 });
 
 test("plans new files without creating targets or control data", () => {
@@ -531,7 +590,7 @@ test("rejects unknown and internally inconsistent manifests", () => {
     ]);
     const manifestPath = path.join(root, MANIFEST_PATH);
     const unknownVersion = JSON.parse(encoded) as Record<string, unknown>;
-    unknownVersion.version = 2;
+    unknownVersion.version = 3;
     writeFileSync(manifestPath, `${JSON.stringify(unknownVersion, null, 2)}\n`, "utf8");
     expectDiagnostic(
       () => preflightGeneratedOutputs(options(root, [])),

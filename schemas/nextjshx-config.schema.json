@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nextjshx.dev/schemas/config-v1.json",
+  "$id": "https://nextjshx.dev/schemas/config-v2.json",
   "title": "NextJsHx project configuration",
   "type": "object",
   "additionalProperties": false,
@@ -12,10 +12,10 @@
   ],
   "properties": {
     "$schema": {
-      "const": "https://nextjshx.dev/schemas/config-v1.json"
+      "const": "https://nextjshx.dev/schemas/config-v2.json"
     },
     "schemaVersion": {
-      "const": 1
+      "const": 2
     },
     "appRoot": {
       "$ref": "#/$defs/projectPath"
@@ -67,7 +67,7 @@
               },
               {
                 "type": "string",
-              "pattern": "^(?!nextjshx\\.(?:adapter-plan-output|boundary-plan-output)(?:=|$))[A-Za-z0-9_.-]+(?:=[^\\s\\u0000-\\u001f\\u007f]+)?$"
+                "pattern": "^(?!(?:dts|genes\\.[A-Za-z0-9_.-]+|nextjshx\\.[A-Za-z0-9_.-]+)(?:=|$))[A-Za-z0-9_.-]+(?:=[^\\s\\u0000-\\u001f\\u007f]+)?$"
               }
             ]
           }
@@ -161,7 +161,14 @@
       "additionalProperties": false,
       "required": [
         "manifest",
-        "format"
+        "format",
+        "language",
+        "intent",
+        "profileVersion",
+        "sourceMaps",
+        "sourcesContent",
+        "declarations",
+        "jsxRuntime"
       ],
       "properties": {
         "manifest": {
@@ -177,6 +184,44 @@
         },
         "format": {
           "const": "project"
+        },
+        "language": {
+          "enum": [
+            "typescript",
+            "javascript"
+          ]
+        },
+        "intent": {
+          "enum": [
+            "reviewable",
+            "optimized"
+          ]
+        },
+        "profileVersion": {
+          "const": 1
+        },
+        "sourceMaps": {
+          "enum": [
+            "external",
+            "inline",
+            "none"
+          ]
+        },
+        "sourcesContent": {
+          "type": "boolean"
+        },
+        "declarations": {
+          "enum": [
+            "public",
+            "all",
+            "none"
+          ]
+        },
+        "jsxRuntime": {
+          "enum": [
+            "automatic",
+            "classic"
+          ]
         }
       }
     }

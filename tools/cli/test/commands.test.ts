@@ -1325,6 +1325,58 @@ test("typecheck and checked routes refuse to validate an unpublished adapter tre
   }
 });
 
+test("typecheck refuses a profile change until its manifest is published", async () => {
+  const root = fixtureRoot();
+  try {
+    const state = stateFor(simplePlan("Profiled"));
+    const runtime = runtimeFor(state);
+    await runGenerateCommand({
+      start: root,
+      runtime,
+      validate: false,
+    });
+    const configPath = path.join(root, "nextjshx.config.json");
+    const config = JSON.parse(readFileSync(configPath, "utf8")) as Record<
+      string,
+      unknown
+    >;
+    config.$schema = "https://nextjshx.dev/schemas/config-v2.json";
+    config.schemaVersion = 2;
+    config.haxe = {
+      ...(config.haxe as Record<string, unknown>),
+      defines: [],
+    };
+    config.output = {
+      ...(config.output as Record<string, unknown>),
+      language: "typescript",
+      intent: "optimized",
+      profileVersion: 1,
+      sourceMaps: "external",
+      sourcesContent: true,
+      declarations: "public",
+      jsxRuntime: "automatic",
+    };
+    writeJson(configPath, config);
+    state.requests.length = 0;
+
+    await assert.rejects(
+      runTypecheckCommand({ start: root, runtime }),
+      (error) => {
+        assert(error instanceof CliDiagnosticError);
+        assert.equal(error.diagnostic.code, "NXHX-CLI-TYPECHECK-0006");
+        assert.match(error.diagnostic.actual, /profile:[0-9a-f]{12}->[0-9a-f]{12}/);
+        return true;
+      },
+    );
+    assert.deepEqual(
+      state.requests.map((request) => request.source),
+      ["haxe"],
+    );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("plan collection rejects locally writable control directories", async () => {
   const root = fixtureRoot();
   try {
@@ -1876,14 +1928,14 @@ test("doctor checks the pinned environment and reports interrupted transaction s
     };
     config.haxe.defines = ["genes.ts"];
     writeJson(configPath, config);
-    const missingDefine = await runDoctorCommand({ start: root, runtime });
-    assert.equal(missingDefine.ok, false);
+    const migratedDefines = await runDoctorCommand({ start: root, runtime });
+    assert.equal(migratedDefines.ok, true);
     assert(
-      missingDefine.checks.some(
+      migratedDefines.checks.some(
         (check) =>
           check.code === "NXHX-DOCTOR-PLAN-0010" &&
-          check.status === "fail" &&
-          check.actual.includes("missing genes.ts.no_extension"),
+          check.status === "pass" &&
+          check.actual.includes("define(s) derived"),
       ),
     );
   } finally {
