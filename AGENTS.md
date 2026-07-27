@@ -238,6 +238,14 @@ bd prime                # Refresh Beads context
   test is reuse: if WordPressHx/Gutenberg or another Haxe-to-JS/TS project
   could use the capability without importing Next.js concepts, it belongs in
   genes rather than in this repository.
+- Check the pinned/current genes public API, documentation, and executable
+  fixtures before proposing or implementing upstream work. If genes already
+  provides the required generic capability, consume that capability directly
+  and do not duplicate it in NextJsHx or create a competing genes abstraction.
+  Add or change genes only when a minimal framework-neutral fixture proves the
+  required JS/TS, React, compiler, or tooling contract is genuinely missing.
+  Framework pressure may discover the gap, but the upstream API, diagnostics,
+  and tests must remain usable without Next.js vocabulary.
 - Do not use `Dynamic`, `Any`, `untyped`, `cast`, `Reflect`, broad `unknown`,
   unchecked TypeScript assertions, or reflection as substitutes for a typed
   design in repository-owned Haxe or generated public APIs. Leverage Haxe's

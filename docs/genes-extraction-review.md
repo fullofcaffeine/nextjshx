@@ -75,11 +75,15 @@ and diagnostics remain in NextJsHx.
 
 Before adding a new compiler-adjacent feature here:
 
-1. reduce it to a framework-neutral Haxe/JS/TS statement;
-2. name a plausible non-Next consumer;
-3. file or link the genes task and its generic fixture;
-4. keep only the Next adapter or policy locally;
-5. pin the released genes identity before making NextJsHx depend on it.
+1. inspect the pinned/current genes API, documentation, and executable fixtures;
+2. consume the existing generic capability directly when it already satisfies
+   the contract—do not duplicate it locally or create a competing abstraction;
+3. only when the capability is missing, reduce the gap to a framework-neutral
+   Haxe/JS/TS statement and prove it with a minimal generic fixture;
+4. name a plausible non-Next consumer;
+5. file or link the genes task and its generic fixture;
+6. keep only the Next adapter or policy locally;
+7. pin the released genes identity before making NextJsHx depend on it.
 
 If the reduction still contains a route, Next directive, App Router target,
 Next package type, or Next runtime rule, the remaining part belongs here.
