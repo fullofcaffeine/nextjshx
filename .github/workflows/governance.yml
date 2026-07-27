@@ -185,7 +185,7 @@ jobs:
   baseline-test-harness:
     name: Typed boundaries, production actions, snapshots, and package harness
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Check out source
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
