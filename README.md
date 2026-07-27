@@ -6,7 +6,7 @@ through `genes-ts`; narrow generated adapters materialize the exact filenames,
 directives, and export shapes required by the App Router.
 
 This repository is in foundation work. It has no supported release yet, and its
-public API, package shape, compatibility matrix, and license are not final.
+public API, package shape, and compatibility matrix are not final.
 
 ## Why NextJsHx?
 
@@ -93,11 +93,12 @@ production build, cache-key reuse, and tag invalidation.
 
 ## Maintained showcase sites
 
-Three polished sites exercise NextJsHx as an application-authoring surface:
+Four polished sites exercise NextJsHx as an application-authoring surface:
 Pelagic Signal (landing page plus hydrated tide instrument), Moraine (typed
 generated-static field journal), and Common Ground (typed product routes,
-optimized images, filtering, and cart Sheet). They reuse one source-owned
-shadcn/Radix package through precise Haxe facades.
+optimized images, filtering, and cart Sheet), plus Field Atlas (trusted local
+MDX, typed Haxe components, and safely decoded portable content blocks). They
+reuse one source-owned shadcn/Radix package through precise Haxe facades.
 
 ```sh
 npm run test:showcase-ui
@@ -831,3 +832,8 @@ historical issue records before invoking `bd dolt push`. Replace the temporary
 commit pin with the first stable Beads release containing the fix. Do not put
 secrets or private vulnerability details in GitHub issues, pull requests, CI
 logs, generated files, or Beads.
+
+## License
+
+NextJsHx is free software licensed under the
+[GNU General Public License version 3](LICENSE).

@@ -1,6 +1,7 @@
 {
   "name": "nextjshx",
   "version": "0.0.0-development",
+  "license": "GPL-3.0-only",
   "private": true,
   "description": "Typed Haxe authoring for Next.js through genes-ts and Next-native adapters.",
   "packageManager": "npm@10.8.2",

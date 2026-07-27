@@ -24,6 +24,8 @@ BEADS_INSTALLER = ROOT / "scripts/ci/install-beads.sh"
 GITLEAKS_CONFIG = ROOT / ".gitleaks.toml"
 PACKAGE = ROOT / "package.json"
 PACKAGE_LOCK = ROOT / "package-lock.json"
+LICENSE = ROOT / "LICENSE"
+README = ROOT / "README.md"
 CLI_PACKAGE = ROOT / "tools/cli/package.json"
 CLI_TSCONFIG = ROOT / "tools/cli/tsconfig.json"
 CONFIG_SCHEMA = ROOT / "schemas/nextjshx-config.schema.json"
@@ -134,6 +136,10 @@ EXPECTED_REACT_DOM_TYPES_VERSION = "19.2.3"
 EXPECTED_GENES_VERSION = "1.38.2"
 EXPECTED_GENES_COMMIT = "f0ffa29e6d49fe81541977c6a3aae6b80000cec6"
 EXPECTED_HELDER_VERSION = "0.3.1"
+EXPECTED_LICENSE = "GPL-3.0-only"
+EXPECTED_LICENSE_SHA256 = (
+    "9e54404b6d141e4babddd0b36cc6fa39d53cbadfb612653408f880ddfa97edaf"
+)
 EXPECTED_WORKSPACES = [
     "tools/cli",
     "examples/showcase-ui",
@@ -645,6 +651,17 @@ def validate_ignores_and_tracked_files() -> int:
 
 def validate_package_contract() -> None:
     package = read_json(PACKAGE)
+    if package.get("license") != EXPECTED_LICENSE:
+        raise SecurityToolingFailure(
+            f"package.json must retain the {EXPECTED_LICENSE} license declaration"
+        )
+    license_digest = hashlib.sha256(LICENSE.read_bytes()).hexdigest()
+    if license_digest != EXPECTED_LICENSE_SHA256:
+        raise SecurityToolingFailure(
+            "LICENSE must remain the canonical GNU GPL version 3 text"
+        )
+    if "[GNU General Public License version 3](LICENSE)" not in read_text(README):
+        raise SecurityToolingFailure("README must link the GNU GPL version 3 license")
     scripts = package.get("scripts")
     if not isinstance(scripts, dict):
         raise SecurityToolingFailure("package.json scripts must be an object")
@@ -1261,6 +1278,7 @@ def validate_package_contract() -> None:
     root_lock = packages.get("")
     if (
         not isinstance(root_lock, dict)
+        or root_lock.get("license") != EXPECTED_LICENSE
         or root_lock.get("devDependencies") != expected_dev_dependencies
         or root_lock.get("workspaces") != EXPECTED_WORKSPACES
     ):
