@@ -37,7 +37,11 @@ typedef TodoMutationState = {
 	final retryable:Bool;
 }
 
-/** Deterministic state constructors shared by server actions and client views. */
+/**
+ * `@:next.shared` explicitly approves this dependency for both server and
+ * client graphs after boundary analysis. It must stay runtime-neutral:
+ * importing server-only modules here would fail before generated output.
+ */
 @:next.shared
 class TodoMutationStates {
 	public static function ready(operation:TodoMutationOperation, message:String):TodoMutationState {

@@ -3,7 +3,11 @@ package commerce.app;
 import genes.react.Element;
 import nextjs.components.NextLink;
 
-/** Product-segment 404 reached through the typed Haxe not-found flow. */
+/**
+ * `@:next.notFound("products")` owns the product segment's conventional
+ * `not-found.tsx`. Next's own `notFound()` interruption selects it after the
+ * typed catalogue lookup fails.
+ */
 @:next.notFound("products")
 class ProductNotFound {
 	public static function render():Element {

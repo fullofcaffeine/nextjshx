@@ -55,9 +55,19 @@ typedef TodoApiIssue = {
  *
  * Request-only headers and cookies are read here, outside the reusable shared
  * cache. A production mutation must authenticate and authorize before storage.
+ *
+ * `@:next.route("api/todos")` owns `app/api/todos/route.ts` and checks the
+ * Route Handler signatures. Next still supplies `NextRequest`, routing,
+ * streaming, and deployment; this annotation only declares the convention
+ * file and its typed Haxe implementation.
  */
 @:next.route("api/todos")
 class TodoApi {
+	/**
+	 * `@:next.GET` names the exact HTTP export expected by Next.
+	 * `@:async` emits a native async function, and `await(...)` emits native
+	 * JavaScript await—there is no Haxe scheduler or Promise wrapper.
+	 */
 	@:next.GET
 	@:async
 	public static function get(_request:NextRequest, _context:RouteContext<NoParams>):Promise<NextResponseBody<TodoListResponse>> {
@@ -67,6 +77,11 @@ class TodoApi {
 		return ResponseJson.ok({ok: true, todos: todos.map(toApiItem), request: requestContext});
 	}
 
+	/**
+	 * `@:next.POST` exposes this method as the route's POST handler. The
+	 * annotation does not validate request data or authorize callers, so this
+	 * body immediately decodes into a closed model before mutation.
+	 */
 	@:next.POST
 	@:async
 	public static function create(request:NextRequest, _context:RouteContext<NoParams>):Promise<NextResponseBody<TodoCreateResponse>> {

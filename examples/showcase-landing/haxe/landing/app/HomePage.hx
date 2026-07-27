@@ -22,9 +22,17 @@ import showcase.ui.Icons.Waves;
 
 using nextjs.client.ClientComponent;
 
+/**
+ * `@:next.page("")` maps this checked Haxe class to the root `app/page.tsx`.
+ * The empty segment means `/`; the generated `HomePage.href()` companion is
+ * therefore a typed root href rather than a duplicated path string.
+ */
 @:next.page("")
 class HomePage {
 	public static function render(props:PageProps<NoParams, SearchParams>):Element {
+		// `.client()` yields the only identity that may place this hydrated
+		// component in Server Component HXX; importing its implementation would
+		// cross the server/client boundary incorrectly.
 		final Tide = TideDial.client();
 		final launchBadge:BadgeProps = {variant: BadgeVariant.Outline, className: "launch-badge"};
 		final metricCard:CardProps = {className: "metric-card"};

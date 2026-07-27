@@ -7,7 +7,11 @@ import showcase.ui.Button.ButtonType;
 import showcase.ui.Button.ButtonVariant;
 import showcase.ui.Button.UiButton;
 
-/** Typed, Haxe-owned client error boundary with Next's exact reset callback. */
+/**
+ * `@:next.error("todos")` owns `app/todos/error.tsx` and checks Next's exact
+ * client error/reset contract. Calling `reset` retries the native segment
+ * boundary; NextJsHx does not add a parallel recovery runtime.
+ */
 @:next.error("todos")
 class TodoError {
 	public static function render(props:ErrorProps):Element {

@@ -5,6 +5,11 @@ import nextjs.app.LayoutProps;
 import nextjs.raw.metadata.Metadata;
 import nextjs.route.NoParams;
 
+/**
+ * `@:next.layout("")` owns the root `app/layout.tsx` convention file and
+ * checks that `render` accepts the root layout props, including `children`.
+ * Metadata remains Next's ordinary typed static export.
+ */
 @:next.layout("")
 class RootLayout {
 	public static final metadata:Metadata = {

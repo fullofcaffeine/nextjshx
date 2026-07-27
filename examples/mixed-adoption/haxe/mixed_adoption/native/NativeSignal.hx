@@ -42,6 +42,11 @@ typedef NativeSignalCardProps = {
 }
 
 extern class NativeSignalHook {
+	/**
+	 * On an extern, `@:next.hook` records that the reviewed native export is a
+	 * React Hook, so Haxe call sites receive the same placement diagnostics.
+	 * `@:jsRequire` is a zero-runtime declaration of the existing ESM export.
+	 */
 	@:next.hook
 	@:jsRequire("@nextjshx/mixed-adoption/native-hook", "useNativeSignal")
 	static function use(initialValue:Int):NativeSignalReading;

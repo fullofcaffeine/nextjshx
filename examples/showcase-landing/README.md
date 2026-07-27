@@ -1,25 +1,46 @@
-# Pelagic Signal landing showcase
+# Pelagic Signal: Haxe-first landing page
 
-Pelagic Signal is the smallest maintained site: a static Haxe-authored App
-Router page and layout with semantic Next navigation, shared shadcn UI, and a
-hydrated tide instrument declared as a Haxe Client Component. Its semantic
-Haxe Hook owns the React state transition while still emitting ordinary React
-`useState`; Haxe also owns the props, event callbacks, markup, and generated
-client boundary.
+This is the smallest complete NextJsHx site: a static landing page with a
+hydrated tide control. Use it to learn the framework before opening the larger
+examples.
 
-Run the complete three-site contract from the repository root with
-`npm run test:showcases`, or run this workspace manually with
-`npm run build --workspace @nextjshx/showcase-landing` followed by
-`npm start --workspace @nextjshx/showcase-landing -- -p 3000`.
+## Why write this in Haxe?
 
-For development, one command rebuilds the internal CLI and initial stylesheet,
-then watches Tailwind and Haxe while one native Next process owns Fast Refresh:
+Haxe checks the page, layout, component props, events, and HXX markup before
+generating TSX. The tide state uses a familiar React Hook with a named
+`State<Int>` API, while the browser still runs ordinary React and Next.js.
+Generated boundary files remain short, conventional Next modules.
+
+## Architecture
+
+| Haxe source | Vanilla Next.js equivalent | Runs in |
+| --- | --- | --- |
+| `landing/app/RootLayout.hx` | `app/layout.tsx` | server |
+| `landing/app/HomePage.hx` | `app/page.tsx` | server |
+| `landing/client/TideDial.hx` | a `"use client"` component | browser |
+| `landing/client/TideHook.hx` | a custom React Hook | browser |
+
+The App Router, React renderer, Tailwind CSS, Fast Refresh, build, and
+deployment model are unchanged. NextJsHx adds typed Haxe authoring and owns only
+the generated files listed in `.nextjshx/manifest.json`.
+
+## Run it
+
+From the repository root:
 
 ```sh
 npm run dev --workspace @nextjshx/showcase-landing
+npm run build --workspace @nextjshx/showcase-landing
 ```
 
-Pass reviewed Next dev flags after the npm separator, for example
-`npm run dev --workspace @nextjshx/showcase-landing -- --webpack -p 3100`.
+Pass supported Next flags after `--`, for example `-- --webpack -p 3100`.
 
-See the [showcase guide](../../docs/showcases.md) for ownership and evidence.
+## Gotchas
+
+- Edit `haxe/` and `styles/app.css`, not `src-gen/` or manifest-owned adapters.
+- Use `nextjs.*` for the ergonomic layer and `nextjs.raw.*` when exact host
+  behavior is the goal.
+- Client state and browser events belong behind `@:next.clientComponent`.
+
+See the first-use comments in the Haxe sources and the
+[showcase guide](../../docs/showcases.md) for generated ownership and tests.

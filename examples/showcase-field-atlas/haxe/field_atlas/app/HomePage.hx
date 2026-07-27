@@ -19,6 +19,10 @@ import showcase.ui.Icons.CircleGauge;
 import showcase.ui.Icons.IconProps;
 import showcase.ui.Icons.Leaf;
 
+/**
+ * `@:next.page("")` declares the root Server Component page. NextJsHx emits
+ * only the conventional adapter and generates `HomePage.href()` for `/`.
+ */
 @:next.page("")
 class HomePage {
 	public static function render(props:PageProps<NoParams, SearchParams>):Element {

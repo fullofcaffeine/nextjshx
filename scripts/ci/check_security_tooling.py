@@ -463,6 +463,7 @@ def validate_hook_wiring() -> None:
         "scripts/ci/check_architecture_docs.py",
         "(issues|interactions)\\.jsonl",
         "scripts/ci/check_security_tooling.py",
+        'BD_BIN="$ROOT_DIR/.cache/beads-bin/bd"',
     ):
         if fragment not in pre_commit:
             raise SecurityToolingFailure(f"pre-commit lost required behavior: {fragment}")
@@ -493,9 +494,17 @@ def validate_hook_wiring() -> None:
             raise SecurityToolingFailure(
                 f"active Beads {hook_name} wrapper lost its managed section"
             )
+        if 'PATH="$ROOT_DIR/.cache/beads-bin:$PATH"' not in source:
+            raise SecurityToolingFailure(
+                f"active Beads {hook_name} wrapper does not prefer the reviewed pinned bd"
+            )
         if source.index(repository_hook) > source.index(managed_marker):
             raise SecurityToolingFailure(
                 f"repository {hook_name} checks must run before the Beads-managed section"
+            )
+        if f'"$ROOT_DIR/{repository_hook}" "$@" || exit $?' not in source:
+            raise SecurityToolingFailure(
+                f"active Beads {hook_name} wrapper does not propagate repository-check failures"
             )
 
     git_scan = read_text(ROOT / "scripts/security/run-gitleaks.sh")
@@ -1331,7 +1340,7 @@ def validate_package_contract() -> None:
         cli_package.get("name") != "@nextjshx/cli-internal"
         or cli_package.get("private") is not True
         or cli_package.get("type") != "module"
-        or cli_package.get("bin") != {"nextjshx": "./.tmp/src/cli.js"}
+        or cli_package.get("bin") != {"nextjshx": "./bin/nextjshx.js"}
         or cli_package.get("scripts") != expected_cli_scripts
         or cli_package.get("devDependencies") != expected_cli_dependencies
         or cli_package.get("engines") != {"node": ">=20.9.0"}
@@ -1341,7 +1350,7 @@ def validate_package_contract() -> None:
     if (
         not isinstance(cli_lock, dict)
         or cli_lock.get("name") != "@nextjshx/cli-internal"
-        or cli_lock.get("bin") != {"nextjshx": ".tmp/src/cli.js"}
+        or cli_lock.get("bin") != {"nextjshx": "bin/nextjshx.js"}
         or cli_lock.get("devDependencies") != expected_cli_dependencies
     ):
         raise SecurityToolingFailure("package-lock lost the internal CLI workspace")
@@ -3177,29 +3186,20 @@ def validate_docs_and_modes() -> None:
 
     todo_readme = read_text(TODO_APP_README)
     for fragment in (
-        "Why this slice exists",
-        "Deterministic persistence",
-        "Typed navigation: positive and negative",
-        "TodoDetailPage.href",
-        "robots=noindex",
+        "Why Haxe is useful here",
+        "Architecture",
+        "Suggested reading order",
+        "Gotchas",
+        "Evidence",
+        ".nextjshx/manifest.json",
+        "src-gen/",
         "npm run test:example:todoapp",
-        "Typed Server Function mutations: positive and negative",
-        "Typed Route Handler and cache invalidation: positive and negative",
-        "While developing R04",
-        "While developing R06",
-        "Playwright production evidence: positive and negative",
-        "NEXTJSHX_TODO_RUN_ID",
-        "retries: 0",
-        "FIELD_LEDGER_RECOVERABLE_RENDER",
-        "Next 16.2.12 declaration mismatch",
-        "React.JSX.Element",
-        "NXHX-CACHE-REQUEST-0006",
-        "invalid_json",
+        "`@:next.action`",
+        "Next Cache Components",
         "revalidateTag",
         "updateTag",
         "authenticate",
         "authorize",
-        "useActionState",
     ):
         if fragment not in todo_readme:
             raise SecurityToolingFailure(

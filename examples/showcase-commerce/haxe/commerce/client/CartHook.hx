@@ -57,11 +57,21 @@ private typedef CartQuantity = {
  * small showcase catalogue makes the linear lookup cost immaterial.
  */
 class CartHook {
+	/**
+	 * `@:next.hook` enables Haxe-side React Hook placement checks.
+	 * `@:next.exportHook` also publishes an ordinary directive-first
+	 * `useShopCart` TypeScript const alias, preserving types and identity
+	 * without a delegating wrapper.
+	 */
 	@:next.hook
 	@:next.exportHook
 	public static function useShopCart(products:Array<CartProduct>):CartModel {
+		// Semantic state names intent: `.set(value)` replaces while
+		// `.update(previous -> next)` performs a functional update.
 		final filter = React.useState(CatalogFilter.All);
 		final quantities = React.useState(new Array<CartQuantity>());
+		// `React.deps(...)` is compile-time packaging. It emits the direct,
+		// lint-visible dependency array rather than a runtime helper call.
 		final lines = React.useMemo((products, currentQuantities) -> buildLines(products, currentQuantities), React.deps(products, quantities.value));
 		var count = 0;
 		var totalCents = 0;

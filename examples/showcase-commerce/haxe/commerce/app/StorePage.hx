@@ -19,9 +19,15 @@ import showcase.ui.Icons.Sprout;
 
 using nextjs.client.ClientComponent;
 
+/**
+ * `@:next.page("")` owns the root `app/page.tsx` adapter. The Haxe method is a
+ * Server Component, and `StorePage.href()` is its generated typed `/` href.
+ */
 @:next.page("")
 class StorePage {
 	public static function render(props:PageProps<NoParams, SearchParams>):Element {
+		// `.client()` is the checked reference that lets Server Component HXX
+		// render the hydrated leaf without importing its client implementation.
 		final Shop = ShopClient.client();
 		final products:Array<CartProduct> = ProductCatalog.all().map(toCartProduct);
 		final badge:BadgeProps = {variant: BadgeVariant.Outline, className: "season-badge"};

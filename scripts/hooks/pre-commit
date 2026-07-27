@@ -3,17 +3,21 @@ set -euo pipefail
 
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 cd "$ROOT_DIR"
+BD_BIN="$ROOT_DIR/.cache/beads-bin/bd"
+if [[ ! -x "$BD_BIN" ]]; then
+  BD_BIN="$(command -v bd || true)"
+fi
 
 if [[ "${BD_GIT_HOOK:-}" == "1" ]]; then
   exit 0
 fi
 
-if [[ -d "$ROOT_DIR/.beads" ]] && command -v bd >/dev/null 2>&1; then
-  if bd -C "$ROOT_DIR" context >/dev/null 2>&1; then
+if [[ -d "$ROOT_DIR/.beads" && -n "$BD_BIN" ]]; then
+  if "$BD_BIN" -C "$ROOT_DIR" context >/dev/null 2>&1; then
     echo "[pre-commit] Exporting current Beads issues to JSONL..."
     BEADS_EXPORT_TMP="$(mktemp)"
     trap 'rm -f "$BEADS_EXPORT_TMP"' EXIT
-    bd -C "$ROOT_DIR" export | awk 'NF { print }' >"$BEADS_EXPORT_TMP"
+    "$BD_BIN" -C "$ROOT_DIR" export | awk 'NF { print }' >"$BEADS_EXPORT_TMP"
     mv -f "$BEADS_EXPORT_TMP" "$ROOT_DIR/.beads/issues.jsonl"
     git -C "$ROOT_DIR" add .beads/issues.jsonl
     trap - EXIT

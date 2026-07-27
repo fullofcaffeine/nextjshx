@@ -7,7 +7,11 @@ import nextjs.raw.metadata.Metadata;
 import nextjs.route.NoParams;
 import todoapp.ui.TodoStyles;
 
-/** Haxe-owned document shell and visual system for the maintained evidence app. */
+/**
+ * `@:next.layout("")` owns the root `app/layout.tsx` adapter and validates the
+ * required children contract. Static metadata and the document shell remain
+ * ordinary Next layout exports and markup.
+ */
 @:next.layout("")
 class RootLayout {
 	public static final metadata:Metadata = {

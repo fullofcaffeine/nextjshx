@@ -24,6 +24,12 @@ typedef ArticleParams = {
 	final slug:PostSlug;
 }
 
+/**
+ * A bracket segment in `@:next.page("journal/[slug]")` generates a typed
+ * `ArticleParams` route contract and `ArticlePage.href({slug: ...})`. Next
+ * still receives its conventional dynamic `page.tsx`, static params, and
+ * metadata exports.
+ */
 @:next.page("journal/[slug]")
 class ArticlePage {
 	public static function generateStaticParams():Array<ArticleParams> {
@@ -43,6 +49,11 @@ class ArticlePage {
 		});
 	}
 
+	/**
+	 * `@:async` makes the emitted function genuinely `async`; `await(...)`
+	 * lowers to native JavaScript `await`. It does not add a Haxe scheduler or
+	 * change Next's Promise and Server Component semantics.
+	 */
 	@:async
 	public static function render(props:PageProps<ArticleParams, SearchParams>):Promise<Element> {
 		final params = await(props.params);

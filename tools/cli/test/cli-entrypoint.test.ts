@@ -8,13 +8,13 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 const TEST_DIRECTORY = path.dirname(fileURLToPath(import.meta.url));
-const COMPILED_ENTRYPOINT = path.resolve(TEST_DIRECTORY, "../src/cli.js");
+const TRACKED_LAUNCHER = path.resolve(TEST_DIRECTORY, "../../bin/nextjshx.js");
 
 test(
-  "the compiled npm bin remains executable after a TypeScript rebuild",
+  "the tracked npm bin remains executable after a TypeScript rebuild",
   { skip: process.platform === "win32" },
   () => {
-    assert.notEqual(fs.statSync(COMPILED_ENTRYPOINT).mode & 0o111, 0);
+    assert.notEqual(fs.statSync(TRACKED_LAUNCHER).mode & 0o111, 0);
   },
 );
 
@@ -22,7 +22,7 @@ test("the CLI runs when Node receives an npm-style bin symlink", () => {
   const temporaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "nextjshx-bin-"));
   const binPath = path.join(temporaryDirectory, "nextjshx");
   try {
-    fs.symlinkSync(COMPILED_ENTRYPOINT, binPath);
+    fs.symlinkSync(TRACKED_LAUNCHER, binPath);
     const result = spawnSync(process.execPath, [binPath, "--help"], {
       encoding: "utf8",
     });

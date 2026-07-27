@@ -5,7 +5,7 @@
   "description": "Host-native project discovery and tooling seams for NextJsHx.",
   "type": "module",
   "bin": {
-    "nextjshx": "./.tmp/src/cli.js"
+    "nextjshx": "./bin/nextjshx.js"
   },
   "scripts": {
     "build": "tsc6 --project tsconfig.json",

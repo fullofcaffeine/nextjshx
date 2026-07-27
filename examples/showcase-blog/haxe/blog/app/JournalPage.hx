@@ -21,6 +21,11 @@ import showcase.ui.Icons.BookOpenText;
 import showcase.ui.Icons.IconProps;
 import showcase.ui.Separator;
 
+/**
+ * `@:next.page("")` declares the root App Router page. Its checked signature
+ * produces the ordinary `app/page.tsx`, while `JournalPage.href()` avoids a
+ * second hand-maintained copy of `/`.
+ */
 @:next.page("")
 class JournalPage {
 	public static function render(props:PageProps<NoParams, SearchParams>):Element {

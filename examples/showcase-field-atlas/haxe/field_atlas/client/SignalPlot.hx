@@ -16,7 +16,11 @@ typedef SignalPlotProps = {
 	final values:Array<Int>;
 }
 
-/** MDX-ready Haxe Client Component backed by the reviewed Recharts surface. */
+/**
+ * `@:next.clientComponent` creates the same boundary as `"use client"`.
+ * Recharts stays native React; its reviewed Haxe props and data keys are
+ * checked in this HXX before Next receives a directive-first adapter.
+ */
 @:next.clientComponent
 class SignalPlot {
 	public static function render(props:SignalPlotProps):Element {

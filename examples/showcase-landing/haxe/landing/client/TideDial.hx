@@ -16,7 +16,11 @@ typedef TideDialProps = {
 	final updated:String;
 }
 
-/** Hydrated ocean reading with all state and event behavior authored in Haxe. */
+/**
+ * `@:next.clientComponent` is the Haxe declaration of a `"use client"`
+ * boundary. NextJsHx checks props and HXX first, then emits a directive-first
+ * adapter so React hydrates this component through the normal Next runtime.
+ */
 @:next.clientComponent
 class TideDial {
 	public static function render(props:TideDialProps):Element {

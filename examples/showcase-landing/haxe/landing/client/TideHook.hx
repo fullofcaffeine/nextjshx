@@ -16,6 +16,12 @@ typedef TideReading = {
 
 /** Haxe-authored tide state with bounded updates and explicit direction. */
 class TideHook {
+	/**
+	 * `@:next.hook` gives this Haxe function a typed React Hook identity and
+	 * enforces top-level Hook placement. `React.useState` returns the semantic
+	 * zero-wrapper `State<T>` view: `.value` reads, `.set` replaces, and
+	 * `.update` computes from the previous value.
+	 */
 	@:next.hook
 	public static function useTideReading(initialLevel:Int):TideReading {
 		final level = React.useState(initialLevel);

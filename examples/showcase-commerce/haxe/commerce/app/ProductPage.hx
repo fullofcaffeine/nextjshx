@@ -28,6 +28,11 @@ typedef ProductParams = {
 	final slug:ProductSlug;
 }
 
+/**
+ * `@:next.page("products/[slug]")` checks this dynamic App Router page and
+ * generates `ProductPage.href({slug: ...})`, keeping links and parameters in
+ * the same closed `ProductSlug` domain.
+ */
 @:next.page("products/[slug]")
 class ProductPage {
 	public static function generateStaticParams():Array<ProductParams> {
@@ -47,6 +52,11 @@ class ProductPage {
 		});
 	}
 
+	/**
+	 * `@:async` and `genes.js.Async.await` emit native async/await. Next sees
+	 * the same Promise-returning Server Component it would receive from TSX;
+	 * no Haxe scheduler or runtime wrapper is introduced.
+	 */
 	@:async
 	public static function render(props:PageProps<ProductParams, SearchParams>):Promise<Element> {
 		final params = await(props.params);

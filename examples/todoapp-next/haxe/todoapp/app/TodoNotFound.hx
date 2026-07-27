@@ -3,7 +3,11 @@ package todoapp.app;
 import genes.react.Element;
 import nextjs.raw.components.Link;
 
-/** Segment-owned 404 selected by Next after the detail page interrupts control flow. */
+/**
+ * `@:next.notFound("todos")` owns the segment's `not-found.tsx`. The detail
+ * page calls Next's native `notFound()` interruption; Next keeps responsibility
+ * for the 404 status, routing, streaming, and indexing behavior.
+ */
 @:next.notFound("todos")
 class TodoNotFound {
 	public static function render():Element {

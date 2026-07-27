@@ -14,9 +14,16 @@ import showcase.ui.Badge.BadgeVariant;
 
 using nextjs.client.ClientComponent;
 
+/**
+ * `@:next.page("haxe-lab")` declares the App Router segment. NextJsHx checks
+ * the page signature and owns only the resulting `app/haxe-lab/page.tsx`
+ * adapter; Next still discovers and renders that conventional file.
+ */
 @:next.page("haxe-lab")
 class HaxeLabPage {
 	public static function render(_:PageProps<NoParams, SearchParams>):Element {
+		// `.client()` is the checked Haxe equivalent of importing a generated
+		// Client Component identity into this Server Component's HXX.
 		final Console = HaxePatchConsole.client();
 		final badge:BadgeProps = {variant: BadgeVariant.Outline, className: "language-badge"};
 		return <main className="haxe-lab">

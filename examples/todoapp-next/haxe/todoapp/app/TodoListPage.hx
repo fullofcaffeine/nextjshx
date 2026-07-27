@@ -21,7 +21,11 @@ import todoapp.persistence.TodoStore;
 
 using nextjs.client.ClientComponent;
 
-/** Server-rendered root ledger with typed links to every dynamic detail route. */
+/**
+ * `@:next.page("")` maps this class to the root `app/page.tsx`, checks the
+ * Server Component signature, and generates `TodoListPage.href()` for `/`.
+ * The adapter is conventional Next source; routing and rendering remain Next's.
+ */
 @:next.page("")
 class TodoListPage {
 	public static final metadata:Metadata = {
@@ -43,6 +47,11 @@ class TodoListPage {
 		return <Suspense {...suspense}><List /></Suspense>;
 	}
 
+	/**
+	 * The first `@:async` use in this page emits a native async helper. Keeping
+	 * the outer page synchronous lets it return Suspense immediately while
+	 * connection and cached reads happen in this streamed child.
+	 */
 	@:async
 	static function renderList():Promise<Element> {
 		await(Server.connection());

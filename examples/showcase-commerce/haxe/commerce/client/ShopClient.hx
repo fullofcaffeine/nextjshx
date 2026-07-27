@@ -43,7 +43,11 @@ typedef ShopClientProps = {
 	final products:Array<CartProduct>;
 }
 
-/** Hydrated catalogue filtering and receipt-style cart, authored in Haxe. */
+/**
+ * `@:next.clientComponent` establishes the ordinary Next `"use client"`
+ * boundary. Haxe checks the props, Hooks, events, and HXX; a thin generated
+ * adapter gives Next the directive and canonical module shape it expects.
+ */
 @:next.clientComponent
 class ShopClient {
 	public static function render(props:ShopClientProps):Element {

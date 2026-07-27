@@ -1,30 +1,46 @@
-# Common Ground commerce showcase
+# Common Ground: typed commerce storefront
 
-Common Ground exercises typed products and money, semantic catalogue/product
-hrefs, three generated-static product paths, generated metadata, optimized Next
-images, a Haxe-owned Client Component, semantic typed React filtering/cart state,
-and the shared shadcn Sheet as a responsive cart. The cart itself is a
-Haxe-authored custom Hook using `State.value`, `State.set`, `State.update`, and
-explicit `React.deps(...)`. Its computed quantity state becomes one typed
-lint-visible scalar shared by the generated memo callback and dependency list;
-a generated directive-first typed alias publishes the Hook as an ordinary
-`useShopCart` TypeScript export without a wrapper call.
-Quantity changes and totals are verified in real production Chrome at desktop
-and mobile sizes.
+Common Ground is a responsive product catalogue with static product pages,
+optimized images, filtering, and a client-side cart. It is the compact example
+for Haxe-authored React state and custom Hooks.
 
-Run the complete three-site contract from the repository root with
-`npm run test:showcases`, or run this workspace manually with
-`npm run build --workspace @nextjshx/showcase-commerce` followed by
-`npm start --workspace @nextjshx/showcase-commerce -- -p 3000`.
+## Why write this in Haxe?
 
-For development, one command rebuilds the internal CLI and initial stylesheet,
-then watches Tailwind and Haxe while one native Next process owns Fast Refresh:
+Products, slugs, money, filters, cart actions, routes, and component props are
+closed types. The semantic Hook API separates replacement (`set`) from
+functional updates (`update`) and keeps dependencies explicit. Haxe publishes
+the custom Hook back to TypeScript as ordinary `useShopCart` without a wrapper
+call.
+
+## Architecture
+
+| Haxe source | Vanilla Next.js equivalent | Runs in |
+| --- | --- | --- |
+| `commerce/app/StorePage.hx` | `app/page.tsx` | server |
+| `commerce/app/ProductPage.hx` | `app/products/[slug]/page.tsx` | server |
+| `commerce/client/ShopClient.hx` | `"use client"` storefront | browser |
+| `commerce/client/CartHook.hx` | typed custom React Hook | browser |
+| `commerce/domain/` | product, slug, and money types | shared |
+
+Next still owns App Router rendering, image optimization, hydration, CSS, and
+production deployment. The shadcn Sheet is normal source TSX consumed through
+a checked Haxe surface.
+
+## Run it
 
 ```sh
 npm run dev --workspace @nextjshx/showcase-commerce
+npm run build --workspace @nextjshx/showcase-commerce
 ```
 
-Pass reviewed Next dev flags after the npm separator, for example
-`npm run dev --workspace @nextjshx/showcase-commerce -- --webpack -p 3100`.
+## Gotchas
 
-See the [showcase guide](../../docs/showcases.md) for the route and surface map.
+- `React.deps(...)` must stay directly inside semantic `useMemo`; this preserves
+  an inline dependency array visible to React lint.
+- Use `useStateLazy` for function-valued state so React does not mistake the
+  stored function for an initializer.
+- Cart state is intentionally client-local; this example does not pretend to
+  provide checkout, inventory, authentication, or server persistence.
+
+See the first-use source comments and the
+[showcase guide](../../docs/showcases.md) for the generated Hook boundary.

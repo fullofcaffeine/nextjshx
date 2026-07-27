@@ -189,6 +189,39 @@ bd prime                # Refresh Beads context
 - Generated output must be manifest-owned and fail closed on collisions with
   native TypeScript or JavaScript files. Never infer ownership from a directory
   scan or overwrite an unowned route.
+- Model generated output with two independent configuration axes: output
+  language (`typescript` by default, or `javascript`) and output intent
+  (`optimized` by default, or `native-source`). The optimized intent may use
+  whole-program Haxe knowledge, DCE, specialization, inlining, allocation
+  removal, and representation choices that a handwritten module cannot safely
+  assume. The native-source intent must instead look like code an experienced
+  Next.js developer deliberately wrote in the selected language, including
+  conventional module structure and readable names. Both intents must preserve
+  the same public semantics, Next runtime behavior, type/boundary guarantees,
+  ownership rules, and source-map correctness; document and test any
+  profile-specific limitation rather than silently falling back.
+
+### Examples and agent onboarding
+
+- Treat every maintained example as a learning product, not only a regression
+  fixture. Its README must concisely explain the user-visible result, why Haxe
+  improves the implementation, how its routes/components/data flow map to a
+  vanilla Next.js application, what source the developer owns, the smallest
+  useful commands, and the important gotchas. Keep detailed evidence in linked
+  technical docs and tests rather than burying the first-run path.
+- In each example, explain the first use of every NextJsHx-specific annotation,
+  macro, semantic API, generated companion, boundary conversion, or reviewed
+  ecosystem facade with an adjacent teaching comment. State what it means,
+  what useful check or output it provides, and what it does not do—especially
+  for security, validation, authorization, caching, client/server placement,
+  and runtime semantics. Later identical uses may stay concise.
+- Optimize bootstrapped projects for capable AI agents that have no NextJsHx
+  training-data prior. Generate a concise project `AGENTS.md` that establishes
+  the Next-native mental model, authored/generated ownership boundary, raw
+  versus semantic namespaces, HXX rules, common commands, type-safety policy,
+  documentation map, and a short verified edit loop. Agent guidance must help
+  the model discover canonical local docs and examples instead of duplicating
+  the entire manual or encouraging edits to generated output.
 
 ### Type safety and compiler boundaries
 

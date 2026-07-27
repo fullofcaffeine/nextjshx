@@ -5,6 +5,10 @@ import nextjs.app.LayoutProps;
 import nextjs.raw.metadata.Metadata;
 import nextjs.route.NoParams;
 
+/**
+ * `@:next.layout("")` maps this class to `app/layout.tsx` and checks the
+ * required root layout/children contract before the adapter is published.
+ */
 @:next.layout("")
 class RootLayout {
 	public static final metadata:Metadata = {

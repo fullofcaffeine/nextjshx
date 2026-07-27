@@ -23,6 +23,11 @@ typedef HaxePatchConsoleProps = {
 	final accent:PatchAccent;
 }
 
+/**
+ * `@:next.clientComponent` creates the same server/client boundary as a
+ * first-line `"use client"` directive. The HXX body and props are checked by
+ * Haxe; NextJsHx emits a thin directive-first adapter for Next to hydrate.
+ */
 @:next.clientComponent
 class HaxePatchConsole {
 	public static function render(props:HaxePatchConsoleProps):Element {

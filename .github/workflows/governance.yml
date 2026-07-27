@@ -150,7 +150,6 @@ jobs:
     name: Next canary declaration drift (non-blocking)
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    continue-on-error: true
     steps:
       - name: Check out source
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
@@ -170,6 +169,7 @@ jobs:
           --no-save --no-audit --no-fund next@16.3.0-canary.87
 
       - name: Classify canary declaration drift
+        continue-on-error: true
         env:
           NEXTJSHX_NEXT_PACKAGE_DIR: ${{ runner.temp }}/next-canary/node_modules/next
         run: npm run drift:next:upstream

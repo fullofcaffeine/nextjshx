@@ -3,7 +3,11 @@ package blog.app;
 import genes.react.Element;
 import nextjs.components.NextLink;
 
-/** Segment-owned missing dispatch rendered by Next's ordinary 404 flow. */
+/**
+ * `@:next.notFound("journal")` owns `app/journal/not-found.tsx`. Calling
+ * Next's native `notFound()` control flow from a child page selects this UI;
+ * NextJsHx adds signature and ownership checks, not another error mechanism.
+ */
 @:next.notFound("journal")
 class JournalNotFound {
 	public static function render():Element {

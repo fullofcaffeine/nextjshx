@@ -5,8 +5,12 @@ if [ "${BD_GIT_HOOK:-}" = "1" ]; then
 fi
 
 ROOT_DIR="$(git rev-parse --show-toplevel)"
+if [ -x "$ROOT_DIR/.cache/beads-bin/bd" ]; then
+  PATH="$ROOT_DIR/.cache/beads-bin:$PATH"
+  export PATH
+fi
 if [ -x "$ROOT_DIR/scripts/hooks/pre-commit" ]; then
-  "$ROOT_DIR/scripts/hooks/pre-commit" "$@"
+  "$ROOT_DIR/scripts/hooks/pre-commit" "$@" || exit $?
 fi
 
 # --- BEGIN BEADS INTEGRATION v1.0.4 ---

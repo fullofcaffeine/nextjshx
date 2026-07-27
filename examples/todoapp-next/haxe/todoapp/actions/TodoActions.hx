@@ -20,9 +20,19 @@ import todoapp.persistence.TodoStore;
  * actions must authenticate the current actor and authorize the exact todo
  * inside every action, before calling the persistence layer. Hiding a button
  * in the client is never an authorization boundary.
+ *
+ * `@:next.serverFunctions("actions/todos")` publishes one directive-first
+ * `"use server"` module at `app/actions/todos.ts`. Client code receives typed
+ * server references, never the server implementation module.
  */
 @:next.serverFunctions("actions/todos")
 class TodoActions {
+	/**
+	 * `@:next.action` opts this method into that public Server Function module;
+	 * treat it as an untrusted network entrypoint. `@:async` preserves Next's
+	 * required native Promise shape. Neither annotation decodes, authenticates,
+	 * authorizes, or makes the mutation idempotent—the body must do those jobs.
+	 */
 	@:next.action
 	@:async
 	public static function create(_previous:TodoMutationState, formData:WebFormData):Promise<TodoMutationState> {

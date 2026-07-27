@@ -38,7 +38,11 @@ private typedef OptimisticDraft = {
 	final priority:TodoPriority;
 }
 
-/** Hydrated Haxe intake form backed by a native React 19 action state. */
+/**
+ * `@:next.clientComponent` is the checked Haxe equivalent of a first-line
+ * `"use client"` directive. Haxe validates props, Hooks, callbacks, and HXX;
+ * the generated adapter lets React hydrate it through ordinary Next.js.
+ */
 @:next.clientComponent
 class CreateTodoForm {
 	public static function render(_props:CreateTodoFormProps):Element {

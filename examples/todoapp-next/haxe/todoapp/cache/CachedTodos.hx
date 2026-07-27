@@ -6,7 +6,11 @@ import nextjs.raw.cache.CacheTypes.CacheLifeProfile;
 import todoapp.domain.Todo;
 import todoapp.persistence.TodoStore;
 
-/** Reusable shared-cache boundary around the deterministic todo projection. */
+/**
+ * `@:next.cache("todos/list")` generates a native cache-function adapter whose
+ * body starts with `"use cache"`. `cacheLife` and `cacheTag` remain Next APIs;
+ * callers use `CacheFunction.ref` so the server reference stays typed.
+ */
 @:next.cache("todos/list")
 class CachedTodos {
 	@:async

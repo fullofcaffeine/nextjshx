@@ -92,10 +92,16 @@ function writeJson(filePath, value) {
 }
 
 function runGenerator(args, expectedStatus = 0, extraEnv = {}) {
+  const environment = { ...process.env, ...extraEnv };
+  for (const [name, value] of Object.entries(environment)) {
+    if (value === undefined) {
+      delete environment[name];
+    }
+  }
   const result = spawnSync(process.execPath, [GENERATOR, ...args], {
     cwd: ROOT,
     encoding: "utf8",
-    env: { ...process.env, ...extraEnv },
+    env: environment,
     maxBuffer: 16 * 1024 * 1024,
   });
   if (result.error !== undefined) {
@@ -542,6 +548,9 @@ try {
       path.join(temporaryRoot, "drift.md"),
     ],
     1,
+    // Exercise the transition guard even when this test itself runs in CI.
+    // The dedicated ciUpdate control below proves the CI update prohibition.
+    { CI: undefined },
   );
   assert.match(unreviewedUpdate.stderr, /Refusing update without acceptedTransitions entry/);
   assert.match(unreviewedUpdate.stderr, /NXHX-DRIFT-GENERATED-EXTERN-CHANGED/);
@@ -564,6 +573,9 @@ try {
       path.join(temporaryRoot, "missing-drift.md"),
     ],
     1,
+    // Keep this fixture focused on bootstrap review rather than the outer
+    // process's CI update prohibition.
+    { CI: undefined },
   );
   assert.match(bootstrapBypass.stderr, /exact initial IR hash/);
   assert(!fs.existsSync(missingBaselinePath), "failed bootstrap bypass wrote an IR baseline");

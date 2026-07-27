@@ -5,6 +5,10 @@ import nextjs.app.LayoutProps;
 import nextjs.raw.metadata.Metadata;
 import nextjs.route.NoParams;
 
+/**
+ * `@:next.layout("")` maps this checked class to the root `app/layout.tsx`.
+ * Its children and metadata remain native Next layout/export semantics.
+ */
 @:next.layout("")
 class RootLayout {
 	public static final metadata:Metadata = {

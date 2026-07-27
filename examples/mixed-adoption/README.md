@@ -1,80 +1,50 @@
-# Patchbay 06: mixed Next.js and Haxe adoption
+# Patchbay 06: add Haxe to an existing Next app
 
-Patchbay 06 is deliberately not Haxe-first. It begins with reviewed native
-App Router source and adopts NextJsHx one explicit boundary at a time. The
-finished application remains one ordinary Next.js module graph:
+Patchbay begins as an ordinary TypeScript App Router project. It adopts
+NextJsHx one boundary at a time without rewriting native pages, components, or
+Hooks.
 
-- `/` is a source-owned TypeScript Server Component;
-- `/haxe-lab` is a manifest-owned Haxe page;
-- each route renders one smallest hydrated leaf; and
-- native and generated files remain under separate ownership.
+## What it proves
 
-The visual direction is an analog broadcast patchbay: editorial cream,
-graphite, signal green, cobalt, and vermilion. It uses the repository's
-source-owned shadcn components while keeping application composition local.
+- native TSX page → native TSX at `/`;
+- Haxe page → generated Next adapter at `/haxe-lab`;
+- native component, Hook, and module → precise Haxe externs;
+- Haxe component, Hook, and pure module → typed TypeScript consumers;
+- one React/Next module graph, not two applications.
+
+## Why Haxe helps
+
+The interop declarations turn reviewed JavaScript exports into closed props,
+results, and enums. HXX reports wrong native component props at the Haxe source.
+In the reverse direction, generated exports preserve Hook naming, generic
+inference, client directives, and normal ESM identity.
+
+## Architecture versus vanilla Next.js
+
+| Area | Native owner | Haxe owner |
+| --- | --- | --- |
+| routes | `app/page.tsx` | `HaxeLabPage.hx` |
+| browser UI | `native/signal-card.tsx` | `HaxePatchConsole.hx` |
+| Hooks | `native/use-signal.ts` | `HaxeHooks.hx` |
+| pure modules | `native/signal-format.ts` | generated named Haxe export |
+
+`nextjshx init` preserves all existing native bytes. The manifest owns only the
+three generated adapters under `app/_nextjshx` and `app/haxe-lab`.
 
 ## Run it
-
-From the repository root:
 
 ```sh
 npm run test:example:mixed-adoption
 npm run dev --workspace @nextjshx/mixed-adoption
 ```
 
-The test lane checks native-byte preservation under `nextjshx init`, exact
-generated adapter identities, strict Haxe and TypeScript, official React Hook
-lint, route ownership, production Next output, and browser behavior.
+## Gotchas
 
-## Native TypeScript consumed from Haxe
+- `@:jsRequire` describes a reviewed native export; it does not copy or own it.
+- A generated Haxe Hook must still be consumed from a Client Component.
+- A native file collision blocks generation instead of being overwritten.
+- This example contains TypeScript on purpose; Haxe-first apps do not require
+  hand-authored TS adapters.
 
-The `native/` directory is ordinary application source:
-
-| Native source | Closed Haxe view | Runtime cost |
-| --- | --- | --- |
-| `signal-card.tsx` React component | `NativeSignalCard` plus exact props | none; HXX emits the native component |
-| `use-signal.ts` custom Hook | `NativeSignalHook.use` plus closed result | none; Haxe calls the native Hook |
-| `signal-format.ts` module | `NativeSignalFormat` plus enum-backed inputs/results | none; direct ESM calls |
-
-`@:jsRequire` describes the reviewed export. It does not copy, wrap, or take
-ownership of the native implementation. HXX validates every required prop and
-callback at the Haxe source span before TypeScript output exists.
-
-## Haxe consumed from native TypeScript
-
-The reverse direction uses the smallest mechanism appropriate to the value:
-
-| Haxe source | Native consumer | Publication mechanism |
-| --- | --- | --- |
-| `HaxePatchConsole.render` | `app/native-bridge-deck.tsx` | directive-first manifest-owned Client Component adapter |
-| `HaxeHooks.useBridgeChannel` | `app/native-bridge-deck.tsx` | directive-first typed const alias preserving generic inference |
-| `haxeInteropLabel` | `app/native-bridge-deck.tsx` | genes-ts `@:expose` named ESM export rooted for DCE |
-
-Components and Hooks need adapters because React/Next attach meaning to module
-directives, default exports, and `use...` identities. The ordinary pure
-function needs none: native TypeScript imports the generated named export
-directly.
-
-## Ownership and boundary controls
-
-`nextjshx init` is run against the existing package and must leave
-`app/layout.tsx`, `app/page.tsx`, `app/native-bridge-deck.tsx`, and every
-`native/*` module byte-identical. The same digest check covers the ambient
-declaration, executable Next config, NextJsHx/Haxe and TypeScript config,
-`.gitignore`, and `package.json`, including its existing scripts. `generate`
-owns only:
-
-```text
-app/_nextjshx/client/c7daa5458af6/HaxePatchConsole.tsx
-app/_nextjshx/hook/4aa28d4a55e4/useBridgeChannel.ts
-app/haxe-lab/page.tsx
-```
-
-A native collision at `app/haxe-lab/page.tsx` blocks publication instead of
-being overwritten. A Server Component that calls the generated Haxe Hook is
-an invalid boundary and the negative production control must fail; moving that
-use behind a `"use client"` leaf is the correction.
-
-No TypeScript file is required to make Haxe-first applications work. This
-example contains native TypeScript because its purpose is incremental adoption
-inside an existing Next.js application.
+Start with `haxe/mixed_adoption/native/NativeSignal.hx` and
+`app/native-bridge-deck.tsx` to see both interop directions.
