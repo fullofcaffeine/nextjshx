@@ -182,10 +182,93 @@ test("profile CLI emits bounded human/JSON output and validate fails unqualified
   }
 });
 
+test("profile diff compares one explicit cell without changing project state", async () => {
+  const root = fixtureRoot();
+  try {
+    const configPath = path.join(root, "nextjshx.config.json");
+    const before = readFileSync(configPath, "utf8");
+    const compared = runProfileCommand({
+      start: root,
+      operation: "diff",
+      target: {
+        language: "javascript",
+        intent: "optimized",
+      },
+    });
+    assert.deepEqual(
+      compared.comparison?.changes.map((change) => [
+        change.field,
+        change.from,
+        change.to,
+      ]),
+      [
+        ["language", "typescript", "javascript"],
+        ["intent", "reviewable", "optimized"],
+      ],
+    );
+    assert.deepEqual(compared.comparison?.compilerDefinesAdded, [
+      "dts",
+      "genes.no_extension",
+      "genes.react.inline_markup",
+      "genes.react.jsx_runtime_module=react",
+    ]);
+    assert.deepEqual(compared.comparison?.compilerDefinesRemoved, [
+      "genes.ts",
+      "genes.ts.jsx_import_source=react",
+      "genes.ts.no_extension",
+    ]);
+
+    let stdout = "";
+    assert.equal(
+      await runCli(
+        [
+          "profile",
+          "diff",
+          "--to",
+          "javascript/optimized",
+          "--json",
+        ],
+        {
+          cwd: root,
+          stdout: (value) => {
+            stdout += value;
+          },
+        },
+      ),
+      0,
+    );
+    const decoded = JSON.parse(stdout) as {
+      result: {
+        comparison: {
+          profile: { language: string; intent: string };
+          changes: readonly unknown[];
+        };
+      };
+    };
+    assert.deepEqual(decoded.result.comparison.profile, {
+      language: "javascript",
+      intent: "optimized",
+      profileVersion: 1,
+      sourceMaps: "external",
+      sourcesContent: true,
+      declarations: "public",
+      jsxRuntime: "automatic",
+    });
+    assert.equal(decoded.result.comparison.changes.length, 2);
+    assert.equal(readFileSync(configPath, "utf8"), before);
+    assert.equal(existsSync(path.join(root, ".nextjshx")), false);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("profile CLI rejects missing and unknown operations", async () => {
   for (const args of [
     ["profile"],
     ["profile", "diff"],
+    ["profile", "show", "--to", "typescript/optimized"],
+    ["profile", "diff", "--to", "typescript/reviewable", "--to", "javascript/reviewable"],
+    ["profile", "diff", "--to", "typescript/native-source"],
     ["profile", "show", "list"],
   ]) {
     let stderr = "";

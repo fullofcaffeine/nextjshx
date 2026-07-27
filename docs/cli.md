@@ -89,6 +89,7 @@ change.
 nextjshx profile show [--json] [--config <path>]
 nextjshx profile list [--json] [--config <path>]
 nextjshx profile validate [--json] [--config <path>]
+nextjshx profile diff --to <language/intent> [--json] [--config <path>]
 ```
 
 These commands inspect the configured output language and intent without
@@ -96,7 +97,10 @@ generating or publishing files. `show` reports the selected cell, profile
 version, deterministic fingerprint, current maturity, migration state, and
 known unsupported capabilities. `list` adds the complete closed profile-cell
 registry. `validate` reports the same facts and exits nonzero until the
-configured cell has completed every recorded release gate.
+configured cell has completed every recorded release gate. `diff` compares the
+configured policy with one explicit `typescript|javascript` and
+`reviewable|optimized` target, reporting its fingerprint, maturity, policy
+field changes, derived compiler-define changes, and capability gaps.
 
 The maturity registry is deliberately honest: a profile accepted by the config
 schema is not thereby qualified for release. Unsupported work is named rather
@@ -108,9 +112,11 @@ Positive example: `profile show --json` can be used by CI to record the exact
 profile fingerprint without changing `nextjshx.config.json`, `.nextjshx/`, or
 the ownership manifest. Negative control: `profile validate` exits with status
 1 for a preview, experimental, or planned cell while still returning its
-structured result. Transactional profile switching and temporary cross-profile
-diffs are intentionally separate follow-up work; these read-only commands do
-not imply mutation authority.
+structured result. `profile diff` is deliberately a policy/compiler-input
+comparison at this stage; it does not claim to build or compare implementation
+trees before isolated alternate-root generation exists. Transactional profile
+switching and generated-tree inspection are separate follow-up work; these
+read-only commands do not imply mutation authority.
 
 ## `clean`
 

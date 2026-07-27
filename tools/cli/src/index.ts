@@ -193,10 +193,14 @@ export {
 } from "./process.js";
 export {
   type ProfileCell,
+  type ProfileComparison,
   type ProfileCommandOperation,
   type ProfileCommandOptions,
   type ProfileCommandResult,
   type ProfileMaturity,
+  type ProfilePolicyChange,
+  type ProfileSelection,
+  parseProfileSelection,
   runProfileCommand,
 } from "./profile.js";
 export {

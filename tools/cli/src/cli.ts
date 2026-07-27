@@ -39,6 +39,8 @@ import {
 import {
   type ProfileCommandOperation,
   type ProfileCommandResult,
+  type ProfileSelection,
+  parseProfileSelection,
   runProfileCommand,
 } from "./profile.js";
 
@@ -55,6 +57,7 @@ Usage:
   nextjshx routes [--json] [--check] [--config <path>]
   nextjshx boundaries [--json] [--config <path>]
   nextjshx profile <show|list|validate> [--json] [--config <path>]
+  nextjshx profile diff --to <language/intent> [--json] [--config <path>]
   nextjshx doctor [--json] [--config <path>]
   nextjshx build [--json] [--config <path>] [-- <Next build flags>]
   nextjshx dev [--config <path>] [-- <Next dev flags>]
@@ -110,6 +113,7 @@ interface ParsedArguments {
   readonly check: boolean;
   readonly typedRoutes: boolean;
   readonly profileOperation?: ProfileCommandOperation;
+  readonly profileTarget?: ProfileSelection;
   readonly nextArgs: readonly string[];
   readonly path?: string;
 }
@@ -180,6 +184,7 @@ function parseArguments(
   const nextArgs: string[] = [];
   let transferPath: string | undefined;
   let profileOperation: ProfileCommandOperation | undefined;
+  let profileTarget: ProfileSelection | undefined;
   for (let index = 1; index < args.length; index += 1) {
     const argument = args[index] as string;
     if (argument === "--") {
@@ -254,6 +259,24 @@ function parseArguments(
         index += 1;
         break;
       }
+      case "--to": {
+        const value = args[index + 1];
+        if (
+          command !== "profile" ||
+          profileTarget !== undefined ||
+          value === undefined ||
+          value.length === 0 ||
+          value.startsWith("-")
+        ) {
+          usageFailure(
+            "--to requires one language/intent value and may appear once only on profile diff.",
+            value ?? "missing",
+          );
+        }
+        profileTarget = parseProfileSelection(value);
+        index += 1;
+        break;
+      }
       case "--help":
       case "-h":
         usageFailure(
@@ -276,7 +299,8 @@ function parseArguments(
           profileOperation === undefined &&
           (argument === "show" ||
             argument === "list" ||
-            argument === "validate")
+            argument === "validate" ||
+            argument === "diff")
         ) {
           profileOperation = argument;
         } else {
@@ -294,8 +318,18 @@ function parseArguments(
   }
   if (command === "profile" && profileOperation === undefined) {
     usageFailure(
-      "profile requires one operation: show, list, or validate.",
+      "profile requires one operation: show, list, validate, or diff.",
       "missing",
+    );
+  }
+  if (
+    command === "profile" &&
+    ((profileOperation === "diff" && profileTarget === undefined) ||
+      (profileOperation !== "diff" && profileTarget !== undefined))
+  ) {
+    usageFailure(
+      "--to is required exactly once by profile diff and rejected by other profile operations.",
+      profileOperation ?? "missing",
     );
   }
   return Object.freeze({
@@ -306,6 +340,7 @@ function parseArguments(
     check,
     typedRoutes,
     ...(profileOperation === undefined ? {} : { profileOperation }),
+    ...(profileTarget === undefined ? {} : { profileTarget }),
     nextArgs: Object.freeze(nextArgs),
     ...(transferPath === undefined ? {} : { path: transferPath }),
   });
@@ -516,6 +551,29 @@ function humanProfile(result: ProfileCommandResult): string {
       );
     }
   }
+  if (result.comparison !== null) {
+    lines.push(
+      `target: ${result.comparison.profile.language}/${result.comparison.profile.intent}`,
+      `target profile version: ${result.comparison.profile.profileVersion}`,
+      `target maturity: ${result.comparison.maturity}`,
+      `target qualified: ${result.comparison.qualified ? "yes" : "no"}`,
+      `target fingerprint: ${result.comparison.fingerprint}`,
+      `policy changes (${result.comparison.changes.length})`,
+      ...result.comparison.changes.map(
+        (change) => `  ${change.field}: ${change.from} -> ${change.to}`,
+      ),
+      `compiler defines added (${result.comparison.compilerDefinesAdded.length})`,
+      ...result.comparison.compilerDefinesAdded.map((define) => `  ${define}`),
+      `compiler defines removed (${result.comparison.compilerDefinesRemoved.length})`,
+      ...result.comparison.compilerDefinesRemoved.map(
+        (define) => `  ${define}`,
+      ),
+      `target unsupported capabilities (${result.comparison.unsupportedCapabilities.length})`,
+      ...result.comparison.unsupportedCapabilities.map(
+        (capability) => `  ${capability}`,
+      ),
+    );
+  }
   return lines.join("\n");
 }
 
@@ -693,6 +751,9 @@ export async function runCli(
         result = runProfileCommand({
           ...base,
           operation: requiredProfileOperation(parsed.profileOperation),
+          ...(parsed.profileTarget === undefined
+            ? {}
+            : { target: parsed.profileTarget }),
         });
         break;
       case "doctor":
