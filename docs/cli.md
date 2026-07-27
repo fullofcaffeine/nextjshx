@@ -16,6 +16,7 @@ npm run nextjshx -- clean
 npm run nextjshx -- adopt src/app/catalog/page.tsx
 npm run nextjshx -- release src/app/catalog/page.tsx
 npm run nextjshx -- repair src/app/catalog/page.tsx
+npm run nextjshx -- profile show
 npm run nextjshx -- typecheck
 npm run nextjshx -- routes
 npm run nextjshx -- boundaries
@@ -81,6 +82,35 @@ Negative control: an existing native `src/app/page.tsx`, custom `dev` script,
 custom HXML, and executable `next.config.mjs` remain byte-for-byte intact. The
 result reports each collision and prints the proposed script or typed-routes
 change.
+
+## `profile`
+
+```sh
+nextjshx profile show [--json] [--config <path>]
+nextjshx profile list [--json] [--config <path>]
+nextjshx profile validate [--json] [--config <path>]
+```
+
+These commands inspect the configured output language and intent without
+generating or publishing files. `show` reports the selected cell, profile
+version, deterministic fingerprint, current maturity, migration state, and
+known unsupported capabilities. `list` adds the complete closed profile-cell
+registry. `validate` reports the same facts and exits nonzero until the
+configured cell has completed every recorded release gate.
+
+The maturity registry is deliberately honest: a profile accepted by the config
+schema is not thereby qualified for release. Unsupported work is named rather
+than silently weakening source maps, declarations, analyzer visibility, output
+quality, or static checking. Environment variables such as `NODE_ENV` do not
+select or alter a profile.
+
+Positive example: `profile show --json` can be used by CI to record the exact
+profile fingerprint without changing `nextjshx.config.json`, `.nextjshx/`, or
+the ownership manifest. Negative control: `profile validate` exits with status
+1 for a preview, experimental, or planned cell while still returning its
+structured result. Transactional profile switching and temporary cross-profile
+diffs are intentionally separate follow-up work; these read-only commands do
+not imply mutation authority.
 
 ## `clean`
 

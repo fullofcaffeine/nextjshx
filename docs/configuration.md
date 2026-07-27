@@ -66,7 +66,9 @@ and production builds. It never silently changes intent for production.
 TypeScript plus reviewable output is the schema-v2 default emitted by
 `nextjshx init`. The selected profile deterministically supplies genes-ts
 compiler defines; those implementation details are no longer application
-configuration.
+configuration. Use `nextjshx profile show|list|validate` to inspect the selected
+cell, its fingerprint, maturity, and unmet release gates without modifying the
+configuration or generated ownership state.
 
 Schema-v1 files remain readable for a bounded migration window. The loader
 derives an equivalent reviewable TypeScript or JavaScript profile from the

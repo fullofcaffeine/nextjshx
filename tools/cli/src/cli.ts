@@ -36,6 +36,11 @@ import {
   type InitCommandResult,
   runInitCommand,
 } from "./init.js";
+import {
+  type ProfileCommandOperation,
+  type ProfileCommandResult,
+  runProfileCommand,
+} from "./profile.js";
 
 const USAGE = `NextJsHx ${NEXTJSHX_VERSION}
 
@@ -49,6 +54,7 @@ Usage:
   nextjshx typecheck [--json] [--config <path>]
   nextjshx routes [--json] [--check] [--config <path>]
   nextjshx boundaries [--json] [--config <path>]
+  nextjshx profile <show|list|validate> [--json] [--config <path>]
   nextjshx doctor [--json] [--config <path>]
   nextjshx build [--json] [--config <path>] [-- <Next build flags>]
   nextjshx dev [--config <path>] [-- <Next dev flags>]
@@ -65,6 +71,7 @@ Commands:
   typecheck  Compile Haxe, run Next route typegen, then strict TypeScript.
   routes     Report Haxe/native routes, ownership, parameters, and optional parity.
   boundaries Explain Haxe-known boundaries and available Next client artifacts.
+  profile    Report configured output policy, maturity, and capability gaps.
   doctor     Inspect the pinned toolchain and fail-closed project state.
   build      Run the complete production build and verify fresh owned output.
   dev        Watch Haxe and run one Next development server with native Fast Refresh.
@@ -80,6 +87,7 @@ type CommandName =
   | "typecheck"
   | "routes"
   | "boundaries"
+  | "profile"
   | "doctor"
   | "build"
   | "dev";
@@ -101,6 +109,7 @@ interface ParsedArguments {
   readonly noCheck: boolean;
   readonly check: boolean;
   readonly typedRoutes: boolean;
+  readonly profileOperation?: ProfileCommandOperation;
   readonly nextArgs: readonly string[];
   readonly path?: string;
 }
@@ -119,6 +128,15 @@ function usageFailure(message: string, actual: string): never {
 function requiredTransferPath(value: string | undefined): string {
   if (value === undefined) {
     usageFailure("An ownership-transfer path is required.", "missing");
+  }
+  return value;
+}
+
+function requiredProfileOperation(
+  value: ProfileCommandOperation | undefined,
+): ProfileCommandOperation {
+  if (value === undefined) {
+    usageFailure("A profile operation is required.", "missing");
   }
   return value;
 }
@@ -143,6 +161,7 @@ function parseArguments(
     command !== "typecheck" &&
     command !== "routes" &&
     command !== "boundaries" &&
+    command !== "profile" &&
     command !== "doctor" &&
     command !== "build" &&
     command !== "dev"
@@ -160,6 +179,7 @@ function parseArguments(
   let configPath: string | undefined;
   const nextArgs: string[] = [];
   let transferPath: string | undefined;
+  let profileOperation: ProfileCommandOperation | undefined;
   for (let index = 1; index < args.length; index += 1) {
     const argument = args[index] as string;
     if (argument === "--") {
@@ -251,6 +271,14 @@ function parseArguments(
           !argument.startsWith("-")
         ) {
           transferPath = argument;
+        } else if (
+          command === "profile" &&
+          profileOperation === undefined &&
+          (argument === "show" ||
+            argument === "list" ||
+            argument === "validate")
+        ) {
+          profileOperation = argument;
         } else {
           usageFailure("The command contains an unknown argument.", argument);
         }
@@ -264,6 +292,12 @@ function parseArguments(
   ) {
     usageFailure(`${command} requires one generated adapter path.`, "missing");
   }
+  if (command === "profile" && profileOperation === undefined) {
+    usageFailure(
+      "profile requires one operation: show, list, or validate.",
+      "missing",
+    );
+  }
   return Object.freeze({
     command,
     json,
@@ -271,6 +305,7 @@ function parseArguments(
     noCheck,
     check,
     typedRoutes,
+    ...(profileOperation === undefined ? {} : { profileOperation }),
     nextArgs: Object.freeze(nextArgs),
     ...(transferPath === undefined ? {} : { path: transferPath }),
   });
@@ -460,6 +495,30 @@ function humanDoctor(result: DoctorCommandResult): string {
   return lines.join("\n");
 }
 
+function humanProfile(result: ProfileCommandResult): string {
+  const lines = [
+    `profile ${result.operation}: ${result.qualified ? "qualified" : "not qualified"}`,
+    `project: ${result.projectRoot}`,
+    `selected: ${result.profile.language}/${result.profile.intent}`,
+    `profile version: ${result.profile.profileVersion}`,
+    `maturity: ${result.maturity}`,
+    `fingerprint: ${result.fingerprint}`,
+    `unsupported capabilities (${result.unsupportedCapabilities.length})`,
+    ...result.unsupportedCapabilities.map((capability) => `  ${capability}`),
+    `migration: ${result.migration === null ? "none" : `schema ${result.migration.fromSchemaVersion}->${result.migration.toSchemaVersion}`}`,
+  ];
+  if (result.operation === "list") {
+    lines.push(`cells (${result.cells.length})`);
+    for (const cell of result.cells) {
+      lines.push(
+        `  ${cell.language}/${cell.intent} | ${cell.maturity} | ` +
+          `${cell.unsupportedCapabilities.length} unsupported`,
+      );
+    }
+  }
+  return lines.join("\n");
+}
+
 function humanBuild(result: BuildCommandResult): string {
   const summary = [
     "build: passed",
@@ -488,6 +547,7 @@ function machineResult(
     | TypecheckCommandResult
     | RoutesCommandResult
     | BoundariesCommandResult
+    | ProfileCommandResult
     | DoctorCommandResult,
 ): unknown {
   if (result.command !== "build") {
@@ -591,6 +651,7 @@ export async function runCli(
       | TypecheckCommandResult
       | RoutesCommandResult
       | BoundariesCommandResult
+      | ProfileCommandResult
       | DoctorCommandResult
       | DevCommandResult;
     switch (parsed.command) {
@@ -628,6 +689,12 @@ export async function runCli(
       case "boundaries":
         result = await runBoundariesCommand(base);
         break;
+      case "profile":
+        result = runProfileCommand({
+          ...base,
+          operation: requiredProfileOperation(parsed.profileOperation),
+        });
+        break;
       case "doctor":
         result = await runDoctorCommand(base);
         break;
@@ -657,26 +724,35 @@ export async function runCli(
               ? humanInit(result)
               : result.command === "generate"
                 ? humanGenerate(result)
-              : result.command === "clean"
-                ? humanClean(result)
-                : result.command === "adopt" ||
-                    result.command === "release" ||
-                    result.command === "repair"
-                  ? humanOwnershipTransfer(result)
-                : result.command === "typecheck"
-                  ? humanTypecheck(result)
-                  : result.command === "routes"
-                    ? humanRoutes(result)
-                    : result.command === "boundaries"
-                      ? humanBoundaries(result)
-                      : result.command === "doctor"
-                        ? humanDoctor(result)
-                        : result.command === "build"
-                          ? humanBuild(result)
-                          : ""
+                : result.command === "clean"
+                  ? humanClean(result)
+                  : result.command === "adopt" ||
+                      result.command === "release" ||
+                      result.command === "repair"
+                    ? humanOwnershipTransfer(result)
+                    : result.command === "typecheck"
+                      ? humanTypecheck(result)
+                      : result.command === "routes"
+                        ? humanRoutes(result)
+                        : result.command === "boundaries"
+                          ? humanBoundaries(result)
+                          : result.command === "profile"
+                            ? humanProfile(result)
+                            : result.command === "doctor"
+                              ? humanDoctor(result)
+                              : result.command === "build"
+                                ? humanBuild(result)
+                                : ""
           }\n`,
     );
-    return result.command === "doctor" && !result.ok ? 1 : 0;
+    return (
+      (result.command === "doctor" && !result.ok) ||
+      (result.command === "profile" &&
+        result.operation === "validate" &&
+        !result.qualified)
+    )
+      ? 1
+      : 0;
   } catch (error) {
     const diagnostic = commandErrorJson(error);
     const blocked = blockedOutputs(diagnostic, selectedCommand);

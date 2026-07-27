@@ -192,6 +192,14 @@ export {
   runProcess,
 } from "./process.js";
 export {
+  type ProfileCell,
+  type ProfileCommandOperation,
+  type ProfileCommandOptions,
+  type ProfileCommandResult,
+  type ProfileMaturity,
+  runProfileCommand,
+} from "./profile.js";
+export {
   type DevCommandOptions,
   type DevCommandResult,
   type DevGenerationRequest,

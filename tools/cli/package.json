@@ -11,7 +11,7 @@
     "build": "tsc6 --project tsconfig.json",
     "postbuild": "node scripts/mark-bin.mjs",
     "cli": "npm run build && node .tmp/src/cli.js",
-    "test:commands": "npm run build && node --test .tmp/test/adapter-plan-renderer.test.js .tmp/test/boundary-plan.test.js .tmp/test/cli-entrypoint.test.js .tmp/test/commands.test.js .tmp/test/dev-generated-tree.test.js .tmp/test/dev-loop.test.js .tmp/test/dev-process.test.js .tmp/test/dev.test.js .tmp/test/init.test.js .tmp/test/next-client-artifacts.test.js .tmp/test/watch-inputs.test.js",
+    "test:commands": "npm run build && node --test .tmp/test/adapter-plan-renderer.test.js .tmp/test/boundary-plan.test.js .tmp/test/cli-entrypoint.test.js .tmp/test/commands.test.js .tmp/test/dev-generated-tree.test.js .tmp/test/dev-loop.test.js .tmp/test/dev-process.test.js .tmp/test/dev.test.js .tmp/test/init.test.js .tmp/test/next-client-artifacts.test.js .tmp/test/profile.test.js .tmp/test/watch-inputs.test.js",
     "test:config": "npm run build && node --test .tmp/test/config-discovery.test.js",
     "test:ownership": "npm run build && node --test .tmp/test/ownership-preflight.test.js",
     "test:publication": "npm run build && node --test .tmp/test/publication.test.js",

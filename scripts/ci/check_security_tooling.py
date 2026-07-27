@@ -1319,6 +1319,7 @@ def validate_package_contract() -> None:
             ".tmp/test/dev-loop.test.js .tmp/test/dev-process.test.js "
             ".tmp/test/dev.test.js .tmp/test/init.test.js "
             ".tmp/test/next-client-artifacts.test.js "
+            ".tmp/test/profile.test.js "
             ".tmp/test/watch-inputs.test.js"
         ),
         "test:config": (
