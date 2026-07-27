@@ -9,6 +9,19 @@ NextJsHx internals.
   construction, runtime identity, inheritance, an interface, class metadata,
   or an exact framework/compiler export contract requires it; explain that
   reason beside any retained all-static class.
+- Prefer typed `map`, `filter`, `find`, `findIndex`, `some`, `every`,
+  `flatMap`, `reduce`, `reduceRight`, `at`, and similar collection operations
+  only when they keep both Haxe source and generated genes output recognizable
+  to JavaScript/TypeScript developers. Inspect the generated module: a retained
+  Lambda support module is not an improvement over a clear loop merely because
+  the Haxe call says `find`. Prefer functional pipelines when their
+  transformations and accumulator type stay clear. Keep loops for genuinely
+  stateful, indexed, multi-accumulator, allocation-sensitive, or
+  control-flow-heavy work; do not force fluent chains merely for style.
+  hxnodejs is for Node.js APIs, not language-level Array ergonomics. A faithful
+  JS-native Array surface and semantics-preserving portable lowering are
+  distinct generic genes concerns; do not invent either one locally in an
+  example.
 - Document every nontrivial module/class and complex function in friendly
   why/what/how terms. Explain the application or compiler contract it owns, the
   important data/control flow, and the ordinary native artifact or runtime

@@ -147,6 +147,26 @@ bd prime                # Refresh Beads context
   to author, compose, export, and consume precisely typed Hooks, components,
   and modules in both Haxe and TypeScript; do not limit interop to extern-only
   consumption when a reusable Haxe authoring surface can provide better UX.
+- Prefer familiar typed collection operations such as `map`, `filter`, `find`,
+  `findIndex`, `some`, `every`, `flatMap`, `reduce`, `reduceRight`, and `at`
+  when both the Haxe API and genes output remain close to careful
+  JavaScript/TypeScript. Inspect generated output: do not replace a simple loop
+  with a standard Haxe/Lambda helper if it retains an indirect helper module
+  instead of the expected native Array operation. Do not reach for hxnodejs for
+  language-level collection behavior: hxnodejs owns Node.js APIs, not Array
+  ergonomics. Keep an explicit loop when it more clearly owns mutation,
+  indexing, multiple mutable accumulators, allocation, evaluation order, or
+  early control flow. Prefer functional pipelines when their transformations
+  and accumulator type remain easy to follow. If a familiar operation is
+  missing or emits needlessly
+  indirect output, first check genes and the Haxe standard library; reduce the
+  gap to a framework-neutral genes capability rather than adding a
+  NextJsHx-only helper. Prefer a precise `genes.js` API when the author
+  deliberately wants JavaScript behavior such as `undefined`; prefer a
+  semantics-preserving compiler lowering when portable Haxe source should keep
+  its `Null<T>` contract. Portability beyond JS/TS may justify a different API
+  later, but that must be an explicit product/profile decision rather than an
+  accidental cost in the current JS/TS-first path.
 - Treat bidirectional ecosystem interop as a release-gated product capability.
   Maintain executable examples for native TypeScript/JavaScript/Next.js code
   consumed from Haxe through precise closed externs, and for Haxe-authored

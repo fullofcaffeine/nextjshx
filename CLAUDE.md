@@ -79,4 +79,9 @@ repository, prefer module-level Haxe functions and values over all-static shell
 classes unless class identity or a framework/compiler contract genuinely
 requires one, and treat examples as executable teaching material with friendly
 why/what/how documentation and an equally idiomatic vanilla Next.js/TypeScript
-comparison. Require executable evidence for capability claims.
+comparison. Prefer familiar typed collection operations—including `map`,
+`filter`, `find`, `findIndex`, `some`, `every`, `flatMap`, `reduce`,
+`reduceRight`, and `at`—when both Haxe source and genes output stay close to
+JavaScript/TypeScript. Inspect output and do not trade a clear loop for a
+retained Lambda helper. hxnodejs is not the owner of language-level Array
+ergonomics. Require executable evidence for capability claims.
