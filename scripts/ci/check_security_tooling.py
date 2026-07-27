@@ -2831,6 +2831,7 @@ def validate_docs_and_modes() -> None:
 
     security = read_text(ROOT / "SECURITY.md")
     for fragment in (
+        "https://github.com/fullofcaffeine/nextjshx/security/advisories/new",
         "boss@fullofcaffeine.com",
         "There is no published or supported release",
         "must be enabled and verified",

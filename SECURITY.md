@@ -7,10 +7,11 @@ boundaries privately.
 
 ## Reporting a vulnerability
 
-Email [boss@fullofcaffeine.com](mailto:boss@fullofcaffeine.com) with the subject
-`[NextJsHx security]`. If GitHub private vulnerability reporting is later
-enabled and verified for the public repository, this document will link that
-form as the preferred channel.
+Use GitHub's
+[private vulnerability reporting form](https://github.com/fullofcaffeine/nextjshx/security/advisories/new)
+as the preferred channel. If that form is unavailable, email
+[boss@fullofcaffeine.com](mailto:boss@fullofcaffeine.com) with the subject
+`[NextJsHx security]`.
 
 Do not open a public issue, pull request, discussion, or Beads issue containing
 vulnerability details. Do not attach live credentials, private source,
@@ -63,4 +64,4 @@ npm run public:preflight
 Publish Beads data only with `npm run beads:push`. Repository-host settings such
 as private vulnerability reporting, secret scanning, push protection,
 Dependabot security updates, and branch protection must be enabled and verified
-separately before a public visibility change.
+separately from repository files.
