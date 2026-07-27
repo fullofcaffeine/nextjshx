@@ -226,6 +226,18 @@ bd prime                # Refresh Beads context
 
 ### Type safety and compiler boundaries
 
+- Classify a capability by its narrowest reusable owner before implementing
+  it. If the mechanism is not inherently about a Next.js convention or
+  runtime contract, implement it in `genes-ts` (or its generic `genes.react`
+  layer) and consume the pinned capability from NextJsHx. This includes
+  reusable Haxe-to-JavaScript/TypeScript language lowering, output profiles and
+  transactions, source maps, declarations, module/import/export mechanics,
+  general HXX/JSX/React typing, and compiler lifecycle/tooling primitives.
+  NextJsHx owns only the Next.js-specific composition, convention adapters,
+  route/runtime policy, and diagnostics layered over those mechanisms. The
+  test is reuse: if WordPressHx/Gutenberg or another Haxe-to-JS/TS project
+  could use the capability without importing Next.js concepts, it belongs in
+  genes rather than in this repository.
 - Do not use `Dynamic`, `Any`, `untyped`, `cast`, `Reflect`, broad `unknown`,
   unchecked TypeScript assertions, or reflection as substitutes for a typed
   design in repository-owned Haxe or generated public APIs. Leverage Haxe's

@@ -53,6 +53,9 @@ layer. Choose the shortest path below for the work you are doing.
 - [Generated-output ownership](generated-output-ownership.md)
 - [Transactional publication and recovery](generated-output-publication.md)
 - [Compiler gap inventory](compiler-gap-inventory.md)
+- [Genes extraction review](genes-extraction-review.md): which reusable
+  compiler/tooling mechanisms belong upstream and which Next policy remains
+  local.
 - [Accepted architecture decisions](adr/README.md)
 
 The repository is pre-release. Treat the
