@@ -30,6 +30,13 @@ typedef HaxePatchConsoleProps = {
  */
 @:next.clientComponent
 class HaxePatchConsole {
+	/**
+	 * Renders the Haxe-owned half of the native/Haxe bridge demonstration.
+	 *
+	 * The component consumes its exact props, owns local semantic state, and
+	 * renders ordinary HXX. Its generated `"use client"` entry is imported by
+	 * native TSX without a second component model.
+	 */
 	public static function render(props:HaxePatchConsoleProps):Element {
 		final reading = NativeSignalHook.use(props.initialLevel);
 		final formatted = NativeSignalFormat.formatSignal(reading.value, NativeSignalUnit.Db);

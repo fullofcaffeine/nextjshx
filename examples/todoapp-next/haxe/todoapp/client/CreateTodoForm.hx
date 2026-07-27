@@ -23,7 +23,7 @@ import showcase.ui.Textarea.Textarea;
 import showcase.ui.Textarea.TextareaProps;
 import todoapp.actions.TodoActions;
 import todoapp.domain.TodoPriority;
-import todoapp.input.TodoInputCodecs;
+import todoapp.input.TodoInputCodecs.draftMutationForm;
 import todoapp.mutations.TodoMutationState.TodoMutationOperation;
 import todoapp.mutations.TodoMutationState.TodoMutationPhase;
 
@@ -45,6 +45,13 @@ private typedef OptimisticDraft = {
  */
 @:next.clientComponent
 class CreateTodoForm {
+	/**
+	 * Owns the create form's native action state and optimistic draft preview.
+	 *
+	 * The component builds real `FormData`, calls the generated Server Function
+	 * reference through the shared mutation Hook, and renders closed issue
+	 * paths. React/Next still own form transport and transition scheduling.
+	 */
 	public static function render(_props:CreateTodoFormProps):Element {
 		final initialDraft:OptimisticDraft = {
 			active: false,
@@ -54,7 +61,7 @@ class CreateTodoForm {
 		};
 		final draft = React.useOptimistic(initialDraft, (_current:OptimisticDraft, next:OptimisticDraft) -> next);
 		final mutation = MutationHook.useTodoMutation(ServerFunction.ref(TodoActions.create), TodoMutationOperation.Create, "Intake desk ready.",
-			formData -> switch TodoInputCodecs.draftMutationForm(formData) {
+			formData -> switch draftMutationForm(formData) {
 				case Decoded(input):
 					final value = input.payload;
 					draft.apply({

@@ -2,7 +2,8 @@ package commerce.app;
 
 import commerce.domain.Product;
 import commerce.domain.Product.ProductSlug;
-import commerce.domain.ProductCatalog;
+import commerce.domain.ProductCatalog.all;
+import commerce.domain.ProductCatalog.find;
 import genes.js.Async.await;
 import genes.react.Element;
 import js.lib.Error;
@@ -36,12 +37,12 @@ typedef ProductParams = {
 @:next.page("products/[slug]")
 class ProductPage {
 	public static function generateStaticParams():Array<ProductParams> {
-		return ProductCatalog.all().map(product -> {slug: product.slug});
+		return all().map(product -> {slug: product.slug});
 	}
 
 	public static function generateMetadata(props:PageMetadataProps<ProductParams, SearchParams>):Promise<Metadata> {
 		return props.params.then(params -> {
-			final product = ProductCatalog.find(params.slug);
+			final product = find(params.slug);
 			final metadata:Metadata = product == null ? {
 				title: "Object unavailable — Common Ground"
 			} : {
@@ -60,7 +61,7 @@ class ProductPage {
 	@:async
 	public static function render(props:PageProps<ProductParams, SearchParams>):Promise<Element> {
 		final params = await(props.params);
-		final product = ProductCatalog.find(params.slug);
+		final product = find(params.slug);
 		return product == null ? missing() : renderProduct(product);
 	}
 
@@ -69,6 +70,13 @@ class ProductPage {
 		throw new Error("next/navigation.notFound returned instead of interrupting control flow");
 	}
 
+	/**
+	 * Renders a validated product with native Next Image and typed UI facades.
+	 *
+	 * Product lookup and not-found interruption are already complete, so this
+	 * helper receives a closed domain value. Next retains image optimization,
+	 * Link navigation, and Server Component rendering.
+	 */
 	static function renderProduct(product:Product):Element {
 		final image:ImageProps = {
 			src: product.image,

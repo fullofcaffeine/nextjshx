@@ -7,7 +7,14 @@ typedef FailureRecoveryModel = {
 	final trigger:Void->Void;
 }
 
-/** Haxe-authored one-shot render failure used by the deliberate boundary drill. */
+/**
+ * Haxe-authored one-shot render failure used by the deliberate boundary drill.
+ *
+ * The Hook itself has no class identity. This static shell is retained only
+ * because the current analyzer bridge lifts a public static field into a
+ * native module function; the generic direct-module form belongs in
+ * `genes.react`.
+ */
 class FailureRecoveryHook {
 	/**
 	 * `@:next.hook` gives this function a reviewed Hook identity and enables

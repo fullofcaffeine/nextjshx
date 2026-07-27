@@ -8,6 +8,14 @@ typedef BridgeChannel<Value> = {
 	final select:Int->Void;
 }
 
+/**
+ * Temporary DCE root for the Haxe Hook published to native TSX.
+ *
+ * The Hook has no class identity. The current export/analyzer bridge requires
+ * a retained public static field, then publishes an analyzer-visible native
+ * module function. Once NextJsHx consumes the framework-neutral
+ * `genes.react` module-Hook/export surface, this shell class can be removed.
+ */
 @:keep
 class HaxeHooks {
 	/**

@@ -2,7 +2,9 @@ package blog.app;
 
 import blog.domain.Post;
 import blog.domain.Post.PostSlug;
-import blog.domain.PostCatalog;
+import blog.domain.PostCatalog.all;
+import blog.domain.PostCatalog.find;
+import blog.domain.PostCatalog.nextAfter;
 import genes.js.Async.await;
 import genes.react.Element;
 import js.lib.Error;
@@ -33,12 +35,12 @@ typedef ArticleParams = {
 @:next.page("journal/[slug]")
 class ArticlePage {
 	public static function generateStaticParams():Array<ArticleParams> {
-		return PostCatalog.all().map(post -> {slug: post.slug});
+		return all().map(post -> {slug: post.slug});
 	}
 
 	public static function generateMetadata(props:PageMetadataProps<ArticleParams, SearchParams>):Promise<Metadata> {
 		return props.params.then(params -> {
-			final post = PostCatalog.find(params.slug);
+			final post = find(params.slug);
 			final metadata:Metadata = post == null ? {
 				title: "Missing field note — Moraine"
 			} : {
@@ -57,7 +59,7 @@ class ArticlePage {
 	@:async
 	public static function render(props:PageProps<ArticleParams, SearchParams>):Promise<Element> {
 		final params = await(props.params);
-		final post = PostCatalog.find(params.slug);
+		final post = find(params.slug);
 		return post == null ? missing() : renderArticle(post);
 	}
 
@@ -66,9 +68,16 @@ class ArticlePage {
 		throw new Error("next/navigation.notFound returned instead of interrupting control flow");
 	}
 
+	/**
+	 * Renders one already-validated catalogue entry and its typed next link.
+	 *
+	 * Lookup and not-found control flow happen before this helper, so the HXX
+	 * body receives a closed `Post`. Next still owns the native Link behavior
+	 * and Server Component rendering.
+	 */
 	static function renderArticle(post:Post):Element {
 		final body = post.paragraphs.map(paragraph -> <p>{paragraph}</p>);
-		final next = PostCatalog.nextAfter(post.slug);
+		final next = nextAfter(post.slug);
 		final badge:BadgeProps = {variant: BadgeVariant.Outline, className: "issue-badge"};
 		final icon:IconProps = {size: 17, strokeWidth: 1.6};
 		return <main className="article-shell">

@@ -55,6 +55,12 @@ private typedef CartQuantity = {
  * Quantities use a closed immutable array rather than an open JavaScript
  * dictionary. That keeps slug and quantity operations Haxe-checked while the
  * small showcase catalogue makes the linear lookup cost immaterial.
+ *
+ * The Hook has no class identity. This temporary static shell exists because
+ * the current analyzer-function bridge accepts a public static field, then
+ * emits it as a native module-level Hook. The reusable module-Hook contract is
+ * being moved into `genes.react`; this class should disappear when the pinned
+ * compiler surface supports the direct module form.
  */
 class CartHook {
 	/**

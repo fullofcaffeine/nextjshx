@@ -54,28 +54,35 @@ extern class UiCommandDialog {}
 
 @:jsRequire("@nextjshx/showcase-ui/command", "CommandInput")
 @:genes.jsxComponentProps("nextjs.raw.integrations.cmdk.Command.CommandInputProps")
+/** Native cmdk search input with its reviewed intrinsic-like props. */
 extern class UiCommandInput {}
 
 @:jsRequire("@nextjshx/showcase-ui/command", "CommandList")
 @:genes.jsxComponentProps("nextjs.raw.integrations.cmdk.Command.CommandListProps")
+/** Native cmdk scrollable result list with checked children. */
 extern class UiCommandList {}
 
 @:jsRequire("@nextjshx/showcase-ui/command", "CommandItem")
 @:genes.jsxComponentProps("showcase.ui.Command.UiCommandItemProps")
+/** Native cmdk selectable item with a typed selection callback. */
 extern class UiCommandItem {}
 
 @:jsRequire("@nextjshx/showcase-ui/command", "CommandGroup")
 @:genes.jsxComponentProps("nextjs.raw.integrations.cmdk.Command.CommandGroupProps")
+/** Native cmdk labelled result group with checked children. */
 extern class UiCommandGroup {}
 
 @:jsRequire("@nextjshx/showcase-ui/command", "CommandEmpty")
 @:genes.jsxComponentProps("nextjs.raw.integrations.cmdk.Command.CommandPartProps")
+/** Native cmdk empty-state region shown when filtering has no result. */
 extern class UiCommandEmpty {}
 
 @:jsRequire("@nextjshx/showcase-ui/command", "CommandSeparator")
 @:genes.jsxComponentProps("nextjs.raw.integrations.cmdk.Command.CommandSeparatorProps")
+/** Native cmdk visual separator with reviewed presentation props. */
 extern class UiCommandSeparator {}
 
 @:jsRequire("@nextjshx/showcase-ui/command", "CommandShortcutLabel")
 @:genes.jsxComponentProps("showcase.ui.Command.CommandShortcutLabelProps")
+/** Native presentational shortcut label with checked React children. */
 extern class UiCommandShortcutLabel {}

@@ -14,11 +14,19 @@ typedef TideReading = {
 	final lower:Void->Void;
 }
 
-/** Haxe-authored tide state with bounded updates and explicit direction. */
+/**
+ * Temporary static shell for the tide dial's bounded client Hook.
+ *
+ * The Hook has no class identity and should ultimately be a module function.
+ * The current NextJsHx analyzer-function bridge still requires a public static
+ * field so it can lift the checked body into a native module-level Hook. The
+ * reusable module-Hook capability is being generalized in `genes.react`; this
+ * class should disappear when NextJsHx consumes that public surface.
+ */
 class TideHook {
 	/**
-	 * `@:next.hook` gives this Haxe function a typed React Hook identity and
-	 * enforces top-level Hook placement. `React.useState` returns the semantic
+	 * `@:next.hook` gives this function a typed React Hook identity and
+	 * enforces top-level placement. `React.useState` returns the semantic
 	 * zero-wrapper `State<T>` view: `.value` reads, `.set` replaces, and
 	 * `.update` computes from the previous value.
 	 */

@@ -13,10 +13,11 @@ import nextjs.raw.server.NextResponse.NextResponseBody;
 import nextjs.route.NoParams;
 import nextjs.route.RouteContext;
 import todoapp.cache.CachedTodos;
-import todoapp.cache.TodoCacheTag;
+import todoapp.cache.TodoCacheTag.current;
 import todoapp.domain.Todo;
-import todoapp.input.TodoInputCodecs;
-import todoapp.persistence.TodoStore;
+import todoapp.input.TodoInputCodecs.draftJson;
+import todoapp.persistence.TodoStore.cacheScope;
+import todoapp.persistence.TodoStore.create as createTodo;
 
 typedef TodoApiItem = {
 	final id:String;
@@ -73,7 +74,7 @@ class TodoApi {
 	public static function get(_request:NextRequest, _context:RouteContext<NoParams>):Promise<NextResponseBody<TodoListResponse>> {
 		final requestContext = await(readRequestContext());
 		final list = CacheFunction.ref(CachedTodos.list);
-		final todos = await(list(TodoStore.cacheScope()));
+		final todos = await(list(cacheScope()));
 		return ResponseJson.ok({ok: true, todos: todos.map(toApiItem), request: requestContext});
 	}
 
@@ -86,10 +87,10 @@ class TodoApi {
 	@:async
 	public static function create(request:NextRequest, _context:RouteContext<NoParams>):Promise<NextResponseBody<TodoCreateResponse>> {
 		final requestContext = await(readRequestContext());
-		return switch await(RequestDecoder.json(request, TodoInputCodecs.draftJson)) {
+		return switch await(RequestDecoder.json(request, draftJson)) {
 			case Decoded(draft):
-				final created = TodoStore.create(draft.title, draft.note, draft.priority);
-				Cache.revalidateTag(TodoCacheTag.current(), {expire: 0});
+				final created = createTodo(draft.title, draft.note, draft.priority);
+				Cache.revalidateTag(current(), {expire: 0});
 				final noIssues:Array<TodoApiIssue> = [];
 				final body:TodoCreateResponse = {
 					ok: true,

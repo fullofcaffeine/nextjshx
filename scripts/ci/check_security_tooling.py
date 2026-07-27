@@ -26,6 +26,8 @@ PACKAGE = ROOT / "package.json"
 PACKAGE_LOCK = ROOT / "package-lock.json"
 LICENSE = ROOT / "LICENSE"
 README = ROOT / "README.md"
+DOCS_ROOT = ROOT / "docs"
+DOCS_INDEX = DOCS_ROOT / "README.md"
 CLI_PACKAGE = ROOT / "tools/cli/package.json"
 CLI_TSCONFIG = ROOT / "tools/cli/tsconfig.json"
 CONFIG_SCHEMA = ROOT / "schemas/nextjshx-config.schema.json"
@@ -2872,12 +2874,26 @@ def validate_docs_and_modes() -> None:
             raise SecurityToolingFailure(
                 f"CONTRIBUTING.md lost cache review guidance: {fragment}"
             )
-    readme = read_text(ROOT / "README.md")
+    readme = read_text(README)
     for fragment in (
         "support_matrix.json",
+        "npx --no-install lix download",
+        "npm test",
+        "docs/README.md",
+        "docs/architecture.md",
+        "npm run public:preflight",
+    ):
+        if fragment not in readme:
+            raise SecurityToolingFailure(
+                f"README.md lost front-door guidance: {fragment}"
+            )
+
+    documentation = "\n".join(
+        read_text(path) for path in sorted(DOCS_ROOT.rglob("*.md"))
+    )
+    for fragment in (
         "npm run test:support-matrix",
         "npm run support:discover",
-        "npx --no-install lix download",
         "npm run test:fixture:next-stable",
         "npm run test:fixture:next-stable:smoke",
         "npm run test:example:todoapp",
@@ -2918,31 +2934,43 @@ def validate_docs_and_modes() -> None:
         "npm run test:next-server",
         "npm run test:codecs",
         "npm run bindings:next:check",
-        "docs/configuration.md",
-        "docs/binding-policy.md",
-        "docs/codecs.md",
-        "docs/environment-boundaries.md",
-        "docs/client-components.md",
-        "docs/react-hooks.md",
-        "docs/server-functions.md",
-        "docs/cache-components.md",
-        "docs/adr/0003-boundary-classification-and-import-graph-enforcement.md",
-        "docs/adr/0004-haxe-native-react-component-authoring.md",
-        "docs/adr/0006-haxe-native-react-hook-authoring.md",
-        "docs/pages-and-layouts.md",
-        "docs/route-queries.md",
-        "docs/metadata-and-segment-config.md",
-        "docs/special-files.md",
-        "docs/proxy.md",
-        "docs/generated-output-ownership.md",
-        "docs/generated-output-publication.md",
-        "docs/cli.md",
-        "docs/testing-strategy.md",
-        "docs/showcases.md",
         "PostCSS to 8.5.23",
     ):
-        if fragment not in readme:
-            raise SecurityToolingFailure(f"README.md lost compatibility guidance: {fragment}")
+        if fragment not in documentation:
+            raise SecurityToolingFailure(
+                f"linked documentation lost compatibility guidance: {fragment}"
+            )
+
+    documentation_indexes = read_text(DOCS_INDEX) + "\n" + read_text(
+        ROOT / "docs/architecture.md"
+    )
+    for relative_path in (
+        "configuration.md",
+        "binding-policy.md",
+        "codecs.md",
+        "environment-boundaries.md",
+        "client-components.md",
+        "react-hooks.md",
+        "server-functions.md",
+        "cache-components.md",
+        "adr/0003-boundary-classification-and-import-graph-enforcement.md",
+        "adr/0004-haxe-native-react-component-authoring.md",
+        "adr/0006-haxe-native-react-hook-authoring.md",
+        "pages-and-layouts.md",
+        "route-queries.md",
+        "metadata-and-segment-config.md",
+        "special-files.md",
+        "proxy.md",
+        "generated-output-ownership.md",
+        "generated-output-publication.md",
+        "cli.md",
+        "testing-strategy.md",
+        "showcases.md",
+    ):
+        if relative_path not in documentation_indexes:
+            raise SecurityToolingFailure(
+                f"documentation indexes lost required reference: {relative_path}"
+            )
     compatibility = read_text(ROOT / "docs/compatibility.md")
     for fragment in (
         "machine-readable matrix is the source of truth",

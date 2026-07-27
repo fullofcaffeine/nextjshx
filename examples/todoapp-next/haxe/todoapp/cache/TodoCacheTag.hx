@@ -1,16 +1,16 @@
 package todoapp.cache;
 
-import todoapp.persistence.TodoStore;
+import todoapp.persistence.TodoStore.cacheScope;
 
 /** One stable invalidation namespace shared by readers and mutation boundaries. */
-class TodoCacheTag {
-	static inline final PREFIX = "todoapp.todos";
+inline final PREFIX = "todoapp.todos";
 
-	public static function current():String {
-		return forScope(TodoStore.cacheScope());
-	}
+/** Returns the cache identity for the active isolated application run. */
+function current():String {
+	return forScope(cacheScope());
+}
 
-	public static function forScope(scope:String):String {
-		return PREFIX + "." + scope;
-	}
+/** Names one cache scope without duplicating the namespace at call sites. */
+function forScope(scope:String):String {
+	return PREFIX + "." + scope;
 }

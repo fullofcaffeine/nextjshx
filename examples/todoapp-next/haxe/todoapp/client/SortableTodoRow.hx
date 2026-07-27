@@ -22,6 +22,13 @@ private typedef SortableRowElementProps = {
 /** One top-level sortable Hook and its checked row/handle refs. */
 @:next.clientComponent
 class SortableTodoRow {
+	/**
+	 * Connects one closed Todo record to dnd-kit's sortable row contract.
+	 *
+	 * The native package owns transforms, listeners, and keyboard/pointer
+	 * behavior. Haxe checks row props and reuses the existing mutation boundary
+	 * without duplicating record state.
+	 */
 	public static function render(props:SortableTodoRowProps):Element {
 		final sortable = DndKit.useSortable(props.todo.id, props.index);
 		final RowActions = TodoRowActions.client();

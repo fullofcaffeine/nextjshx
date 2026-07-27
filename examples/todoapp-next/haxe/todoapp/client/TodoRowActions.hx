@@ -34,6 +34,13 @@ private typedef OptimisticRow = {
 /** Per-record hydrated controls; authorization still lives inside each action. */
 @:next.clientComponent
 class TodoRowActions {
+	/**
+	 * Wires toggle/remove Server Function refs to one Todo row.
+	 *
+	 * Each mutation gets independent pending/retry state and optimistic UI.
+	 * React and Next still own action transport; Haxe keeps operation and result
+	 * values closed and prevents direct client imports of server bodies.
+	 */
 	public static function render(props:TodoRowActionsProps):Element {
 		final initial:OptimisticRow = {completed: props.completed, visible: true};
 		final optimistic = React.useOptimistic(initial, reduceOptimisticRow);

@@ -5,13 +5,20 @@ import nextjs.codec.DecodeIssueCode;
 import nextjs.codec.DecodeResult;
 import nextjs.raw.Cache;
 import nextjs.raw.server.WebFormData;
-import todoapp.cache.TodoCacheTag;
+import todoapp.cache.TodoCacheTag.current;
 import todoapp.domain.TodoId;
-import todoapp.input.TodoInputCodecs;
+import todoapp.input.TodoInputCodecs.draftMutationForm;
+import todoapp.input.TodoInputCodecs.idMutationForm;
+import todoapp.input.TodoInputCodecs.orderMutationForm;
 import todoapp.mutations.TodoMutationState;
 import todoapp.mutations.TodoMutationState.TodoMutationOperation;
 import todoapp.mutations.TodoMutationState.TodoMutationStates;
-import todoapp.persistence.TodoStore;
+import todoapp.persistence.TodoStore.create as createTodo;
+import todoapp.persistence.TodoStore.rememberApplied;
+import todoapp.persistence.TodoStore.remove as removeTodo;
+import todoapp.persistence.TodoStore.reorder as reorderTodos;
+import todoapp.persistence.TodoStore.toggle as toggleTodo;
+import todoapp.persistence.TodoStore.wasApplied;
 
 /**
  * Native todo mutations with closed FormData decoding and serializable results.
@@ -36,15 +43,15 @@ class TodoActions {
 	@:next.action
 	@:async
 	public static function create(_previous:TodoMutationState, formData:WebFormData):Promise<TodoMutationState> {
-		return switch TodoInputCodecs.draftMutationForm(formData) {
+		return switch draftMutationForm(formData) {
 			case Decoded(input):
-				if (TodoStore.wasApplied(Create, input.mutationId)) {
+				if (wasApplied(Create, input.mutationId)) {
 					replayed(Create);
 				} else {
 					final draft = input.payload;
-					final created = TodoStore.create(draft.title, draft.note, draft.priority);
-					TodoStore.rememberApplied(Create, input.mutationId);
-					Cache.updateTag(TodoCacheTag.current());
+					final created = createTodo(draft.title, draft.note, draft.priority);
+					rememberApplied(Create, input.mutationId);
+					Cache.updateTag(current());
 					TodoMutationStates.completed(Create, 'Filed "${created.title}" as ${created.id}.');
 				}
 			case Rejected(issues):
@@ -55,15 +62,15 @@ class TodoActions {
 	@:next.action
 	@:async
 	public static function toggle(_previous:TodoMutationState, formData:WebFormData):Promise<TodoMutationState> {
-		return switch TodoInputCodecs.idMutationForm(formData) {
+		return switch idMutationForm(formData) {
 			case Decoded(input):
-				if (TodoStore.wasApplied(Toggle, input.mutationId)) {
+				if (wasApplied(Toggle, input.mutationId)) {
 					replayed(Toggle);
-				} else if (!TodoStore.toggle(input.payload)) {
+				} else if (!toggleTodo(input.payload)) {
 					missing(Toggle, input.payload);
 				} else {
-					TodoStore.rememberApplied(Toggle, input.mutationId);
-					Cache.updateTag(TodoCacheTag.current());
+					rememberApplied(Toggle, input.mutationId);
+					Cache.updateTag(current());
 					TodoMutationStates.completed(Toggle, "Status updated in the shared ledger.");
 				}
 			case Rejected(issues):
@@ -74,15 +81,15 @@ class TodoActions {
 	@:next.action
 	@:async
 	public static function remove(_previous:TodoMutationState, formData:WebFormData):Promise<TodoMutationState> {
-		return switch TodoInputCodecs.idMutationForm(formData) {
+		return switch idMutationForm(formData) {
 			case Decoded(input):
-				if (TodoStore.wasApplied(Remove, input.mutationId)) {
+				if (wasApplied(Remove, input.mutationId)) {
 					replayed(Remove);
-				} else if (!TodoStore.remove(input.payload)) {
+				} else if (!removeTodo(input.payload)) {
 					missing(Remove, input.payload);
 				} else {
-					TodoStore.rememberApplied(Remove, input.mutationId);
-					Cache.updateTag(TodoCacheTag.current());
+					rememberApplied(Remove, input.mutationId);
+					Cache.updateTag(current());
 					TodoMutationStates.completed(Remove, "Record removed from the shared ledger.");
 				}
 			case Rejected(issues):
@@ -90,14 +97,22 @@ class TodoActions {
 		};
 	}
 
+	/**
+	 * Validates the complete visible order before persisting and invalidating.
+	 *
+	 * Duplicate/missing IDs are rejected by the shared codec, replay receipts
+	 * make retries deterministic, and native `updateTag` provides read-your-own
+	 * writes. Authentication/authorization would remain explicit here in a real
+	 * application.
+	 */
 	@:next.action
 	@:async
 	public static function reorder(_previous:TodoMutationState, formData:WebFormData):Promise<TodoMutationState> {
-		return switch TodoInputCodecs.orderMutationForm(formData) {
+		return switch orderMutationForm(formData) {
 			case Decoded(input):
-				if (TodoStore.wasApplied(Reorder, input.mutationId)) {
+				if (wasApplied(Reorder, input.mutationId)) {
 					replayed(Reorder);
-				} else if (!TodoStore.reorder(input.payload)) {
+				} else if (!reorderTodos(input.payload)) {
 					TodoMutationStates.rejected(Reorder, "The ledger changed before this order could be saved.", [
 						{
 							code: DecodeIssueCode.InvalidValue,
@@ -106,8 +121,8 @@ class TodoActions {
 						}
 					]);
 				} else {
-					TodoStore.rememberApplied(Reorder, input.mutationId);
-					Cache.updateTag(TodoCacheTag.current());
+					rememberApplied(Reorder, input.mutationId);
+					Cache.updateTag(current());
 					TodoMutationStates.completed(Reorder, "Ledger order committed.");
 				}
 			case Rejected(issues):
@@ -116,7 +131,7 @@ class TodoActions {
 	}
 
 	static function replayed(operation:TodoMutationOperation):TodoMutationState {
-		Cache.updateTag(TodoCacheTag.current());
+		Cache.updateTag(current());
 		return TodoMutationStates.completed(operation, "Already committed; refreshed from the shared ledger.");
 	}
 

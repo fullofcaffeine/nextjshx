@@ -5,7 +5,7 @@ import nextjs.app.LayoutProps;
 import nextjs.raw.components.Link;
 import nextjs.raw.metadata.Metadata;
 import nextjs.route.NoParams;
-import todoapp.ui.TodoStyles;
+import todoapp.ui.TodoStyles.css;
 
 /**
  * `@:next.layout("")` owns the root `app/layout.tsx` adapter and validates the
@@ -24,7 +24,7 @@ class RootLayout {
 			<head>
 				<meta name="theme-color" content="#f3eddf" />
 				<link rel="stylesheet" href="/styles.css" />
-				<style>{TodoStyles.css()}</style>
+				<style>{css()}</style>
 			</head>
 			<body>
 				<div className="shell">

@@ -41,6 +41,12 @@ typedef NativeSignalCardProps = {
 	final ?children:ReactNode;
 }
 
+/**
+ * Exact Haxe view of the existing native `useNativeSignal` Hook module.
+ *
+ * This extern class is a declaration container required to describe a host
+ * module; it creates no JavaScript class or wrapper.
+ */
 extern class NativeSignalHook {
 	/**
 	 * On an extern, `@:next.hook` records that the reviewed native export is a
@@ -53,6 +59,7 @@ extern class NativeSignalHook {
 }
 
 @:jsRequire("@nextjshx/mixed-adoption/native-module")
+/** Exact zero-runtime view of the native signal formatting module. */
 extern class NativeSignalFormat {
 	static function formatSignal(value:Int, unit:NativeSignalUnit):String;
 	static function signalBand(value:Int):NativeSignalBand;
@@ -60,4 +67,5 @@ extern class NativeSignalFormat {
 
 @:jsRequire("@nextjshx/mixed-adoption/native-component", "NativeSignalCard")
 @:genes.jsxComponentProps("mixed_adoption.native.NativeSignal.NativeSignalCardProps")
+/** Native React card identity with HXX-checked props and children. */
 extern class NativeSignalCard {}

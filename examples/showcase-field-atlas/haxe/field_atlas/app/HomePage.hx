@@ -25,6 +25,13 @@ import showcase.ui.Icons.Leaf;
  */
 @:next.page("")
 class HomePage {
+	/**
+	 * Composes the atlas index from trusted local links and typed client data.
+	 *
+	 * The page keeps trusted MDX and decoded portable content as visibly
+	 * different paths, then passes only closed chart props through the generated
+	 * Client Component boundary. Next owns routing, streaming, and hydration.
+	 */
 	public static function render(props:PageProps<NoParams, SearchParams>):Element {
 		final icon:IconProps = {size: 17, strokeWidth: 1.5};
 		return <main>

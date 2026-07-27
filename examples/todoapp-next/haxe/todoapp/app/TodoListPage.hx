@@ -17,7 +17,7 @@ import nextjs.route.SearchParams;
 import todoapp.cache.CachedTodos;
 import todoapp.client.CreateTodoForm;
 import todoapp.client.SortableTodoList;
-import todoapp.persistence.TodoStore;
+import todoapp.persistence.TodoStore.cacheScope;
 
 using nextjs.client.ClientComponent;
 
@@ -58,7 +58,7 @@ class TodoListPage {
 		final CreateForm = CreateTodoForm.client();
 		final SortableList = SortableTodoList.client();
 		final list = CacheFunction.ref(CachedTodos.list);
-		final todos = await(list(TodoStore.cacheScope()));
+		final todos = await(list(cacheScope()));
 		return <main id="todo-list-page" className="page">
 			<section className="hero" aria-labelledby="ledger-title">
 				<div>

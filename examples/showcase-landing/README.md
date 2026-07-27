@@ -24,6 +24,49 @@ The App Router, React renderer, Tailwind CSS, Fast Refresh, build, and
 deployment model are unchanged. NextJsHx adds typed Haxe authoring and owns only
 the generated files listed in `.nextjshx/manifest.json`.
 
+## The same interaction in vanilla Next.js
+
+The native React version is concise and uses the same state machine:
+
+```tsx
+"use client"
+
+export function TideDial({ initialLevel }: { initialLevel: number }) {
+  const [level, setLevel] = useState(initialLevel)
+  const [direction, setDirection] = useState<"rising" | "falling">("rising")
+  const raise = () => {
+    setDirection("rising")
+    setLevel(current => Math.min(94, current + 4))
+  }
+  return <button onClick={raise}>{direction}: {level}</button>
+}
+```
+
+NextJsHx does not replace this runtime model. Its improvement is compile-time:
+the direction is a closed Haxe value, semantic state distinguishes replacement
+from functional update, Hook placement is checked at the Haxe span, and the
+Client Component boundary emits an ordinary `"use client"` module.
+
+The Haxe Hook body makes those two state operations explicit:
+
+```haxe
+final level = React.useState(initialLevel);
+final direction = React.useState(TideDirection.Rising);
+
+return {
+	level: level.value,
+	direction: direction.value,
+	raise: () -> {
+		direction.set(TideDirection.Rising);
+		level.update(current -> current + 4 > 94 ? 94 : current + 4);
+	}
+};
+```
+
+`set` always means replacement and `update` always receives the previous
+value. The compiler can therefore reject callable-state ambiguity without
+changing the `useState` calls that React executes.
+
 ## Run it
 
 From the repository root:
@@ -41,6 +84,10 @@ Pass supported Next flags after `--`, for example `-- --webpack -p 3100`.
 - Use `nextjs.*` for the ergonomic layer and `nextjs.raw.*` when exact host
   behavior is the goal.
 - Client state and browser events belong behind `@:next.clientComponent`.
+- `TideHook` currently has a documented static shell because the analyzer
+  bridge accepts a public static Hook field. The Hook itself has no class
+  identity; a reusable direct module-Hook surface belongs in genes-ts and will
+  remove that shell.
 
 See the first-use comments in the Haxe sources and the
 [showcase guide](../../docs/showcases.md) for generated ownership and tests.

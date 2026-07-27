@@ -76,6 +76,13 @@ The gates are deliberately cumulative:
 This split keeps ordinary commits responsive without allowing a fast local
 check to stand in for the complete hosted or publication evidence.
 
+The dependency gate also protects the reviewed host toolchain, not only Haxe
+source. The current lock keeps React and React DOM at 19.2.7, the TypeScript
+compatibility wrapper on compiler core 6.0.2, and the audited override of
+PostCSS to 8.5.23. `npm run security:audit` rejects
+moderate-or-higher findings, while the pinned production fixture proves those
+resolutions still build and run together.
+
 ## Boundary-decision evidence
 
 `npm run test:architecture` validates every ADR's required metadata and

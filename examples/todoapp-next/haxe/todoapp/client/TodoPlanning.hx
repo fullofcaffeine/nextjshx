@@ -15,53 +15,57 @@ typedef TodoPlanningSnapshot = {
 	final rows:Array<StackedBarDatum>;
 }
 
-/** Pure Todo-to-chart projection; it owns no React state and no chart runtime. */
-class TodoPlanning {
-	public static function project(todos:Array<Todo>):TodoPlanningSnapshot {
-		var p0Open = 0;
-		var p0Completed = 0;
-		var p1Open = 0;
-		var p1Completed = 0;
-		var p2Open = 0;
-		var p2Completed = 0;
+/**
+ * Projects Todo records into the exact summary consumed by the chart.
+ *
+ * This pure module function owns no React state, class identity, or Recharts
+ * runtime. It exhaustively classifies the closed priority values, then hands
+ * ordinary native chart data to the reviewed Recharts facade.
+ */
+function project(todos:Array<Todo>):TodoPlanningSnapshot {
+	var p0Open = 0;
+	var p0Completed = 0;
+	var p1Open = 0;
+	var p1Completed = 0;
+	var p2Open = 0;
+	var p2Completed = 0;
 
-		for (todo in todos) {
-			switch todo.priority {
-				case TodoPriority.Critical:
-					if (todo.completed) {
-						p0Completed++;
-					} else {
-						p0Open++;
-					}
-				case TodoPriority.Important:
-					if (todo.completed) {
-						p1Completed++;
-					} else {
-						p1Open++;
-					}
-				case TodoPriority.Routine:
-					if (todo.completed) {
-						p2Completed++;
-					} else {
-						p2Open++;
-					}
-			}
+	for (todo in todos) {
+		switch todo.priority {
+			case TodoPriority.Critical:
+				if (todo.completed) {
+					p0Completed++;
+				} else {
+					p0Open++;
+				}
+			case TodoPriority.Important:
+				if (todo.completed) {
+					p1Completed++;
+				} else {
+					p1Open++;
+				}
+			case TodoPriority.Routine:
+				if (todo.completed) {
+					p2Completed++;
+				} else {
+					p2Open++;
+				}
 		}
-
-		final completed = p0Completed + p1Completed + p2Completed;
-		final open = p0Open + p1Open + p2Open;
-		final total = open + completed;
-		return {
-			total: total,
-			open: open,
-			completed: completed,
-			completionPercent: total == 0 ? 0 : Math.round(completed / total * 100),
-			urgentOpen: p0Open,
-			rows: [
-				StackedBars.row("P0", p0Open, p0Completed),
-				StackedBars.row("P1", p1Open, p1Completed),
-				StackedBars.row("P2", p2Open, p2Completed)
-			]
-		};
 	}
+
+	final completed = p0Completed + p1Completed + p2Completed;
+	final open = p0Open + p1Open + p2Open;
+	final total = open + completed;
+	return {
+		total: total,
+		open: open,
+		completed: completed,
+		completionPercent: total == 0 ? 0 : Math.round(completed / total * 100),
+		urgentOpen: p0Open,
+		rows: [
+			StackedBars.row("P0", p0Open, p0Completed),
+			StackedBars.row("P1", p1Open, p1Completed),
+			StackedBars.row("P2", p2Open, p2Completed)
+		]
+	};
 }

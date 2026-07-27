@@ -34,8 +34,19 @@ private extern class OnlineNavigator {
  * Refs close the pre-render double-submit window without scheduling extra
  * renders. Transport errors are deliberately discarded and converted to a
  * closed user-facing state before they can cross the application boundary.
+ *
+ * This Hook has no class identity. The shell remains only because the current
+ * analyzer bridge lifts a public static field into a native module function;
+ * direct module-Hook authoring is a reusable `genes.react` prerequisite.
  */
 class MutationHook {
+	/**
+	 * Coordinates one Server Function with optimistic replay and safe retry.
+	 *
+	 * Refs close the double-submit window, cloned FormData keeps retries
+	 * repeatable, and all thrown/transport failures become a closed mutation
+	 * state. React 19 still owns `useActionState`, transitions, and rendering.
+	 */
 	@:next.hook
 	public static function useTodoMutation(action:TodoServerMutation, operation:TodoMutationOperation, readyMessage:String,
 			optimistic:WebFormData->Void):TodoMutationModel {

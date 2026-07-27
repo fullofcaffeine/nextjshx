@@ -1,6 +1,6 @@
 package field_atlas.app;
 
-import field_atlas.content.LocalContentFiles;
+import field_atlas.content.LocalContentFiles.readBrief;
 import genes.react.Element;
 import js.lib.Error;
 import nextjs.app.PageProps;
@@ -13,10 +13,18 @@ import nextjs.route.SearchParams;
 import showcase.ui.Badge;
 import showcase.ui.Badge.BadgeVariant;
 
+/**
+ * Decodes and renders one CMS-like JSON brief at the server route boundary.
+ *
+ * `@:next.page("briefing")` owns the ordinary `app/briefing/page.tsx`
+ * convention. Raw file text is decoded immediately into the closed portable
+ * content algebra; rejected fields become a server error and payload data can
+ * never execute JSX. Next still owns Server Component rendering and routing.
+ */
 @:next.page("briefing")
 class BriefingPage {
 	public static function render(props:PageProps<NoParams, SearchParams>):Element {
-		final source = LocalContentFiles.readBrief();
+		final source = readBrief();
 		final blocks = switch PortableContentDecoder.json(source) {
 			case Decoded(value): value;
 			case Rejected(issues):

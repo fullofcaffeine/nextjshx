@@ -79,6 +79,7 @@
     "test:prepush": "npm run test:plan && npm run test:support-matrix && npm run test:architecture && npm run test:security-tooling && npm run test:haxe && npm run test:adapter-plan && npm run test:routes && npm run test:snapshots && npm run test:package-shape && npm run test:compiler-gaps",
     "test:example:mixed-adoption:source": "node scripts/examples/mixed-adoption.mjs source",
     "test:example:mixed-adoption": "node scripts/examples/mixed-adoption.mjs verify",
+    "audit:examples:haxe": "node scripts/examples/audit-haxe-teaching.mjs",
     "example:todoapp:clean": "node scripts/examples/todoapp-next.mjs clean",
     "test:example:todoapp:source": "node scripts/examples/todoapp-next.mjs source",
     "test:example:todoapp:build": "node scripts/examples/todoapp-next.mjs verify",

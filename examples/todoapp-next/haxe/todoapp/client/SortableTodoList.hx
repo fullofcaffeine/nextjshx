@@ -28,8 +28,10 @@ import todoapp.actions.TodoActions;
 import todoapp.client.TodoDiscovery.TodoPriorityFilter;
 import todoapp.client.TodoDiscovery.TodoStatusFilter;
 import todoapp.client.TodoDiscovery.TodoView;
+import todoapp.client.TodoCommandCenter.render as renderCommandCenter;
+import todoapp.client.TodoPlanning.project;
 import todoapp.domain.Todo;
-import todoapp.input.TodoInputCodecs;
+import todoapp.input.TodoInputCodecs.orderMutationForm;
 import todoapp.mutations.TodoMutationState.TodoMutationOperation;
 import todoapp.mutations.TodoMutationState.TodoMutationPhase;
 import nextjs.codec.DecodeResult;
@@ -50,10 +52,18 @@ typedef SortableTodoListProps = {
  */
 @:next.clientComponent
 class SortableTodoList {
+	/**
+	 * Composes URL-owned discovery, optimistic ordering, charts, and list/board
+	 * presentations inside one hydrated boundary.
+	 *
+	 * dnd-kit, nuqs, Recharts, and React retain their native runtimes. Haxe
+	 * keeps route/filter/priority/order/action values closed and ensures both
+	 * views project one server-owned collection rather than synchronized stores.
+	 */
 	public static function render(props:SortableTodoListProps):Element {
 		final order = React.useOptimistic(todoIds(props.todos), (_current:Array<String>, next:Array<String>) -> next);
 		final mutation = MutationHook.useTodoMutation(ServerFunction.ref(TodoActions.reorder), TodoMutationOperation.Reorder,
-			"Drag a handle or focus it and press Space to reorder.", formData -> switch TodoInputCodecs.orderMutationForm(formData) {
+			"Drag a handle or focus it and press Space to reorder.", formData -> switch orderMutationForm(formData) {
 				case Decoded(input): order.apply(input.payload.map(id -> (id : String)));
 				case Rejected(_): {}
 			});
@@ -63,7 +73,7 @@ class SortableTodoList {
 		final router = Navigation.useRouter();
 		final currentIds = mergeCurrentIds(order.value, props.todos);
 		final projection = TodoDiscovery.project(currentIds, props.todos, discovery.status, discovery.priority, discovery.search);
-		final planning = TodoPlanning.project(projection.visible);
+		final planning = project(projection.visible);
 		final chart = StackedBars.create(planning.rows, "Open", "var(--planning-open)", "Filed", "var(--planning-filed)");
 		final chartMargin:ChartMargin = {
 			top: 8,
@@ -200,7 +210,7 @@ class SortableTodoList {
 		}
 
 		return <div className="todo-workbench">
-			{TodoCommandCenter.render({
+			{renderCommandCenter({
 				open: commandOpen.value,
 				setOpen: next -> commandOpen.set(next),
 				discovery: discovery,

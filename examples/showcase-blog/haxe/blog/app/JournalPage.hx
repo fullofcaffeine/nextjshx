@@ -1,7 +1,8 @@
 package blog.app;
 
 import blog.domain.Post;
-import blog.domain.PostCatalog;
+import blog.domain.PostCatalog.featured;
+import blog.domain.PostCatalog.fieldNotes;
 import genes.react.Element;
 import nextjs.app.PageProps;
 import nextjs.components.NextLink;
@@ -28,9 +29,17 @@ import showcase.ui.Separator;
  */
 @:next.page("")
 class JournalPage {
+	/**
+	 * Composes the journal landing page from one typed catalogue.
+	 *
+	 * The lead story and secondary cards are derived once, then HXX validates
+	 * every shared component prop and child. Generated href companions keep
+	 * article links aligned with the dynamic route while Next performs normal
+	 * Server Component rendering.
+	 */
 	public static function render(props:PageProps<NoParams, SearchParams>):Element {
-		final featured = PostCatalog.featured();
-		final fieldNotes = PostCatalog.fieldNotes().map(renderPostCard);
+		final featuredPost = featured();
+		final secondaryPosts = fieldNotes().map(renderPostCard);
 		final outline:BadgeProps = {variant: BadgeVariant.Outline, className: "issue-badge"};
 		final icon:IconProps = {size: 17, strokeWidth: 1.6};
 		return <main>
@@ -49,15 +58,15 @@ class JournalPage {
 			</section>
 
 			<section id="dispatches" className="featured-story">
-				<div className="featured-label"><Badge {...outline}>{featured.kind}</Badge><span>{featured.issue} / {featured.published}</span></div>
+				<div className="featured-label"><Badge {...outline}>{featuredPost.kind}</Badge><span>{featuredPost.issue} / {featuredPost.published}</span></div>
 				<div className="featured-copy">
-					<h2>{featured.title}</h2><p>{featured.excerpt}</p>
-					<SlottedButton variant={ButtonVariant.Outline} className="read-button" asChild><NextLink href={ArticlePage.href({slug: featured.slug})}>Read the field note <ArrowRight {...icon} /></NextLink></SlottedButton>
+					<h2>{featuredPost.title}</h2><p>{featuredPost.excerpt}</p>
+					<SlottedButton variant={ButtonVariant.Outline} className="read-button" asChild><NextLink href={ArticlePage.href({slug: featuredPost.slug})}>Read the field note <ArrowRight {...icon} /></NextLink></SlottedButton>
 				</div>
-				<aside><BookOpenText {...icon} /><span>{featured.minutes} min read</span><strong>{featured.location}</strong><small>{featured.coordinates}</small></aside>
+				<aside><BookOpenText {...icon} /><span>{featuredPost.minutes} min read</span><strong>{featuredPost.location}</strong><small>{featuredPost.coordinates}</small></aside>
 			</section>
 
-			<section className="dispatch-grid">{fieldNotes}</section>
+			<section className="dispatch-grid">{secondaryPosts}</section>
 
 			<section id="practice" className="practice-band">
 				<p>THE PRACTICE / 03</p><div><h2>Walk softly.<br />Record precisely.</h2><p>Each dispatch pairs field observation with the practical choices that keep a place resilient. No sponsored summits. No geotagged shortcuts.</p></div>

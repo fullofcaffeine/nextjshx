@@ -21,6 +21,13 @@ using nextjs.client.ClientComponent;
  */
 @:next.page("haxe-lab")
 class HaxeLabPage {
+	/**
+	 * Composes the Haxe-owned route from native and Haxe-owned client entries.
+	 *
+	 * The server page passes only closed serializable props across each client
+	 * boundary. Native React still hydrates both entries in the same module
+	 * graph; this function introduces no interop runtime.
+	 */
 	public static function render(_:PageProps<NoParams, SearchParams>):Element {
 		// `.client()` is the checked Haxe equivalent of importing a generated
 		// Client Component identity into this Server Component's HXX.

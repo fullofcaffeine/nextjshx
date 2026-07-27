@@ -23,6 +23,13 @@ typedef SignalPlotProps = {
  */
 @:next.clientComponent
 class SignalPlot {
+	/**
+	 * Renders the reviewed Recharts subset from exact serializable observations.
+	 *
+	 * Haxe validates data keys and component props before output. The real
+	 * Recharts package still creates the chart and React still owns hydration;
+	 * no chart data is widened to an unchecked payload.
+	 */
 	public static function render(props:SignalPlotProps):Element {
 		var plot = 0;
 		final values = props.values;

@@ -24,6 +24,52 @@ remains native because Next’s MDX compiler is already the right tool.
 GFM, heading slugs, syntax highlighting, Next routing, and MDX compilation stay
 native. NextJsHx supplies the checked Haxe boundaries around them.
 
+## The same trust boundary in vanilla Next.js
+
+A strong TypeScript implementation validates unknown JSON before rendering and
+uses a discriminated union:
+
+```tsx
+type Block =
+  | { type: "heading"; text: string }
+  | { type: "paragraph"; text: string }
+
+export default function BriefingPage() {
+  const blocks = BriefingSchema.parse(readBriefingJson())
+  return blocks.map(block => {
+    switch (block.type) {
+      case "heading": return <h2>{block.text}</h2>
+      case "paragraph": return <p>{block.text}</p>
+    }
+  })
+}
+```
+
+NextJsHx follows that same safe architecture. Its closed decoder makes rejected
+input and every block variant exhaustive in Haxe, HXX checks the resulting
+markup and Recharts props before output, and trusted MDX deliberately remains
+in Next's native compiler pipeline.
+
+The Haxe page makes rejection a required control-flow branch:
+
+```haxe
+final blocks = switch PortableContentDecoder.json(readBrief()) {
+	case Decoded(value):
+		value;
+	case Rejected(issues):
+		final summary = issues
+			.map(issue -> issue.code + " at " + issue.path)
+			.join("; ");
+		throw new Error("Portable field brief rejected: " + summary);
+};
+
+final rendered = ContentBlockRenderer.render(blocks);
+```
+
+The renderer is a module function. More importantly, the switch makes payload
+rejection visible: text cannot become JSX, and adding a decode result or
+content-block variant requires the Haxe source to handle it.
+
 ## Run it
 
 ```sh

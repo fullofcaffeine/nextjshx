@@ -50,6 +50,13 @@ typedef ShopClientProps = {
  */
 @:next.clientComponent
 class ShopClient {
+	/**
+	 * Composes filtering, cart controls, product cards, and the native Sheet.
+	 *
+	 * `useShopCart` owns the state transition model; this component projects it
+	 * into HXX with exact package props. React still schedules updates and Radix
+	 * still owns accessible Sheet behavior.
+	 */
 	public static function render(props:ShopClientProps):Element {
 		final cart = CartHook.useShopCart(props.products);
 		final visible = switch cart.filter {
@@ -112,6 +119,7 @@ class ShopClient {
 		return <UiButton {...button}>{label}</UiButton>;
 	}
 
+	/** Renders one typed product and wires its nominal slug to the cart Hook. */
 	static function renderProduct(product:CartProduct, cart:CartModel):Element {
 		final image:ImageProps = {
 			src: product.image,
@@ -137,6 +145,7 @@ class ShopClient {
 		</Card>;
 	}
 
+	/** Renders one derived cart line with bounded increment/decrement actions. */
 	static function renderCartLine(line:CartLine, cart:CartModel):Element {
 		final remove:ButtonProps = {
 			variant: ButtonVariant.Ghost,

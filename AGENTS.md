@@ -204,6 +204,15 @@ bd prime                # Refresh Beads context
 
 ### Examples and agent onboarding
 
+- Prefer Haxe module-level functions and values when a declaration is only a
+  namespace for static fields. Use a class only when construction, runtime
+  class identity, inheritance, interface implementation, class metadata, or a
+  required host/framework export shape makes the class itself meaningful. This
+  keeps Haxe source aligned with normal JavaScript/TypeScript module patterns
+  and avoids redundant static shell classes. When an example must retain an
+  all-static class because a current macro or compiler contract requires class
+  identity, document that reason beside the declaration and track the
+  framework-neutral compiler improvement in genes when applicable.
 - Treat every maintained example as a learning product, not only a regression
   fixture. Its README must concisely explain the user-visible result, why Haxe
   improves the implementation, how its routes/components/data flow map to a
@@ -216,6 +225,20 @@ bd prime                # Refresh Beads context
   what useful check or output it provides, and what it does not do—especially
   for security, validation, authorization, caching, client/server placement,
   and runtime semantics. Later identical uses may stay concise.
+- Give every nontrivial example module/class and complex function friendly
+  teaching documentation that explains why it exists, what contract it
+  enforces or behavior it owns, how the important flow works, and what native
+  Next.js/React/JavaScript artifact or runtime behavior results. Comments must
+  clarify intent and mechanism rather than narrating syntax or restating the
+  declaration name.
+- Compare example Haxe against an equally idiomatic vanilla
+  Next.js/TypeScript implementation of the same behavior. Preserve good native
+  practices such as module functions, direct TSX, standard CSS imports, schema
+  validation, and canonical framework APIs; never make the TypeScript version
+  artificially verbose or unsafe to make Haxe look better. State the precise
+  invalid state, duplicated source of truth, or delayed error that the Haxe
+  layer removes while naming the native Next.js behavior that remains
+  authoritative.
 - Optimize bootstrapped projects for capable AI agents that have no NextJsHx
   training-data prior. Generate a concise project `AGENTS.md` that establishes
   the Next-native mental model, authored/generated ownership boundary, raw

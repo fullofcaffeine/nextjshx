@@ -5,7 +5,7 @@ import commerce.client.CartHook.CartProductCategory;
 import commerce.client.ShopClient;
 import commerce.domain.Product;
 import commerce.domain.Product.ProductCategory;
-import commerce.domain.ProductCatalog;
+import commerce.domain.ProductCatalog.all;
 import genes.react.Element;
 import nextjs.app.PageProps;
 import nextjs.components.NextLink;
@@ -25,11 +25,18 @@ using nextjs.client.ClientComponent;
  */
 @:next.page("")
 class StorePage {
+	/**
+	 * Projects server-owned products into the serializable cart input model.
+	 *
+	 * The page renders the client storefront through its generated typed
+	 * boundary. Next performs the server/client split and hydration; Haxe checks
+	 * that every projected field is safe and present before output.
+	 */
 	public static function render(props:PageProps<NoParams, SearchParams>):Element {
 		// `.client()` is the checked reference that lets Server Component HXX
 		// render the hydrated leaf without importing its client implementation.
 		final Shop = ShopClient.client();
-		final products:Array<CartProduct> = ProductCatalog.all().map(toCartProduct);
+		final products:Array<CartProduct> = all().map(toCartProduct);
 		final badge:BadgeProps = {variant: BadgeVariant.Outline, className: "season-badge"};
 		final icon:IconProps = {size: 20, strokeWidth: 1.7};
 		return <main>

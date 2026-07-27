@@ -23,6 +23,13 @@ typedef TideDialProps = {
  */
 @:next.clientComponent
 class TideDial {
+	/**
+	 * Projects the closed tide Hook state into the interactive dial.
+	 *
+	 * HXX checks SVG, button props, event callbacks, and accessibility
+	 * attributes at this source. React still owns state and event scheduling in
+	 * the generated directive-first Client Component.
+	 */
 	public static function render(props:TideDialProps):Element {
 		final reading = TideHook.useTideReading(props.initialLevel);
 		final circumference = 289.0;

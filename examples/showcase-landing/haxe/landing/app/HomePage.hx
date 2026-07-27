@@ -29,6 +29,13 @@ using nextjs.client.ClientComponent;
  */
 @:next.page("")
 class HomePage {
+	/**
+	 * Composes the static editorial landing page and one typed client island.
+	 *
+	 * Most markup remains a Server Component; only `TideDial.client(...)`
+	 * crosses to hydration with exact serializable props. Next keeps its normal
+	 * server/client split, navigation, image, and build behavior.
+	 */
 	public static function render(props:PageProps<NoParams, SearchParams>):Element {
 		// `.client()` yields the only identity that may place this hydrated
 		// component in Server Component HXX; importing its implementation would

@@ -326,7 +326,8 @@ export default nextConfig;
     "utf8",
   );
   for (const fragment of [
-    "final planning = TodoPlanning.project(projection.visible);",
+    "import todoapp.client.TodoPlanning.project;",
+    "final planning = project(projection.visible);",
     "<BarChart",
     "<CartesianGrid",
     "<XAxis",
@@ -681,8 +682,8 @@ async function verifyGeneratedOutput() {
     "Todo command center widened its contextual Todo payload",
   );
   assert(
-    commandCenter.includes("TodoCommandCenter.execute(command, props)") &&
-      !commandCenter.includes("TodoCommandCenter.execute(_value, props)"),
+    commandCenter.includes(".execute(command, props)") &&
+      !commandCenter.includes(".execute(_value, props)"),
     "Todo command center dispatches cmdk search text instead of its checked Haxe command",
   );
   assert(
@@ -800,8 +801,8 @@ async function verifyGeneratedOutput() {
   for (const operation of ['"create"', '"toggle"', '"remove"', '"reorder"']) {
     assert(actions.includes(operation), `todo action state lost closed operation ${operation}`);
   }
-  assert(actions.includes("TodoStore.wasApplied"), "todo actions lost replay detection");
-  assert(actions.includes("TodoStore.rememberApplied"), "todo actions lost successful replay receipts");
+  assert(actions.includes(".wasApplied"), "todo actions lost replay detection");
+  assert(actions.includes(".rememberApplied"), "todo actions lost successful replay receipts");
 
   const inputCodecs = await fs.readFile(path.join(GENERATED, "todoapp/input/TodoInputCodecs.tsx"), "utf8");
   assertNoTypeScriptEscape("todoapp/input/TodoInputCodecs.tsx", inputCodecs, { allowDecodedUnknown: true });

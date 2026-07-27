@@ -75,4 +75,8 @@ put every framework-neutral Haxe-to-TypeScript/JavaScript mechanism in
 `genes-ts` so WordPressHx/Gutenberg and other Haxe-to-JS/TS projects can reuse
 the same tested capability, treat reusable React/HXX/Hook mechanisms as
 `genes.react` concerns, keep only Next.js-specific composition in this
-repository, and require executable evidence for capability claims.
+repository, prefer module-level Haxe functions and values over all-static shell
+classes unless class identity or a framework/compiler contract genuinely
+requires one, and treat examples as executable teaching material with friendly
+why/what/how documentation and an equally idiomatic vanilla Next.js/TypeScript
+comparison. Require executable evidence for capability claims.

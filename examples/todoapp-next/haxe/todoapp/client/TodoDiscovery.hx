@@ -51,7 +51,15 @@ typedef TodoBoardLanes = {
 	final completed:Array<Todo>;
 }
 
-/** URL-owned discovery intent plus pure projections over server-owned records. */
+/**
+ * URL-owned discovery intent plus pure projections over server-owned records.
+ *
+ * The Hook needs no runtime class identity. This static shell is retained only
+ * for the current analyzer bridge, which lifts the checked Hook to a native
+ * module function. Pure projections remain here so Hook state and the derived
+ * URL model share one closed vocabulary; the class should become a module when
+ * NextJsHx consumes the generic `genes.react` module-Hook surface.
+ */
 class TodoDiscovery {
 	/**
 	 * One reviewed Hook turns nuqs's four tuples into a closed application model.

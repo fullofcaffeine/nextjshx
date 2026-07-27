@@ -16,11 +16,12 @@ import nextjs.route.SearchParams;
 import todoapp.client.FailureRecoveryProbe;
 import todoapp.domain.Todo;
 import todoapp.domain.TodoId;
-import todoapp.persistence.TodoStore;
+import todoapp.persistence.TodoStore.find;
+import todoapp.persistence.TodoStore.list;
 
 using nextjs.client.ClientComponent;
 
-import todoapp.persistence.TodoRuntime;
+import todoapp.persistence.TodoRuntime.waitForDetail;
 
 typedef TodoDetailParams = {
 	final id:TodoId;
@@ -34,14 +35,14 @@ class TodoDetailPage {
 	});
 
 	public static function generateStaticParams():Array<TodoDetailParams> {
-		return TodoStore.list().map(todo -> {id: todo.id});
+		return list().map(todo -> {id: todo.id});
 	}
 
 	@:async
 	public static function generateMetadata(props:PageMetadataProps<TodoDetailParams, SearchParams>, _parent:ResolvingMetadata):Promise<Metadata> {
 		await(Server.connection());
 		final params = await(props.params);
-		final todo = TodoStore.find(params.id);
+		final todo = find(params.id);
 		final value:Metadata = todo == null ? {
 			title: "Missing field note — Field Ledger"
 		} : {
@@ -54,9 +55,9 @@ class TodoDetailPage {
 	@:async
 	public static function render(props:PageProps<TodoDetailParams, SearchParams>):Promise<Element> {
 		await(Server.connection());
-		await(TodoRuntime.waitForDetail());
+		await(waitForDetail());
 		final params = await(props.params);
-		final todo = TodoStore.find(params.id);
+		final todo = find(params.id);
 		return switch todo {
 			case null: missing();
 			case value: renderTodo(value);

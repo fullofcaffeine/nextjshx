@@ -13,7 +13,8 @@ and deployment. Haxe owns the application model and checked authoring surface.
 
 - Todo IDs, priorities, filters, routes, commands, mutation results, and chart
   keys are closed types rather than unrelated strings.
-- One decoder validates forms and JSON into named domain input.
+- Form and JSON decoders reuse the same closed domain values and field rules,
+  then return named input models at their respective boundaries.
 - HXX checks tags, component props, callbacks, spreads, and children before TSX
   is generated.
 - Exhaustive switches make missing domain cases compile errors.
@@ -37,6 +38,59 @@ and deployment. Haxe owns the application model and checked authoring surface.
 
 Generated Next convention files are thin adapters owned by
 `.nextjshx/manifest.json`; `src-gen/` is compiler output. Do not edit either.
+
+## The same mutation in vanilla Next.js
+
+A good TypeScript Server Function keeps validation, authorization, mutation,
+and invalidation visible:
+
+```ts
+"use server"
+
+export async function create(previous: MutationState, formData: FormData) {
+  const input = CreateTodoSchema.safeParse(Object.fromEntries(formData))
+  if (!input.success) return rejected(input.error)
+  const actor = await requireActor()
+  await authorizeCreate(actor, input.data)
+  await store.create(input.data)
+  updateTag(todoTag(actor.scope))
+  return completed("Created")
+}
+```
+
+Field Ledger preserves exactly that Next.js execution model and does not
+generate authorization. Haxe improves the surrounding contract: action values,
+IDs, operations, decode results, cache identities, and boundary references are
+closed; malformed input is exhaustively handled; and illegal server/client
+edges fail before a `"use server"` adapter is published.
+
+The Haxe action keeps the same security-relevant steps visible:
+
+```haxe
+return switch draftMutationForm(formData) {
+	case Decoded(input):
+		if (wasApplied(Create, input.mutationId)) {
+			replayed(Create);
+		} else {
+			final draft = input.payload;
+			final created = createTodo(draft.title, draft.note, draft.priority);
+			rememberApplied(Create, input.mutationId);
+			Cache.updateTag(current());
+			TodoMutationStates.completed(Create, 'Filed "${created.title}".');
+		}
+	case Rejected(issues):
+		TodoMutationStates.rejected(
+			Create,
+			"Review the marked intake fields.",
+			issues
+		);
+};
+```
+
+The example uses deterministic fixture persistence and therefore has no user
+identity. A production action must still authenticate and authorize before the
+mutation; the annotations provide publication and boundary checks, not
+application security policy.
 
 ## Development
 
