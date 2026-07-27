@@ -490,7 +490,7 @@ async function readOwnedOutputs(showcase, options = {}) {
   }
   const manifest = await readJson(manifestPath);
   assert.equal(manifest.protocol, "nextjshx.generated-output");
-  assert.equal(manifest.version, 1);
+  assert.equal(manifest.version, 2);
   assert.equal(manifest.nextVersion, "16.2.12");
   if (options.allowStaleCompilerIdentity !== true) {
     assert.equal(
