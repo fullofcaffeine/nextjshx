@@ -56,6 +56,9 @@ layer. Choose the shortest path below for the work you are doing.
 - [Genes extraction review](genes-extraction-review.md): which reusable
   compiler/tooling mechanisms belong upstream and which Next policy remains
   local.
+- [Genes generator-orchestration decision](genes-generator-orchestration-decision.md):
+  the reusable crash-recovery, HXML/watch, and Haxe compiler-server kernels,
+  plus the framework policy that must remain local.
 - [Accepted architecture decisions](adr/README.md)
 
 The repository is pre-release. Treat the
