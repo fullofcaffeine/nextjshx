@@ -262,11 +262,13 @@ genes host tooling
 
 A separately versioned npm/ESM distribution is the practical consumption
 target because NextJsHx's CLI is TypeScript while WordPressHx's CLI is authored
-in Haxe and compiled to JavaScript. The authoritative implementation may be
-Haxe if genes can publish stable ESM exports and declarations for the
-TypeScript consumer. Until that public export path is released, a shared
-language-neutral conformance-vector package is preferable to copying a
-half-private runtime API.
+in Haxe and compiled to JavaScript. The host-tooling kernel is currently
+TypeScript, while the generic Haxe-authored publication primitive is implemented
+in [genes-ts PR #65](https://github.com/fullofcaffeine/genes-ts/pull/65): matching
+`@:genes.moduleFunction` and `@:expose` publish one genuine typed ESM function
+through its owner and compilation root. Until that compiler capability and the
+tooling package are released, consumers must not depend on private generated
+paths or copy a half-private runtime API.
 
 Putting this code directly in `genes.OutputTransaction` would give the compiler
 project locks, durable host journals, host recovery commands, and framework
