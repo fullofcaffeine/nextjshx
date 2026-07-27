@@ -191,15 +191,16 @@ bd prime                # Refresh Beads context
   scan or overwrite an unowned route.
 - Model generated output with two independent configuration axes: output
   language (`typescript` by default, or `javascript`) and output intent
-  (`optimized` by default, or `native-source`). The optimized intent may use
-  whole-program Haxe knowledge, DCE, specialization, inlining, allocation
-  removal, and representation choices that a handwritten module cannot safely
-  assume. The native-source intent must instead look like code an experienced
-  Next.js developer deliberately wrote in the selected language, including
-  conventional module structure and readable names. Both intents must preserve
-  the same public semantics, Next runtime behavior, type/boundary guarantees,
-  ownership rules, and source-map correctness; document and test any
-  profile-specific limitation rather than silently falling back.
+  (`optimized` as the evidence-gated target default, or `reviewable`). The
+  optimized intent may use whole-program Haxe knowledge, DCE, specialization,
+  inlining, allocation removal, and representation choices that a handwritten
+  module cannot safely assume. The reviewable intent must instead look like
+  code an experienced Next.js developer deliberately wrote in the selected
+  language, including conventional module structure and readable names, while
+  remaining generated and manifest-owned. Both intents must preserve the same
+  public semantics, Next runtime behavior, type/boundary guarantees, ownership
+  rules, and source-map correctness; document and test any profile-specific
+  limitation rather than silently falling back.
 
 ### Examples and agent onboarding
 
@@ -235,9 +236,27 @@ bd prime                # Refresh Beads context
   explaining the external constraint and why the exception is necessary,
   validate immediately, convert to a closed typed model, and test malformed
   input. A general explanation elsewhere does not replace the inline comment.
-- A downstream compiler problem belongs in `genes-ts` only when it is reduced
-  to a generic Haxe/JavaScript/TypeScript construct. Never add Next.js-specific
-  compiler behavior to make a framework fixture pass.
+- Place each Haxe-to-TypeScript/JavaScript capability at the lowest reusable
+  layer. If its useful contract and tests can be stated without Next.js—such
+  as generic JS/TS emission, module/function lowering, imports, declarations,
+  source maps, naming, target-language selection, tooling primitives, or
+  framework-neutral optimization—the mechanism belongs in `genes-ts`, not in
+  NextJsHx. This lets other Haxe-to-TS/JS projects, including WordPressHx
+  Gutenberg work, reuse one generalized and regression-tested implementation
+  instead of growing framework-local copies.
+- Generic React capabilities are not Next.js-specific. React component, Hook,
+  HXX/JSX, props, refs, dependency, and module-export mechanisms that are useful
+  to Gutenberg or another React host belong in `genes-ts` (normally its
+  `genes.react` layer). NextJsHx owns only the Next.js-specific composition
+  around those mechanisms: App Router conventions, React Server/Client graph
+  boundaries, Next directive placement and analyzer constraints, Next-native
+  adapters, framework diagnostics, profile policy, and application-facing
+  ergonomics. Do not implement a generic compiler/tooling feature locally as a
+  NextJsHx workaround. First reduce it to a framework-independent genes-ts
+  fixture; keep any upstream contribution uncoupled from this repository and
+  run the full relevant genes-ts regression matrix. Conversely, never add
+  Next.js-specific behavior to genes-ts merely to make a framework fixture
+  pass.
 
 ### Reference repositories and evidence
 

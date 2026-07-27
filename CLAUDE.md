@@ -71,5 +71,8 @@ faithful `nextjs.raw.*` binding layer and typed `nextjs.*` ergonomics.
 
 Read and follow [AGENTS.md](AGENTS.md). In particular: use Beads for durable
 tracking, keep sibling repositories read-only, avoid untyped escape hatches,
-make generic compiler fixes in `genes-ts`, and require executable evidence for
-capability claims.
+put every framework-neutral Haxe-to-TypeScript/JavaScript mechanism in
+`genes-ts` so WordPressHx/Gutenberg and other Haxe-to-JS/TS projects can reuse
+the same tested capability, treat reusable React/HXX/Hook mechanisms as
+`genes.react` concerns, keep only Next.js-specific composition in this
+repository, and require executable evidence for capability claims.
