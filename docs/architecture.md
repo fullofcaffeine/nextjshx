@@ -47,6 +47,7 @@ changes require a superseding ADR and linked Beads work.
 | [0005](adr/0005-server-function-security-ergonomics.md) | Non-deceptive Server Function security ergonomics | Sensitive actions use an explicit guarded pipeline that invokes application decoding, current-request authentication, target resolution, and exact-operation authorization before creating a private witness; an explicit projection selects public output, while policy correctness remains application-owned. |
 | [0006](adr/0006-haxe-native-react-hook-authoring.md) | Haxe-native React Hook authoring | Raw React tuples remain faithful while allocation-free semantic state, explicit memo dependencies, and typed Hook export adapters make Haxe authoring safer and preserve bidirectional TypeScript interop. |
 | [0007](adr/0007-reviewed-npm-package-integrations.md) | Reviewed npm package integrations | Third-party support is exact-versioned and declaration-drift-checked; precise raw externs, semantic Haxe facades, source-owned TSX, and native package runtimes retain explicit ownership. |
+| [0008](adr/0008-independent-output-language-and-intent-profiles.md) | Independent output language and intent profiles | TypeScript/JavaScript and optimized/reviewable are separate axes; one explicit profile remains stable across development and production, while optimized output must earn its target-default status through semantic, analyzer, source-map, and representative final-pipeline evidence. |
 
 ## System boundaries
 
@@ -139,6 +140,12 @@ changes require a superseding ADR and linked Beads work.
   placement, public `NextProxy`/`ProxyConfig` checks, and native collision
   behavior are documented in the [proxy reference](proxy.md).
 - genes-ts emits strict split ESM TypeScript/TSX implementation modules.
+- Output language and intent follow
+  [ADR 0008](adr/0008-independent-output-language-and-intent-profiles.md).
+  TypeScript/JavaScript and optimized/reviewable remain independent, one
+  explicit profile is stable across normal commands, reviewable output is the
+  debugging and differential baseline, and optimized-only transformations are
+  promoted only after representative final-Next-pipeline evidence.
 - Generic compiler gaps are reduced and fixed in genes-ts without adding
   Next-specific concepts to the compiler.
 - Maintained showcase sites exercise semantic authoring, native ecosystem

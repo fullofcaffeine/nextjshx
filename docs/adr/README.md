@@ -13,5 +13,6 @@ behavior in code, examples, or generated output.
 | [0005](0005-server-function-security-ergonomics.md) | Accepted | Guarded sensitive-action pipeline with request-local application callbacks, operation-scoped authorization witnesses, and mandatory public-result projection without claiming policy correctness |
 | [0006](0006-haxe-native-react-hook-authoring.md) | Accepted | Faithful raw React tuples plus allocation-free semantic state/memo intent, explicit dependency packaging, and bidirectional typed Hook publication |
 | [0007](0007-reviewed-npm-package-integrations.md) | Accepted | Exact npm/declaration provenance, precise-or-omitted raw and semantic facades, native package ownership, and category-appropriate interop evidence |
+| [0008](0008-independent-output-language-and-intent-profiles.md) | Accepted | Independent TypeScript/JavaScript and optimized/reviewable axes, one stable project profile, measured optimization promotion, and an evidence-gated TypeScript-optimized target default |
 
 ADR numbers are stable once committed or referenced by Beads.
