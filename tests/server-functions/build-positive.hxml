@@ -1,0 +1,16 @@
+-lib genes-ts
+-cp src
+-cp tests/server-functions/next-app/haxe
+-main ServerFunctionsMain
+-js tests/server-functions/.tmp/typescript/index.tsx
+-D genes.ts
+-D genes.ts.no_extension
+-D genes.ts.jsx_import_source=react
+-D nextjshx.app-root=tests/server-functions/next-app/app
+-D nextjshx.generated-root=tests/server-functions/.tmp/typescript
+-D nextjshx.adapter-plan-output=tests/server-functions/.tmp/plan.json
+--macro server_functions.AdapterPlan.install()
+--macro include('server_functions.actions')
+--macro include('server_functions.app')
+--macro include('server_functions.client')
+-dce full

@@ -1,0 +1,9 @@
+-lib genes-ts
+-cp src
+-cp tests/codecs/src
+-main codecs.NegativeResponse
+-js tests/codecs/.tmp/negative-response.ts
+-D genes.ts
+-D genes.ts.no_extension
+-D js-es=6
+-dce full

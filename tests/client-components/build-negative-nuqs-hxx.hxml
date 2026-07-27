@@ -1,0 +1,12 @@
+-lib genes-ts
+-cp src
+-cp tests/client-components/negative
+-main client_components_negative.NuqsAdapterWrongProp
+-js tests/client-components/.tmp/rejected-nuqs-hxx.tsx
+-D genes.ts
+-D genes.ts.no_extension
+-D genes.ts.jsx_import_source=react
+-D nextjshx.app-root=tests/client-components/next-app/app
+-D nextjshx.generated-root=tests/client-components/.tmp/generated
+--macro client_components_negative.Fixture.install()
+-dce full

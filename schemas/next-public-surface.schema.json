@@ -1,0 +1,440 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nextjshx.dev/schemas/next-public-surface-v1.json",
+  "title": "NextJsHx normalized public Next.js surface",
+  "description": "Deterministic declaration identities for reviewed public exports, with private declaration origins kept outside the compatibility promise.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "protocol",
+    "version",
+    "generatedBy",
+    "sources",
+    "publicEntrypoints",
+    "internalSupportingDeclarations",
+    "excludedEntrypoints",
+    "surfaceHash"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../schemas/next-public-surface.schema.json"
+    },
+    "protocol": {
+      "const": "nextjshx.next-public-surface"
+    },
+    "version": {
+      "const": 1
+    },
+    "generatedBy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "script",
+        "typescriptVersion"
+      ],
+      "properties": {
+        "script": {
+          "const": "scripts/bindings/next-surface.mjs"
+        },
+        "typescriptVersion": {
+          "$ref": "#/$defs/semver"
+        }
+      }
+    },
+    "sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allowlist",
+        "fixtures",
+        "packages"
+      ],
+      "properties": {
+        "allowlist": {
+          "const": "config/next-public-entrypoints.json"
+        },
+        "fixtures": {
+          "const": "tests/next-surface/fixtures.json"
+        },
+        "packages": {
+          "$ref": "#/$defs/packages"
+        }
+      }
+    },
+    "publicEntrypoints": {
+      "type": "array",
+      "minItems": 17,
+      "items": {
+        "$ref": "#/$defs/publicEntrypoint"
+      }
+    },
+    "internalSupportingDeclarations": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "$ref": "#/$defs/internalDeclaration"
+      }
+    },
+    "excludedEntrypoints": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/excludedEntrypoint"
+      }
+    },
+    "surfaceHash": {
+      "$ref": "#/$defs/digest"
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "portablePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//).+$"
+    },
+    "packages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "next",
+        "typescript"
+      ],
+      "properties": {
+        "next": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "version"
+          ],
+          "properties": {
+            "name": {
+              "const": "next"
+            },
+            "version": {
+              "$ref": "#/$defs/semver"
+            }
+          }
+        },
+        "typescript": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "importName",
+            "name",
+            "version"
+          ],
+          "properties": {
+            "importName": {
+              "const": "typescript"
+            },
+            "name": {
+              "const": "@typescript/typescript6"
+            },
+            "version": {
+              "$ref": "#/$defs/semver"
+            }
+          }
+        }
+      }
+    },
+    "moduleSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "module"
+        }
+      }
+    },
+    "globalSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "library"
+      ],
+      "properties": {
+        "kind": {
+          "const": "global"
+        },
+        "library": {
+          "const": "lib.dom.d.ts"
+        }
+      }
+    },
+    "declarationOrigin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package",
+        "path",
+        "syntaxKind",
+        "declaredName",
+        "declarationHash",
+        "internal"
+      ],
+      "properties": {
+        "package": {
+          "enum": [
+            "next",
+            "@typescript/typescript6"
+          ]
+        },
+        "path": {
+          "$ref": "#/$defs/portablePath"
+        },
+        "syntaxKind": {
+          "type": "string",
+          "pattern": "^[A-Za-z]+$"
+        },
+        "declaredName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "declarationHash": {
+          "$ref": "#/$defs/digest"
+        },
+        "internal": {
+          "type": "boolean"
+        }
+      }
+    },
+    "publicExport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "stability",
+        "signatureHash",
+        "haxeTypePath",
+        "exposure",
+        "declarations"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^(?:default|[A-Za-z_$][A-Za-z0-9_$]*)$"
+        },
+        "kind": {
+          "enum": [
+            "type",
+            "class",
+            "function",
+            "component",
+            "value"
+          ]
+        },
+        "stability": {
+          "enum": [
+            "stable",
+            "unstable",
+            "migration"
+          ]
+        },
+        "signatureHash": {
+          "$ref": "#/$defs/digest"
+        },
+        "haxeTypePath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "haxeMember": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exposure": {
+          "enum": [
+            "raw-only",
+            "raw-and-semantic"
+          ]
+        },
+        "declarations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/declarationOrigin"
+          }
+        }
+      }
+    },
+    "entrypointDeclaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package",
+        "path"
+      ],
+      "properties": {
+        "package": {
+          "enum": [
+            "next",
+            "@typescript/typescript6"
+          ]
+        },
+        "path": {
+          "$ref": "#/$defs/portablePath"
+        }
+      }
+    },
+    "publicEntrypoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "module",
+        "source",
+        "priority",
+        "fixture",
+        "selectionRationale",
+        "exports"
+      ],
+      "properties": {
+        "module": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/moduleSource"
+            },
+            {
+              "$ref": "#/$defs/globalSource"
+            }
+          ]
+        },
+        "priority": {
+          "enum": [
+            "P0",
+            "P1",
+            "P2"
+          ]
+        },
+        "fixture": {
+          "type": "string",
+          "minLength": 1
+        },
+        "selectionRationale": {
+          "type": "string",
+          "minLength": 20
+        },
+        "entrypointDeclaration": {
+          "$ref": "#/$defs/entrypointDeclaration"
+        },
+        "exports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/publicExport"
+          }
+        }
+      }
+    },
+    "supportReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "module",
+        "export"
+      ],
+      "properties": {
+        "module": {
+          "type": "string",
+          "minLength": 1
+        },
+        "export": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "internalDeclaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package",
+        "path",
+        "syntaxKind",
+        "declaredName",
+        "declarationHash",
+        "compatibilityPromise",
+        "runtimeImportAllowed",
+        "supports"
+      ],
+      "properties": {
+        "package": {
+          "const": "next"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^dist/.+\\.d\\.(?:ts|mts|cts)$"
+        },
+        "syntaxKind": {
+          "type": "string",
+          "pattern": "^[A-Za-z]+$"
+        },
+        "declaredName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "declarationHash": {
+          "$ref": "#/$defs/digest"
+        },
+        "compatibilityPromise": {
+          "const": false
+        },
+        "runtimeImportAllowed": {
+          "const": false
+        },
+        "supports": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/supportReference"
+          }
+        }
+      }
+    },
+    "excludedEntrypoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "module",
+        "priority",
+        "stability",
+        "reason"
+      ],
+      "properties": {
+        "module": {
+          "type": "string",
+          "minLength": 1
+        },
+        "priority": {
+          "const": "P3"
+        },
+        "stability": {
+          "enum": [
+            "legacy",
+            "experimental"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 30
+        }
+      }
+    }
+  }
+}

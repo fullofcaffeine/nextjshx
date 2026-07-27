@@ -1,0 +1,10 @@
+-lib genes-ts
+-cp src
+-cp tests/content-blocks/negative
+-main ContentBlocksNegativeMain
+-js tests/content-blocks/.tmp/rejected.tsx
+-D genes.ts
+-D genes.ts.no_extension
+-D genes.ts.jsx_import_source=react
+-D js-es=6
+-dce full

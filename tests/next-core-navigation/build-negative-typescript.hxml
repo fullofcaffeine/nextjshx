@@ -1,0 +1,8 @@
+-lib genes-ts
+-cp src
+-cp tests/next-core-navigation/src
+-main next_core_navigation.InvalidMetadataConsumer
+-js tests/next-core-navigation/.tmp/invalid-metadata.ts
+-D genes.ts
+-D genes.ts.no_extension
+-dce full

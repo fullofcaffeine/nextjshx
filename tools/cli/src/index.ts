@@ -1,0 +1,216 @@
+export {
+  CONFIG_FILE_NAME,
+  CONFIG_SCHEMA_ID,
+  CONFIG_SCHEMA_VERSION,
+  type ExperimentalCacheDirective,
+  type HaxeConfig,
+  type NextConfig,
+  type NextJsHxConfig,
+  type OutputConfig,
+  type BoundaryReportConfig,
+  parseNextJsHxConfig,
+  readNextJsHxConfig,
+} from "./config.js";
+export {
+  type ConfigDiagnostic,
+  type ConfigDiagnosticCode,
+  ConfigDiagnosticError,
+} from "./diagnostic.js";
+export {
+  type ConfiguredProjectPaths,
+  type DiscoveryOptions,
+  type NextPackageDiscovery,
+  type NextProjectDiscovery,
+  type PackageManagerDiscovery,
+  type PackageManagerName,
+  discoverNextProject,
+} from "./discovery.js";
+export {
+  type GeneratedOutputIdentity,
+  type GeneratedOutputManifest,
+  type GeneratedOutputRecord,
+  OUTPUT_MANIFEST_PROTOCOL,
+  OUTPUT_MANIFEST_SCHEMA_ID,
+  OUTPUT_MANIFEST_VERSION,
+  createGeneratedOutputManifest,
+  encodeGeneratedOutputManifest,
+  manifestGeneration,
+  parseGeneratedOutputManifest,
+} from "./manifest.js";
+export {
+  type OwnershipDiagnostic,
+  type OwnershipDiagnosticCode,
+  OwnershipDiagnosticError,
+} from "./ownership-diagnostic.js";
+export {
+  type OutputDisposition,
+  type OutputPreflightChange,
+  type OwnershipTransferOperation,
+  type OwnershipTransferRequest,
+  type OwnershipPreflightOptions,
+  type OwnershipPreflightResult,
+  type PlannedGeneratedOutput,
+  preflightGeneratedOutputs,
+  preflightOwnershipTransfer,
+} from "./ownership-preflight.js";
+export {
+  type GeneratedOutputFormatter,
+  formatGeneratedOutput,
+} from "./output-formatter.js";
+export {
+  type PublicationDiagnostic,
+  type PublicationDiagnosticCode,
+  PublicationDiagnosticError,
+} from "./publication-diagnostic.js";
+export {
+  type PublicationDisposition,
+  type PublicationJournal,
+  type PublicationJournalChange,
+  type PublicationJournalInput,
+  type PublicationPhase,
+  PUBLICATION_JOURNAL_PROTOCOL,
+  PUBLICATION_JOURNAL_SCHEMA_ID,
+  PUBLICATION_JOURNAL_VERSION,
+  createPublicationJournal,
+  encodePublicationJournal,
+  parsePublicationJournal,
+  withPublicationPhase,
+} from "./publication-journal.js";
+export {
+  type PublicationFaultPoint,
+  type PublicationResult,
+  type PublishGeneratedOutputsOptions,
+  type RecoverGeneratedOutputsOptions,
+  type RecoveryResult,
+  PublicationCrashSimulationError,
+  publishGeneratedOutputs,
+  recoverGeneratedOutputPublication,
+} from "./publisher.js";
+export {
+  ADAPTER_PLAN_SCHEMA_ID,
+  ADAPTER_PLAN_SCHEMA_VERSION,
+  type AdapterConfigEntry,
+  type AdapterConfigValue,
+  type AdapterExport,
+  type AdapterImplementation,
+  type AdapterImport,
+  type AdapterIntent,
+  type AdapterKind,
+  type AdapterPlan,
+  type AdapterSource,
+  type AdapterSourcePosition,
+  type AdapterToolchain,
+  parseAdapterPlan,
+  readAdapterPlan,
+} from "./adapter-plan.js";
+export { renderAdapterPlan } from "./adapter-renderer.js";
+export {
+  BOUNDARY_PLAN_SCHEMA_ID,
+  BOUNDARY_PLAN_SCHEMA_VERSION,
+  type BoundaryClassification,
+  type BoundaryDependencyEvidence,
+  type BoundaryEvidence,
+  type BoundaryPlan,
+  type BoundaryReferenceEvidence,
+  parseBoundaryPlan,
+  readBoundaryPlan,
+} from "./boundary-plan.js";
+export {
+  type CliDiagnostic,
+  type CliDiagnosticCode,
+  CliDiagnosticError,
+} from "./cli-diagnostic.js";
+export {
+  type BuildCommandOptions,
+  type BuildCommandResult,
+  type CleanCommandResult,
+  type CleanCommandOptions,
+  type BoundariesCommandResult,
+  type BoundaryReport,
+  type BoundaryWarning,
+  type CommandBaseOptions,
+  type CommandRuntime,
+  type DevelopmentProject,
+  type DoctorCheck,
+  type DoctorCheckCode,
+  type DoctorCheckStatus,
+  type DoctorCommandResult,
+  type GenerateCommandOptions,
+  type GenerateCommandResult,
+  type LastGoodGeneratedTree,
+  type OwnershipTransferCommandOptions,
+  type OwnershipTransferCommandResult,
+  NEXTJSHX_VERSION,
+  type RouteOrigin,
+  type RouteOwnershipStatus,
+  type RouteParameterKind,
+  type RouteParameterReport,
+  type RouteReport,
+  type RoutesCommandOptions,
+  type RoutesCommandResult,
+  type ToolCommand,
+  type TypecheckCommandResult,
+  commandErrorJson,
+  runBuildCommand,
+  runCleanCommand,
+  runBoundariesCommand,
+  runDoctorCommand,
+  runGenerateCommand,
+  runOwnershipTransferCommand,
+  resolveDevelopmentProject,
+  runRoutesCommand,
+  runTypecheckCommand,
+  verifyLastGoodGeneratedTree,
+} from "./commands.js";
+export {
+  type InitCommandOptions,
+  type InitCommandResult,
+  type InitFileReport,
+  type InitScriptReport,
+  runInitCommand,
+} from "./init.js";
+export {
+  type ProcessRequest,
+  type ProcessResult,
+  type ProcessRunner,
+  processOutput,
+  runProcess,
+} from "./process.js";
+export {
+  type DevCommandOptions,
+  type DevCommandResult,
+  type DevGenerationRequest,
+  type DevRuntime,
+  type DevShutdownSignal,
+  type DevSignalSource,
+  nextDevProcessArguments,
+  runDevCommand,
+  validatedNextDevArguments,
+} from "./dev.js";
+export {
+  SerializedDirtyLoop,
+  type SerializedDirtyLoopOptions,
+  type SerializedDirtyLoopState,
+} from "./dev-loop.js";
+export {
+  type DevOutputChannel,
+  type DevOutputEmitter,
+  type DevOutputEvent,
+  type DevOutputSource,
+  type DevProcessExit,
+  type ManagedDevProcess,
+  type ManagedProcessRequest,
+  type OwnedHaxeServer,
+  startManagedProcess,
+  startOwnedHaxeServer,
+} from "./dev-process.js";
+export {
+  type HaxeWatchPlan,
+  type WatchChange,
+  type WatchChangeKind,
+  type WatchSession,
+  type WatchSessionOptions,
+  createHaxeWatchPlan,
+  watchHaxeInputs,
+} from "./watch-inputs.js";
+export { type CliIo, type DevCommandRunner, runCli } from "./cli.js";

@@ -26,8 +26,10 @@ private typedef NegativeCase = {
 
 private typedef SegmentRecord = {
 	final source:String;
+	final publicSource:Null<String>;
 	final kind:String;
 	final segmentIndex:Int;
+	final interception:Null<String>;
 }
 
 private typedef ParameterRecord = {
@@ -41,8 +43,19 @@ private typedef ParameterRecord = {
 private typedef RouteRecord = {
 	final filesystemPath:String;
 	final publicPath:String;
+	final topology:String;
+	final parallelSlots:Array<String>;
+	final interception:Null<InterceptionRecord>;
 	final segments:Array<SegmentRecord>;
+	final publicSegments:Array<SegmentRecord>;
 	final parameters:Array<ParameterRecord>;
+}
+
+private typedef InterceptionRecord = {
+	final marker:String;
+	final segmentIndex:Int;
+	final interceptingPath:String;
+	final interceptedPath:String;
 }
 
 class RouteFixture {
@@ -79,12 +92,20 @@ class RouteFixture {
 	static function positiveCases():Array<PositiveCase> {
 		return [
 			{path: "", paramsType: "route_fixture.StaticParams"},
+			{path: "(marketing)/about", paramsType: "route_fixture.StaticParams"},
+			{path: "@analytics", paramsType: "route_fixture.StaticParams"},
+			{path: "@modal/(.)photo/[id]", paramsType: "route_fixture.DynamicParams"},
 			{path: "about", paramsType: "route_fixture.StaticParams"},
 			{path: "archive/[[...slug]]", paramsType: "route_fixture.OptionalCatchAllParams"},
 			{path: "docs/[...slug]", paramsType: "route_fixture.CatchAllParams"},
+			{path: "feed/@modal/(..)photo/[id]", paramsType: "route_fixture.DynamicParams"},
+			{path: "gallery/@modal/(.)photo/[id]", paramsType: "route_fixture.DynamicParams"},
 			{path: "orders/[id]", paramsType: "route_fixture.CodecParams"},
+			{path: "shop/category/@modal/(..)(..)product/[id]", paramsType: "route_fixture.DynamicParams"},
 			{path: "teams/[teamId]/members/[memberId]", paramsType: "route_fixture.MultipleParams"},
-			{path: "todos/[id]", paramsType: "route_fixture.DynamicParams"}
+			{path: "todos/[id]", paramsType: "route_fixture.DynamicParams"},
+			{path: "workspace/(admin)/teams/[id]", paramsType: "route_fixture.DynamicParams"},
+			{path: "workspace/@modal/(...)account/[id]", paramsType: "route_fixture.DynamicParams"}
 		];
 	}
 
@@ -94,9 +115,20 @@ class RouteFixture {
 			case "traversal": {path: "todos/../[id]", paramsType: "route_fixture.DynamicParams", marker: "traversal"};
 			case "reserved": {path: "todos/_private/[id]", paramsType: "route_fixture.DynamicParams", marker: "reserved"};
 			case "malformed": {path: "todos/[[id]]", paramsType: "route_fixture.DynamicParams", marker: "malformed"};
-			case "group": {path: "(marketing)/todos", paramsType: "route_fixture.StaticParams", marker: "group"};
-			case "slot": {path: "todos/@modal/[id]", paramsType: "route_fixture.DynamicParams", marker: "slot"};
-			case "interception": {path: "feed/(..)photo/[id]", paramsType: "route_fixture.DynamicParams", marker: "interception"};
+			case "group": {path: "(marketing())/todos", paramsType: "route_fixture.StaticParams", marker: "group"};
+			case "slot": {path: "todos/@children/[id]", paramsType: "route_fixture.DynamicParams", marker: "slot"};
+			case "interception": {path: "(..)photo/[id]", paramsType: "route_fixture.DynamicParams", marker: "interception"};
+			case "interception-depth": {
+					path: "feed/(..)(..)photo/[id]",
+					paramsType: "route_fixture.DynamicParams",
+					marker: "interceptionDepth"
+				};
+			case "interception-empty": {path: "feed/(..)", paramsType: "route_fixture.StaticParams", marker: "interceptionEmpty"};
+			case "interception-multiple": {
+					path: "feed/(.)photo/(.)detail/[id]",
+					paramsType: "route_fixture.DynamicParams",
+					marker: "interceptionMultiple"
+				};
 			case "duplicate": {path: "teams/[id]/members/[id]", paramsType: "route_fixture.DynamicParams", marker: "duplicate"};
 			case "placement": {path: "docs/[...slug]/edit", paramsType: "route_fixture.CatchAllParams", marker: "placement"};
 			case "missing": {path: "todos/[id]", paramsType: "route_fixture.NegativeDeclarations.MissingParams", marker: "missing"};
@@ -118,17 +150,31 @@ class RouteFixture {
 	}
 
 	static function record(pattern:RoutePattern, bindings:Array<RouteParameterBinding>):RouteRecord {
+		function segmentRecord(segment:nextjshx.route.RouteSegment):SegmentRecord {
+			return {
+				source: segment.source,
+				publicSource: segment.publicSource,
+				kind: segment.kind,
+				segmentIndex: segment.segmentIndex,
+				interception: segment.interception
+			};
+		}
 		return {
 			filesystemPath: pattern.filesystemPath,
 			publicPath: pattern.publicPath,
-			segments: [
-				for (segment in pattern.segments)
-					{
-						source: segment.source,
-						kind: segment.kind,
-						segmentIndex: segment.segmentIndex
-					}
-			],
+			topology: pattern.topology,
+			parallelSlots: pattern.parallelSlots.copy(),
+			interception: switch pattern.interception {
+				case null: null;
+				case value: {
+						marker: value.marker,
+						segmentIndex: value.segmentIndex,
+						interceptingPath: value.interceptingPath,
+						interceptedPath: value.interceptedPath
+					};
+			},
+			segments: [for (segment in pattern.segments) segmentRecord(segment)],
+			publicSegments: [for (segment in pattern.publicSegments) segmentRecord(segment)],
 			parameters: [
 				for (binding in bindings) {
 					final parameter = pattern.parameters.filter(value -> value.name == binding.name)[0];
@@ -162,7 +208,7 @@ class RouteFixture {
 				validate(entry.path, entry.paramsType, Context.currentPos())
 		];
 		routes.sort((left, right) -> compareString(left.filesystemPath, right.filesystemPath));
-		File.saveContent(outputPath, Json.stringify({schemaVersion: 1, routes: routes}));
+		File.saveContent(outputPath, Json.stringify({schemaVersion: 2, routes: routes}));
 		return macro null;
 	}
 

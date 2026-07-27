@@ -1,0 +1,11 @@
+-lib genes-ts
+-cp haxe
+-cp ../../../src
+--main ClientComponentsMain
+-js src-gen/index.tsx
+
+--macro client_components.AdapterPlan.install()
+--macro include('client_components.app')
+--macro include('client_components.actions')
+--macro include('client_components.client')
+-dce full

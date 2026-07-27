@@ -127,21 +127,81 @@ bd prime                # Refresh Beads context
 - Preserve two public API layers: a faithful `nextjs.raw.*` namespace for
   supported public Next.js entrypoints and a typed `nextjs.*` semantic layer
   where Haxe types, macros, generated references, or diagnostics add value.
+- Make the semantic Haxe layer materially more ergonomic than the raw Next.js
+  surface by using Haxe-native inference, named structural types, domain
+  abstracts, exhaustive compile-time checks, discoverable generated companions,
+  and source-positioned diagnostics. Keep low-level path strings, codegen
+  markers, and adapter mechanics out of application-facing APIs.
+- Treat a more pleasurable authoring experience than raw Next.js/TypeScript as
+  a product requirement, not optional polish. Proactively identify recurring
+  Next.js, React, Node.js, and TypeScript boilerplate, footguns, weak defaults,
+  and delayed errors, then address them through reusable semantic Haxe APIs
+  that require less code, guide users toward safe defaults, and fail earlier
+  with clearer diagnostics. Do not mechanically reproduce a cumbersome host
+  API when Haxe can improve it without changing Next.js runtime semantics; keep
+  the faithful `nextjs.raw.*` layer available for exact compatibility.
+- Preserve familiar React and Next.js concepts, names, and composition patterns
+  so TypeScript developers can transfer their knowledge directly, while using
+  Haxe inference, abstracts, macros, and closed types to reduce boilerplate and
+  make invalid states unrepresentable where possible. Developers must be able
+  to author, compose, export, and consume precisely typed Hooks, components,
+  and modules in both Haxe and TypeScript; do not limit interop to extern-only
+  consumption when a reusable Haxe authoring surface can provide better UX.
+- Treat bidirectional ecosystem interop as a release-gated product capability.
+  Maintain executable examples for native TypeScript/JavaScript/Next.js code
+  consumed from Haxe through precise closed externs, and for Haxe-authored
+  Hooks, components, and modules consumed from ordinary TypeScript/TSX through
+  generated typed exports. Preserve generic inference, React identity, module
+  directives, runtime evaluation order, and one canonical ESM module identity
+  in both directions.
+- Smooth verified Next.js shortcomings in the Haxe semantic layer when that can
+  be done without changing Next runtime semantics or weakening its independent
+  type checks. Reduce genuine framework defects to Next.js-only reproductions;
+  never conceal them with casts or edits to generated `.next` files. If an
+  upstream change is warranted and authorized, develop it in an isolated
+  worktree, keep it generalized and uncoupled from this repository, run the
+  relevant upstream regression suites, and open a specific evidence-backed PR.
 - Prefer short, deterministic, Next-native TypeScript/TSX adapters for
   convention filenames, directives, default exports, and named exports. Do not
   introduce a parallel router or framework runtime.
+- Generated public TypeScript/TSX must look and behave like careful handwritten
+  Next.js code: canonical imports, first-position directives, ordinary named or
+  default exports, direct JSX/TSX syntax, and the minimum necessary delegation.
+  Avoid codegen-only wrappers, Haxe runtime details, redundant annotations,
+  assertions, helper calls, temporary values, or unusual syntax in the public
+  module surface. When an internal genes-ts implementation cannot yet meet that
+  bar, keep the artifact private behind a native-style adapter, document the
+  remaining compiler gap, and reduce any upstream fix to a framework-neutral
+  compiler capability.
+- Prefer the simplest canonical HXX, JSX, and TSX representation that preserves
+  semantics. Write compile-time string attributes as static attributes (for
+  example, `className="panel"`), not redundant expression containers such as
+  `className={"panel"}`; reserve braces, spreads, helpers, and temporary values
+  for genuinely dynamic input. Treat avoidable generated syntax and boilerplate
+  as developer-experience defects, and protect normalization with snapshots.
+- HXX must be checked by Haxe before generated output exists. Intrinsic tags,
+  component identities, exact required/optional props, callback signatures,
+  spreads, and children must fail at their HXX source span; strict TypeScript
+  and Next checks are independent parity evidence, not the primary typechecker.
+  Preserve contextual callback and generic prop inference so HXX is at least as
+  useful as TSX while producing typed `.tsx` or type-erased `.jsx` from the same
+  validated semantics when those profiles are requested.
 - Generated output must be manifest-owned and fail closed on collisions with
   native TypeScript or JavaScript files. Never infer ownership from a directory
   scan or overwrite an unowned route.
 
 ### Type safety and compiler boundaries
 
-- Do not use `Dynamic`, `Any`, `untyped`, broad `unknown`, unchecked casts, or
-  reflection as substitutes for a typed design in repository-owned Haxe or
-  generated public APIs.
+- Do not use `Dynamic`, `Any`, `untyped`, `cast`, `Reflect`, broad `unknown`,
+  unchecked TypeScript assertions, or reflection as substitutes for a typed
+  design in repository-owned Haxe or generated public APIs. Leverage Haxe's
+  type system, macros, and compiler diagnostics instead.
 - A narrow decoded boundary is allowed only when an external JavaScript or
-  declaration contract requires it. Validate the boundary immediately, convert
-  it to a closed typed model, document why it exists, and test malformed input.
+  declaration contract makes a typed alternative genuinely impossible. Keep
+  it to the smallest expression, add an inline comment at that exact use
+  explaining the external constraint and why the exception is necessary,
+  validate immediately, convert to a closed typed model, and test malformed
+  input. A general explanation elsewhere does not replace the inline comment.
 - A downstream compiler problem belongs in `genes-ts` only when it is reduced
   to a generic Haxe/JavaScript/TypeScript construct. Never add Next.js-specific
   compiler behavior to make a framework fixture pass.
@@ -155,6 +215,14 @@ bd prime                # Refresh Beads context
 - The published stable Next.js package is the compatibility contract. A local
   Next.js checkout is an optional read-only source and type oracle, not a
   runtime dependency.
+- Treat a third-party npm package's installed public declarations as its
+  boundary oracle. Maintained integrations must pin exact package, lock
+  integrity, license, public module/export, declaration entry and digest, and
+  executable evidence in the reviewed integration inventory. Expose a precise
+  supported subset or omit it with an actionable limitation; never synthesize
+  a broad fallback from an unsupported TypeScript declaration. Keep package
+  runtime/source ownership native and require an explicit declaration review
+  on upgrades rather than changing a digest only to satisfy the gate.
 - Capability claims require executable evidence appropriate to the layer:
   positive and negative Haxe fixtures, deterministic generated snapshots,
   strict TypeScript/Next checks, runtime or browser proof, and clean packed
@@ -162,10 +230,35 @@ bd prime                # Refresh Beads context
 - Unsupported behavior must fail with an actionable diagnostic; do not weaken
   compiler or framework checks to obtain a green build.
 
+### Deep-review escalation
+
+- When a compiler, macro, type-boundary, framework-integration, or architecture
+  issue remains genuinely tricky after local reduction and executable evidence,
+  suggest an Oracle second-opinion review with GPT-5.6 Pro. Explain why the
+  question benefits from deeper independent reasoning; do not use Oracle as a
+  substitute for ordinary repository inspection or tests.
+- Prepare a self-contained review package for the user when recommending that
+  escalation. Include a detailed prompt that states the exact decision or bug,
+  relevant constraints and invariants, attempted approaches, observed evidence,
+  competing hypotheses, and the requested review output. Add every required
+  source file—or the smallest sufficient file portions—to a Repomix bundle and
+  package the prompt plus Repomix output in one ZIP for upload.
+- Minimize and sanitize the bundle before handing it off: exclude dependencies,
+  generated bulk, credentials, private data, machine-local paths, and unrelated
+  repository content; list the included files/portions and run the repository's
+  leak and path checks. Never upload or submit the bundle without explicit user
+  authorization.
+
 ### Repository workflow and publication safety
 
 - Use Beads for all durable work, blockers, decisions, and discovered follow-up.
   Run `bd prime` for the current command syntax and synchronization profile.
+- Make pull request descriptions as specific and reproducible as possible.
+  State where the problem was discovered and why the change was needed, explain
+  the exact solution and its intended limits, include a positive example of the
+  new behavior and a negative control showing what happens without it, and list
+  the verification performed. For a generalized upstream fix, name the
+  downstream development context without coupling the implementation to it.
 - A task request authorizes scoped working-tree changes, not unrelated commits,
   Git pushes, Dolt pushes, releases, visibility changes, or sibling-repository
   mutations. Follow explicit user and repository authority for those actions.

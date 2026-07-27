@@ -10,21 +10,21 @@ Repository status: **foundation-only**. A declared version is a reproducible tar
 
 | Component | Exact baseline | Notes |
 | --- | --- | --- |
-| Next.js stable | 16.2.10 (16.2.x) | Required package lane; Node >=20.9.0. |
+| Next.js stable | 16.2.12 (16.2.x) | Required package lane; Node >=20.9.0. |
 | React / React DOM | 19.2.7 / 19.2.7 | React 19 primary lane. |
 | TypeScript | 6.0.2 | Pinned to the exact version shared by the observed genes-ts and Next.js source manifests; Next stable accepts workspace-owned TypeScript. |
 | Haxe | 4.3.7 | Pinned by `.haxerc`. |
-| genes-ts | 1.32.0 at `1e7e323fdbda4c5b93689355294bd978e9170725` | The inspected sibling source is the implementation oracle and supersedes the older 1.27-era planning input; the required stable-package fixture is verified against this exact commit. |
-| Node.js | floor 20.9.0; baseline 20.19.3; current LTS 24.18.0 (Krypton) | CI contract: 20.19.3, 24.18.0. |
+| genes-ts | 1.38.2 at `f0ffa29e6d49fe81541977c6a3aae6b80000cec6` | The exact stable v1.38.2 release commit retains the fully green Haxe-authoritative HXX checker from PR #10 and optional-children-spread fix from PR #11, the generalized generic-call and React SVG fixes merged through PR #22, and the React 19 form-action contract, closed callable-union contextual typing, explicit native-global identity, Promise-of-node async components, and closed zero-runtime object-record abstract props/spreads from PR #23. PR #25 keeps enum and scalar abstracts nominal while permitting zero-runtime closed record props. PR #27 adds a framework-neutral exact-null call rule so a literal accepted by an explicit null projection emits as plain null without weakening ordinary nullable-to-required safeguards. The stacked PR #28 separates exact JSX elements from broad ReactNode-style contracts so HXX rejects text, omission, and multiple children where a component requires one element, and preserves statically known extern component names in those diagnostics. Stacked PR #29 prints proven compiler-owned, one-use nested HXX children as canonical source TSX/JSX while retaining authored, shared, effectful, getter-observable, and createElement sequencing controls. Stacked PR #30 adds the closed React 19 native-dialog contract and exact `HTMLDialogElement` event targeting needed for Haxe-checked `<dialog open>`, including the generated-module-shadowing regression found by ts2hx. Stacked PR #31 makes intrinsic HXX ref targets element-specific, so a callback restricted to `HTMLInputElement` cannot be attached to `<li>` while valid callback and object refs retain their inferred DOM element type. PR #32 removes redundant enum-abstract assertions when Haxe has already proved the exact emitted primitive. Security PR #34 keeps the transitive lock on reviewed patched releases, including body-parser 1.20.6 after GHSA-v422-hmwv-36x6 surfaced during hosted validation, without changing compiler behavior. Stacked PR #35 binds explicit generic witnesses to the exact extern call target through fluent macro output and erases its compiler-only identity carrier from both output profiles. Stacked PR #37 recursively preserves closed enum-abstract leaves through callbacks, arrays, nullability, aliases, anonymous structures, and generic applications while leaving ordinary widened paths conservative; it adds no assertion, runtime helper, or framework-specific behavior. Stacked PR #38 retains canonical cleanup for proven-safe HXX children while preserving observable extern component-read order and preventing nested-function name evidence from creating duplicate outer declarations. NextJsHx pins the immutable v1.38.2 release commit through Lix. It adds framework-neutral module-function lowering so selected static Haxe bodies become genuine analyzer-visible module functions while retaining the public static method surface, property descriptor and key order, DCE, initialization order, declarations, source maps, and classic-output parity. Its complete local compiler, security, TypeScript 5/6/7, classic-output, source-map, declaration, ts2hx, and downstream NextJsHx Hook and Client Component matrix is green; every hosted check on genes-ts PR #40 is also green. PR #46 adds one framework-neutral complete-tree local-write plan shared by TypeScript, TSX, and classic ES2015 output, so initialized locals with no rebind emit as canonical const while direct writes, captured writes, initializer-free declarations, and opaque raw-syntax placeholders remain conservative let bindings. Its complete local and hosted compiler matrices are green, and the pinned NextJsHx Hook, route, UI, strict Next build, React lint, and hydrated-browser evidence passes on the exact release commit. PR #47, also included in v1.38.2, preserves exact Regroup declaration identity through reflected and direct declaration paths; its independent compiler matrix and the merged main CI are green. |
+| Node.js | floor 20.9.0; baseline 20.19.3; current LTS 24.18.0 (Krypton) | CI contract: 20.9.0, 24.18.0. |
 
 ## Evidence lanes
 
-| Lane | Required | Status | Next.js | Node.js | Implemented evidence | Owning bead |
-| --- | --- | --- | --- | --- | --- | --- |
-| stable-package | yes | verified | 16.2.10 | 20.19.3, 24.18.0 | `npm run test:support-matrix`, `npm run test:fixture:next-stable`, `npm run test:fixture:next-stable:smoke` | `nxhx-f34.1.5` |
-| source-upstream | no | observed | 16.3.0-canary.87 | 24.18.0 | `npm run support:require-upstream` | `nxhx-f34.1.6` |
+| Lane | Required | Status | Next.js | Node.js | Bundlers | Implemented evidence | Owning bead |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| stable-package | yes | verified | 16.2.12 | 20.9.0, 24.18.0 | turbopack, webpack | `npm run test:support-matrix`, `npm run drift:next:stable`, `npm run test:fixture:next-stable`, `npm run test:fixture:next-stable:turbopack`, `npm run test:fixture:next-stable:webpack`, `npm run test:fixture:next-stable:smoke` | `nxhx-f34.1.5` |
+| source-upstream | no | observed | 16.3.0-canary.87 | 24.18.0 | declarations only | `npm run support:require-upstream`, `npm run drift:next:upstream` | `nxhx-f34.1.6` |
 
-A `declared` lane has reproducible identities and contract checks but no framework support claim. An `observed` source lane has a matching local oracle identity but remains non-blocking. A lane becomes `verified` only after its real Next build and smoke evidence pass.
+A `declared` lane has reproducible identities and contract checks but no framework support claim. An `observed` upstream lane has either a matching read-only source oracle or an exact published canary package identity and remains non-blocking declaration evidence. A lane becomes `verified` only after its real Next build and smoke evidence pass.
 
 Planned fixture commands:
 
@@ -34,7 +34,7 @@ Planned fixture commands:
 
 Sibling repositories are optional tooling oracles. They are never runtime dependencies and their paths may not be hardcoded in library code.
 
-- **genesTs:** set `NEXTJSHX_GENES_TS_DIR`, or use `../genes`. Expected commit: `1e7e323fdbda4c5b93689355294bd978e9170725`.
+- **genesTs:** set `NEXTJSHX_GENES_TS_DIR`, or use `../genes`. Expected commit: `f0ffa29e6d49fe81541977c6a3aae6b80000cec6`.
 - **nextUpstream:** set `NEXTJSHX_NEXT_UPSTREAM_DIR`, or use `../nextjs` then `../next.js`. Expected commit: `491f78099c3ea23be14e66c6d848b50204590e90`.
 
 Commands:
@@ -44,9 +44,17 @@ npm run test:support-matrix
 npm run support:discover
 npm run support:require-genes
 npm run support:require-upstream
+npm run drift:next:stable
+npm run drift:next:upstream
 ```
 
-The baseline check is deterministic and requires no sibling checkout. Discovery reports missing checkouts as actionable, non-fatal diagnostics. The two `require` commands opt into fail-closed source-oracle lanes. Explicit environment overrides take precedence over default candidates.
+The baseline and stable-drift checks are deterministic and require no sibling checkout. Discovery reports missing checkouts as actionable, non-fatal diagnostics. The two `require` commands opt into fail-closed source-oracle lanes. Explicit environment overrides take precedence over default candidates. `drift:next:upstream` uses the exact clean source checkout by default; CI may provide an exact published canary package root with `NEXTJSHX_NEXT_PACKAGE_DIR`. Candidate reports never rewrite the checked stable baseline.
+
+Pinned upstream drift follow-ups:
+
+- `NXHX-DRIFT-SIGNATURE-CHANGED` for `next.NextConfig` → `nxhx-r5o`
+- `NXHX-DRIFT-SIGNATURE-CHANGED` for `next/image.default` → `nxhx-q90`
+- `NXHX-DRIFT-DOCUMENTATION-CHANGED` for `next/cache.revalidateTag` → `nxhx-u5n`
 
 ## Runtime and bundler scope
 
@@ -54,14 +62,17 @@ The baseline check is deterministic and requires no sibling checkout. Discovery 
 | --- | --- | --- | --- |
 | Runtime | Node.js | primary | The first supported App Router vertical slices target the standard Next.js Node runtime. |
 | Runtime | Edge Runtime | excluded | Edge compatibility requires a separate API and runtime audit and is not part of the initial support claim. |
-| Bundler | Turbopack | primary | The pinned stable Next.js release uses the framework's current default bundler path. |
-| Bundler | webpack | compatibility | A focused compatibility lane may be added after the stable Turbopack vertical slice is proven. |
+| Bundler | Turbopack | primary | The pinned stable Next.js release uses the framework's current default bundler path, verified on both supported Node versions. |
+| Bundler | webpack | compatibility | The same stable production fixture and smoke contract run as a blocking compatibility lane on both supported Node versions. |
 
 Included in the initial product boundary:
 
 - Next.js App Router
 - Server Components by default
 - Explicit client components and Server Functions
+- Version-gated React 19 Flight Date, Map, Set, typed-buffer, global-symbol, server-Promise, Server Function prop, and desktop/mobile Suspense streaming capabilities
+- Typed loading, error, and not-found convention files
+- Typed metadata, generated static params, and stable literal segment config
 - Generated narrow convention adapters
 - Published stable Next.js package as the blocking lane
 

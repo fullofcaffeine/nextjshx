@@ -1,0 +1,326 @@
+{
+  "$schema": "https://nextjshx.dev/schemas/adapter-plan.schema.json",
+  "schemaVersion": 1,
+  "toolchain": {
+    "nextjshx": "0.0.0-development",
+    "haxe": "4.3.7",
+    "genesTs": "1.38.2+f0ffa29e6d49fe81541977c6a3aae6b80000cec6",
+    "next": "16.2.12"
+  },
+  "intents": [
+    {
+      "kind": "layout",
+      "source": {
+        "typeName": "metadata_segment.positive.GeneratedMetadataLayout",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/metadata-segment/src/metadata_segment/positive/GeneratedMetadataLayout.hx",
+          "startLine": 16,
+          "startCharacter": 1,
+          "endLine": 36,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/metadata-segment/src/metadata_segment/positive/GeneratedMetadataLayout.hx",
+          "startLine": 33,
+          "startCharacter": 2,
+          "endLine": 35,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/metadata-segment/src/metadata_segment/positive/GeneratedMetadataLayout.hx",
+          "startLine": 15,
+          "startCharacter": 1,
+          "endLine": 15,
+          "endCharacter": 14
+        }
+      },
+      "segmentPath": "proof/catalog/[category]",
+      "targetPath": "proof/catalog/[category]/layout.tsx",
+      "implementation": {
+        "modulePath": "../../../../../.tmp/src-gen/metadata_segment/positive/GeneratedMetadataLayout",
+        "symbol": "GeneratedMetadataLayout"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../../.tmp/src-gen/metadata_segment/positive/GeneratedMetadataLayout",
+          "symbol": "GeneratedMetadataLayout",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "next",
+          "symbol": "Metadata",
+          "alias": null,
+          "typeOnly": true
+        },
+        {
+          "modulePath": "next",
+          "symbol": "ResolvingMetadata",
+          "alias": null,
+          "typeOnly": true
+        },
+        {
+          "modulePath": "react",
+          "symbol": "JSX",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: LayoutProps<\"/proof/catalog/[category]\">) => JSX.Element"
+        },
+        {
+          "kind": "named",
+          "name": "generateMetadata",
+          "sourceField": "generateMetadata",
+          "signature": "(props: Pick<LayoutProps<\"/proof/catalog/[category]\">, \"params\">, parent: ResolvingMetadata) => Metadata"
+        },
+        {
+          "kind": "named",
+          "name": "generateStaticParams",
+          "sourceField": "generateStaticParams",
+          "signature": "() => Array<Awaited<LayoutProps<\"/proof/catalog/[category]\">[\"params\"]>>"
+        }
+      ],
+      "config": [
+        {
+          "name": "dynamicParams",
+          "value": {
+            "kind": "boolean",
+            "value": true
+          }
+        },
+        {
+          "name": "preferredRegion",
+          "value": {
+            "kind": "string",
+            "value": "global"
+          }
+        },
+        {
+          "name": "runtime",
+          "value": {
+            "kind": "string",
+            "value": "edge"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "page",
+      "source": {
+        "typeName": "metadata_segment.positive.GeneratedMetadataPage",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/metadata-segment/src/metadata_segment/positive/GeneratedMetadataPage.hx",
+          "startLine": 17,
+          "startCharacter": 1,
+          "endLine": 39,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/metadata-segment/src/metadata_segment/positive/GeneratedMetadataPage.hx",
+          "startLine": 36,
+          "startCharacter": 2,
+          "endLine": 38,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/metadata-segment/src/metadata_segment/positive/GeneratedMetadataPage.hx",
+          "startLine": 16,
+          "startCharacter": 1,
+          "endLine": 16,
+          "endCharacter": 12
+        }
+      },
+      "segmentPath": "proof/products/[slug]",
+      "targetPath": "proof/products/[slug]/page.tsx",
+      "implementation": {
+        "modulePath": "../../../../../.tmp/src-gen/metadata_segment/positive/GeneratedMetadataPage",
+        "symbol": "GeneratedMetadataPage"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../../.tmp/src-gen/metadata_segment/positive/GeneratedMetadataPage",
+          "symbol": "GeneratedMetadataPage",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "next",
+          "symbol": "Metadata",
+          "alias": null,
+          "typeOnly": true
+        },
+        {
+          "modulePath": "next",
+          "symbol": "ResolvingMetadata",
+          "alias": null,
+          "typeOnly": true
+        },
+        {
+          "modulePath": "react",
+          "symbol": "JSX",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: PageProps<\"/proof/products/[slug]\">) => JSX.Element"
+        },
+        {
+          "kind": "named",
+          "name": "generateMetadata",
+          "sourceField": "generateMetadata",
+          "signature": "(props: PageProps<\"/proof/products/[slug]\">, parent: ResolvingMetadata) => Promise<Metadata>"
+        },
+        {
+          "kind": "named",
+          "name": "generateStaticParams",
+          "sourceField": "generateStaticParams",
+          "signature": "() => Promise<Array<Awaited<PageProps<\"/proof/products/[slug]\">[\"params\"]>>>"
+        }
+      ],
+      "config": [
+        {
+          "name": "dynamicParams",
+          "value": {
+            "kind": "boolean",
+            "value": false
+          }
+        },
+        {
+          "name": "maxDuration",
+          "value": {
+            "kind": "integer",
+            "value": 10
+          }
+        },
+        {
+          "name": "preferredRegion",
+          "value": {
+            "kind": "string-array",
+            "value": ["iad1", "sfo1"]
+          }
+        },
+        {
+          "name": "revalidate",
+          "value": {
+            "kind": "integer",
+            "value": 60
+          }
+        }
+      ]
+    },
+    {
+      "kind": "page",
+      "source": {
+        "typeName": "metadata_segment.positive.StaticMetadataPage",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/metadata-segment/src/metadata_segment/positive/StaticMetadataPage.hx",
+          "startLine": 12,
+          "startCharacter": 1,
+          "endLine": 28,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/metadata-segment/src/metadata_segment/positive/StaticMetadataPage.hx",
+          "startLine": 25,
+          "startCharacter": 2,
+          "endLine": 27,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/metadata-segment/src/metadata_segment/positive/StaticMetadataPage.hx",
+          "startLine": 11,
+          "startCharacter": 1,
+          "endLine": 11,
+          "endCharacter": 12
+        }
+      },
+      "segmentPath": "proof/static-metadata",
+      "targetPath": "proof/static-metadata/page.tsx",
+      "implementation": {
+        "modulePath": "../../../../.tmp/src-gen/metadata_segment/positive/StaticMetadataPage",
+        "symbol": "StaticMetadataPage"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../.tmp/src-gen/metadata_segment/positive/StaticMetadataPage",
+          "symbol": "StaticMetadataPage",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "next",
+          "symbol": "Metadata",
+          "alias": null,
+          "typeOnly": true
+        },
+        {
+          "modulePath": "react",
+          "symbol": "JSX",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: PageProps<\"/proof/static-metadata\">) => JSX.Element"
+        },
+        {
+          "kind": "named",
+          "name": "metadata",
+          "sourceField": "metadata",
+          "signature": "Metadata"
+        }
+      ],
+      "config": [
+        {
+          "name": "maxDuration",
+          "value": {
+            "kind": "integer",
+            "value": 5
+          }
+        },
+        {
+          "name": "preferredRegion",
+          "value": {
+            "kind": "string",
+            "value": "home"
+          }
+        },
+        {
+          "name": "revalidate",
+          "value": {
+            "kind": "boolean",
+            "value": false
+          }
+        },
+        {
+          "name": "runtime",
+          "value": {
+            "kind": "string",
+            "value": "nodejs"
+          }
+        }
+      ]
+    }
+  ]
+}

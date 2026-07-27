@@ -1,0 +1,10 @@
+-lib genes-ts
+-cp haxe
+-cp ../../../src
+--main ClientificationMain
+-js src-gen/index.tsx
+
+--macro clientification.AdapterPlan.install()
+--macro include('clientification.app')
+--macro include('clientification.client')
+-dce full

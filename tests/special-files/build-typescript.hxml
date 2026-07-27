@@ -1,0 +1,13 @@
+-lib genes-ts
+-cp src
+-cp tests/special-files/src
+-main special_files.NoRuntime
+-js tests/special-files/.tmp/typescript/index.tsx
+-D genes.ts
+-D genes.ts.no_extension
+-D genes.ts.jsx_import_source=react
+-D nextjshx.app-root=tests/special-files/next-app/app
+-D nextjshx.generated-root=tests/special-files/.tmp/typescript
+--macro special_files.SpecialFileFixture.install('tests/special-files/.tmp/typescript-plan.json')
+--macro include('special_files.positive')
+-dce full

@@ -1,0 +1,11 @@
+-lib genes-ts
+-cp haxe
+-cp ../showcase-ui/haxe
+-cp ../../src
+--main CommerceMain
+-js src-gen/index.tsx
+
+--macro commerce.AdapterPlan.install()
+--macro include('commerce.app')
+--macro include('commerce.client')
+-dce full

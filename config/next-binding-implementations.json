@@ -1,0 +1,502 @@
+{
+  "$schema": "../schemas/next-binding-implementations.schema.json",
+  "schemaVersion": 1,
+  "reviewedSurfaceHash": "sha256:2789fe465e2502593c4e1e2b8827ce1a1a718d9cfe8fb09e8c405b70629e233c",
+  "implementations": [
+    {
+      "id": "b03-compat-router",
+      "module": "next/compat/router",
+      "strategy": "curated-public-module-extern",
+      "symbols": [
+        {
+          "export": "useRouter",
+          "expectedSignatureHash": "sha256:519b2f447355ff7e78dabf19319ed1abf6d03aa1c7da58b28bd02d92aea19af7"
+        }
+      ],
+      "outputs": [
+        "src/nextjs/raw/compat/Router.hx"
+      ],
+      "fixture": "tests/next-core-navigation",
+      "owningBead": "nxhx-f34.3.3",
+      "reason": "Expose the nullable migration hook through its public module while keeping the legacy Pages Router surface out of the App Router core API."
+    },
+    {
+      "id": "b03-core-root-types",
+      "module": "next",
+      "strategy": "curated-public-type-projection",
+      "symbols": [
+        {
+          "export": "Metadata",
+          "expectedSignatureHash": "sha256:2f0bf8024c0199975df23772a4a4fc4dc58f4d3c6e2ea65b5825336f460a175b"
+        },
+        {
+          "export": "NextConfig",
+          "expectedSignatureHash": "sha256:e7f519c7fdf899381c233d28855ca1a9dc936235dab220f2e6cfe5bd7d6c6e87"
+        },
+        {
+          "export": "ResolvingMetadata",
+          "expectedSignatureHash": "sha256:10a8438ac22c574d18dfbfeadbcfd31910bb0056fc352ed618138799a58d2fb4"
+        },
+        {
+          "export": "ResolvingViewport",
+          "expectedSignatureHash": "sha256:b416f9e552943e66e1af1b4a9ddb8ac1b700a59e53942e99577d177858f07f27"
+        },
+        {
+          "export": "Viewport",
+          "expectedSignatureHash": "sha256:11628a08d0f9ac5de6f4204dfb0b9c3e24f08a2a9172de6a4e2564047980acb1"
+        }
+      ],
+      "outputs": [
+        "src/nextjs/raw/NextConfig.hx",
+        "src/nextjs/raw/metadata/Metadata.hx",
+        "src/nextjs/raw/metadata/ResolvingMetadata.hx",
+        "src/nextjs/raw/metadata/ResolvingViewport.hx",
+        "src/nextjs/raw/metadata/Viewport.hx"
+      ],
+      "fixture": "tests/next-core-navigation",
+      "owningBead": "nxhx-f34.3.3",
+      "reason": "Keep broad configuration and metadata objects faithful through public TypeScript projections while Haxe remains free of copied private declarations and Dynamic fallbacks."
+    },
+    {
+      "id": "b03-navigation",
+      "module": "next/navigation",
+      "strategy": "curated-public-module-extern",
+      "symbols": [
+        {
+          "export": "ReadonlyURLSearchParams",
+          "expectedSignatureHash": "sha256:587f2d1b84d82e72ce4a3575c17d451c6d625103ddfa5eba7fb8d060acf9da95"
+        },
+        {
+          "export": "RedirectType",
+          "expectedSignatureHash": "sha256:d2b50c4586d638bdd7bb3ce47f3f3e4ac7a17b78ad2eab587f26f9ced4c54a3a"
+        },
+        {
+          "export": "forbidden",
+          "expectedSignatureHash": "sha256:abec9c7b10b88c1d1b97e3eb62f08339b4fef6589f73723461fc5f753c05e9c0"
+        },
+        {
+          "export": "notFound",
+          "expectedSignatureHash": "sha256:6d255f4e57f9aa950d09d50ff4fb84294c34cfdc993531cbe6d9e263494eab78"
+        },
+        {
+          "export": "permanentRedirect",
+          "expectedSignatureHash": "sha256:6e3c920beda76c5d7e4a68432c2593fe554fe6e3d351605996a728971ad9555c"
+        },
+        {
+          "export": "redirect",
+          "expectedSignatureHash": "sha256:a9f7c9cec326a4c3d97323fb6c85b43717dff74e84a9b0edbdc4bd4fea6f4377"
+        },
+        {
+          "export": "unauthorized",
+          "expectedSignatureHash": "sha256:de1bf382555a3df17350ceb7013f2ddece1f34ed26815ae170af3d85702dd659"
+        },
+        {
+          "export": "useParams",
+          "expectedSignatureHash": "sha256:f1262903b757e1fee1bb18413c6f4e9074abeee233ee07d96fbf78935a437ce4"
+        },
+        {
+          "export": "usePathname",
+          "expectedSignatureHash": "sha256:152a3bd5712e70a775a920e4dca29a65e8ea038874bf28d4a91cc473d4ad32cb"
+        },
+        {
+          "export": "useRouter",
+          "expectedSignatureHash": "sha256:670eb465f0f98c3b46e55549a109322603ef82a5004defc1f47a09965e284fbb"
+        },
+        {
+          "export": "useSearchParams",
+          "expectedSignatureHash": "sha256:1c0e235305ce6fbfae2ac6550e0d987826e85202da26777a6b5440e0eefcc146"
+        },
+        {
+          "export": "useSelectedLayoutSegment",
+          "expectedSignatureHash": "sha256:9f3e6cc738e4a7950924603aaecb08b5470f093b18e6ce12b0f4a8dcbdc63818"
+        },
+        {
+          "export": "useSelectedLayoutSegments",
+          "expectedSignatureHash": "sha256:cfa160ff234d7d7460d851320c0d24207338521a33589691d1bb482f5cbc0de4"
+        }
+      ],
+      "outputs": [
+        "src/nextjs/raw/Navigation.hx",
+        "src/nextjs/raw/navigation/AppRouterInstance.hx",
+        "src/nextjs/raw/navigation/NavigateOptions.hx",
+        "src/nextjs/raw/navigation/Never.hx",
+        "src/nextjs/raw/navigation/ReadonlyURLSearchParams.hx",
+        "src/nextjs/raw/navigation/RedirectType.hx",
+        "src/nextjs/raw/navigation/RouteParams.hx"
+      ],
+      "fixture": "tests/next-core-navigation",
+      "owningBead": "nxhx-f34.3.3",
+      "reason": "Preserve the public navigation runtime surface while using Haxe literals, read-only views, and exact TypeScript projections to improve authoring feedback without adding a wrapper runtime."
+    },
+    {
+      "id": "b03-route-type",
+      "module": "next/types",
+      "strategy": "curated-public-type-projection",
+      "symbols": [
+        {
+          "export": "Route",
+          "expectedSignatureHash": "sha256:00a3fb74517d190c41aaca0156f94c72e778efacc0cc98d6ba71e2610e75e175"
+        }
+      ],
+      "outputs": [
+        "src/nextjs/raw/Route.hx"
+      ],
+      "fixture": "tests/next-core-navigation",
+      "owningBead": "nxhx-f34.3.3",
+      "reason": "Map Next's open Route generic to an explicit Unknown parameter while preserving the canonical public type for generated TypeScript consumers."
+    },
+    {
+      "id": "b04-dynamic",
+      "module": "next/dynamic",
+      "strategy": "curated-public-module-extern",
+      "symbols": [
+        {
+          "export": "DynamicOptions",
+          "expectedSignatureHash": "sha256:b7300fc7649dfd2b931120f91398b3117b51e7695affb775a1923eb05b8b5d2a"
+        },
+        {
+          "export": "Loader",
+          "expectedSignatureHash": "sha256:3b972faca8d63d9b87eecc8749bbb9112e61c7d9dde7e0027c266128a3e4d18e"
+        },
+        {
+          "export": "default",
+          "expectedSignatureHash": "sha256:40245b6492e763a85f0a1cc2e4d024e9db648b2438a1104fc95efa84de7308f1"
+        }
+      ],
+      "outputs": [
+        "src/nextjs/raw/DynamicComponent.hx",
+        "src/nextjs/raw/lazy/DynamicOptions.hx",
+        "src/nextjs/raw/lazy/Loader.hx",
+        "src/nextjs/raw/react/ComponentType.hx"
+      ],
+      "fixture": "tests/next-components",
+      "owningBead": "nxhx-f34.3.4",
+      "reason": "Keep the runtime import on public next/dynamic, omit its build-generated any-valued loader map, and avoid Haxe's reserved dynamic/Dynamic names through the discoverable DynamicComponent.load and raw.lazy paths."
+    },
+    {
+      "id": "b04-font-google",
+      "module": "next/font/google",
+      "strategy": "curated-public-module-extern",
+      "symbols": [
+        {
+          "export": "Inter",
+          "expectedSignatureHash": "sha256:3d543618b534e3fd40a52a6ed1727d806e8598610459640f01d968cbbc3f07d5"
+        },
+        {
+          "export": "Roboto",
+          "expectedSignatureHash": "sha256:7b8768861053468512c5c59423ad80d9e60834f50cb95a6a7eb9023e384f534a"
+        }
+      ],
+      "outputs": [
+        "src/nextjs/raw/font/FontTypes.hx",
+        "src/nextjs/raw/font/Google.hx",
+        "src/nextjs/raw/font/GoogleOptions.hx"
+      ],
+      "fixture": "tests/next-components",
+      "owningBead": "nxhx-f34.3.4",
+      "reason": "Expose direct Inter and Roboto named imports with Haxe-style lower-camel methods, closed weight/style/subset/axis literals, and overloads that retain the CSS-variable result shape."
+    },
+    {
+      "id": "b04-font-local",
+      "module": "next/font/local",
+      "strategy": "curated-public-module-extern",
+      "symbols": [
+        {
+          "export": "default",
+          "expectedSignatureHash": "sha256:8970f66d13131d6e369faea915faffeeeabf2da5c9b4a9bb1ebc0b944ed0d0d3"
+        }
+      ],
+      "outputs": [
+        "src/nextjs/raw/font/Local.hx",
+        "src/nextjs/raw/font/LocalFontOptions.hx"
+      ],
+      "fixture": "tests/next-components",
+      "owningBead": "nxhx-f34.3.4",
+      "reason": "Expose the public local-font default loader with required sources, closed fallback choices, typed multi-file descriptors, and a variable-aware return overload without a runtime adapter."
+    },
+    {
+      "id": "b04-form",
+      "module": "next/form",
+      "strategy": "curated-public-module-extern",
+      "symbols": [
+        {
+          "export": "FormProps",
+          "expectedSignatureHash": "sha256:28f79fb46d388d2b58abbd8b5f3994f3bccc84d09bd2727e026861887cb5e56c"
+        },
+        {
+          "export": "default",
+          "expectedSignatureHash": "sha256:2e76e2be8be45fc57b4a85faa77cc87873d1197db1895227145afd7f3d698e4f"
+        }
+      ],
+      "outputs": [
+        "src/nextjs/raw/components/Form.hx",
+        "src/nextjs/raw/components/FormProps.hx",
+        "src/nextjs/raw/react/ReactNode.hx"
+      ],
+      "fixture": "tests/next-components",
+      "owningBead": "nxhx-f34.3.4",
+      "reason": "Preserve Form's required route-or-action input with the current standard Web FormData callback contract and false-only prefetch mode, while excluding method, encType, and target exactly as Next does instead of accepting ignored values."
+    },
+    {
+      "id": "b04-image",
+      "module": "next/image",
+      "strategy": "curated-public-module-extern",
+      "symbols": [
+        {
+          "export": "ImageLoaderProps",
+          "expectedSignatureHash": "sha256:bbf83174a7da3dc0e2f0f74b8588299894e12bdd97a65e4d38ee5c56e547b7ae"
+        },
+        {
+          "export": "ImageProps",
+          "expectedSignatureHash": "sha256:7c266d2c9afe01ee0dd2f918a84fc56d50cb2b8615fa2e7c6f2bd88b83c1c266"
+        },
+        {
+          "export": "StaticImageData",
+          "expectedSignatureHash": "sha256:1b7ac855b22c4694b5d5bb33ce9975dca8e997e8d580367d375e1cd73e2c6d38"
+        },
+        {
+          "export": "default",
+          "expectedSignatureHash": "sha256:12ca137b361aa162ba2a8f3031880224935843c17956a764be05a37a3fd7e46e"
+        },
+        {
+          "export": "getImageProps",
+          "expectedSignatureHash": "sha256:8a137c14f5a7ffddc1ed54791500fba2dc351ad859df12f112672b90c797bd1e"
+        }
+      ],
+      "outputs": [
+        "src/nextjs/raw/components/Image.hx",
+        "src/nextjs/raw/components/ImageLoaderProps.hx",
+        "src/nextjs/raw/components/ImageProps.hx",
+        "src/nextjs/raw/components/StaticImageData.hx"
+      ],
+      "fixture": "tests/next-components",
+      "owningBead": "nxhx-f34.3.4",
+      "reason": "Require src and alt in Haxe, retain numeric-string dimensions and closed loading/placeholder choices, and expose getImageProps plus static-import metadata through public Next projections."
+    },
+    {
+      "id": "b04-link",
+      "module": "next/link",
+      "strategy": "curated-public-module-extern",
+      "symbols": [
+        {
+          "export": "LinkProps",
+          "expectedSignatureHash": "sha256:4fc42af13a0c32ec07c56b3a5aeb0f979dd63f8fe26a9c581f840381d6c51664"
+        },
+        {
+          "export": "default",
+          "expectedSignatureHash": "sha256:824862ef93de7d0e9b075b1e549d1f2d0c2a86f1e4a9fdada39764444c45871a"
+        },
+        {
+          "export": "useLinkStatus",
+          "expectedSignatureHash": "sha256:0b168b8d2ec32c9cca4b8b4bd41ed452f827fd72db75428464f8bcc4c50f69c0"
+        }
+      ],
+      "outputs": [
+        "src/nextjs/raw/components/Link.hx",
+        "src/nextjs/raw/components/LinkProps.hx"
+      ],
+      "fixture": "tests/next-components",
+      "owningBead": "nxhx-f34.3.4",
+      "reason": "Make href required before TypeScript emission, keep the route parameter Haxe-visible for generated href types, and emit the default component plus useLinkStatus as direct public imports."
+    },
+    {
+      "id": "b04-script",
+      "module": "next/script",
+      "strategy": "curated-public-module-extern",
+      "symbols": [
+        {
+          "export": "ScriptProps",
+          "expectedSignatureHash": "sha256:958b86f5e84475b076cef6859f4c095abcec21a6fa6346a33e7c7abbe7bf3bd5"
+        },
+        {
+          "export": "default",
+          "expectedSignatureHash": "sha256:e401742a61eb2d0e57f237ad80e17f23b8b425587de3c9290ac2f84dc6052a9f"
+        }
+      ],
+      "outputs": [
+        "src/nextjs/raw/components/Script.hx",
+        "src/nextjs/raw/components/ScriptProps.hx"
+      ],
+      "fixture": "tests/next-components",
+      "owningBead": "nxhx-f34.3.4",
+      "reason": "Keep Script's loading strategy closed and replace Next's any-valued load/error callback payloads with explicit unknown values while preserving the direct default component import."
+    },
+    {
+      "id": "b05-cache",
+      "module": "next/cache",
+      "strategy": "curated-public-module-extern",
+      "symbols": [
+        {
+          "export": "cacheLife",
+          "expectedSignatureHash": "sha256:d6591aabe36985c8842231e7c0357063c85986480864b0ba9552ebd2292416ec"
+        },
+        {
+          "export": "cacheTag",
+          "expectedSignatureHash": "sha256:ab2dce1106bb5641e4aabd2364fddb74d5e3c40021bb9fc9d838cfc2b4c71954"
+        },
+        {
+          "export": "refresh",
+          "expectedSignatureHash": "sha256:3067014e5aef5eed8a6b207ee76ca45171faf131ce4a84b744b6201495126074"
+        },
+        {
+          "export": "revalidatePath",
+          "expectedSignatureHash": "sha256:dc526e48bbb07518c505678a59307738e4b3de2258f123dc6608926eb27c1d87"
+        },
+        {
+          "export": "revalidateTag",
+          "expectedSignatureHash": "sha256:b5c9264e648b7b61acf03db366b1d62f469982dc399f803c5d3c1b4d4363e9b7"
+        },
+        {
+          "export": "unstable_cache",
+          "expectedSignatureHash": "sha256:4ca1513eea06643cf9aeb85194af9dd3611dd33356d4f4942a04c2b2b6f63ca1"
+        },
+        {
+          "export": "unstable_cacheLife",
+          "expectedSignatureHash": "sha256:9f2b80e702d293a174eb3236fcf110f79d64f94c0b9902e76bb8124c0bbdff69"
+        },
+        {
+          "export": "unstable_cacheTag",
+          "expectedSignatureHash": "sha256:69cba17aac2585fc20d1d54bcdb18ea6b571daa42a1fcf9266221f8aac6e30ec"
+        },
+        {
+          "export": "unstable_noStore",
+          "expectedSignatureHash": "sha256:fb38e864fcae06081ee37359d24e39c7b799a56a2d2872c6297a7e5e8a4cda74"
+        },
+        {
+          "export": "updateTag",
+          "expectedSignatureHash": "sha256:85be20ba6855e788b5fb37a767e906532b5adffec696c003c0a7608aa24b87bc"
+        }
+      ],
+      "outputs": [
+        "src/nextjs/raw/Cache.hx",
+        "src/nextjs/raw/cache/CacheTypes.hx"
+      ],
+      "fixture": "tests/next-server",
+      "owningBead": "nxhx-f34.3.5",
+      "reason": "Expose all reviewed next/cache calls directly while making built-in lifetime profiles, path scopes, false-only legacy revalidation, and the required Next 16 tag profile discoverable in Haxe."
+    },
+    {
+      "id": "b05-headers",
+      "module": "next/headers",
+      "strategy": "curated-public-module-extern",
+      "symbols": [
+        {
+          "export": "cookies",
+          "expectedSignatureHash": "sha256:c29b12ef96c45bd45a4d7bdb545b65592c46c8b3bebde274b49e43824782d53a"
+        },
+        {
+          "export": "draftMode",
+          "expectedSignatureHash": "sha256:b85481d54b7d6cbd74739c4751147560fd5005a3f2c9aa172b05ad5b1e7e3009"
+        },
+        {
+          "export": "headers",
+          "expectedSignatureHash": "sha256:b013487265de27a24c485ae30c977d7cbdbbb21d569d78d97943d39f1ad4f348"
+        }
+      ],
+      "outputs": [
+        "src/nextjs/raw/Headers.hx",
+        "src/nextjs/raw/headers/CookieTypes.hx",
+        "src/nextjs/raw/headers/DraftMode.hx",
+        "src/nextjs/raw/headers/ReadonlyHeaders.hx"
+      ],
+      "fixture": "tests/next-server",
+      "owningBead": "nxhx-f34.3.5",
+      "reason": "Preserve every async next/headers return while defaulting reads to mutation-free views and requiring an explicit direct-import alias when a Server Action or Route Handler intends to mutate cookies."
+    },
+    {
+      "id": "b05-server",
+      "module": "next/server",
+      "strategy": "curated-public-module-extern",
+      "symbols": [
+        {
+          "export": "MiddlewareConfig",
+          "expectedSignatureHash": "sha256:5a022dfae5f1542147148fe61224a7750b61a85bb5791133851d72dc7e9bfc23"
+        },
+        {
+          "export": "NextFetchEvent",
+          "expectedSignatureHash": "sha256:1b122b8ebf740da35a402adf6d9109f4b52793155f3f999030ed6efbca1b0ecf"
+        },
+        {
+          "export": "NextMiddleware",
+          "expectedSignatureHash": "sha256:0d8576de33f9f9f8ad7158bccf70a0b1d2fb7571334fe229fd76598596ddc2cb"
+        },
+        {
+          "export": "NextProxy",
+          "expectedSignatureHash": "sha256:66b9b30da9d89c07432b17868842d4d40e05fd9b5b1f752f6ab9a19e3924fd49"
+        },
+        {
+          "export": "NextRequest",
+          "expectedSignatureHash": "sha256:14cd03aec93af5d0d8ecca90b39a76df8b4f8b6e18ccc6cf4741557c187ef4ec"
+        },
+        {
+          "export": "NextResponse",
+          "expectedSignatureHash": "sha256:1711d5a0ab8bc1842e0f019faaf2eca66104b97e2a9299f93a18eccdb0381198"
+        },
+        {
+          "export": "ProxyConfig",
+          "expectedSignatureHash": "sha256:674c139bb91354bdf91589b0e77c7986861378519fba39f2f30e8973b61c9b1f"
+        },
+        {
+          "export": "URLPattern",
+          "expectedSignatureHash": "sha256:7b49a1c5ea627420977721e7774a54da83f2b257bdf66752f7c95cf5fc0069d8"
+        },
+        {
+          "export": "after",
+          "expectedSignatureHash": "sha256:f0423f652002026e5608ef0ca630dd44820121dedb5b42374c13cb72ff54b557"
+        },
+        {
+          "export": "connection",
+          "expectedSignatureHash": "sha256:17e5f40c0a5bfbaead8d126ca53ced1f40d2288cc12645a3d8030544cbb4ed55"
+        },
+        {
+          "export": "userAgent",
+          "expectedSignatureHash": "sha256:8067b45c9b8b7e33e03b2d5f713d97e5376422620d84a436a852c828494434c9"
+        },
+        {
+          "export": "userAgentFromString",
+          "expectedSignatureHash": "sha256:d76117e5658f8e7a3b1c98777b41340d53a0f76103354dcf2d931cc51c7270a1"
+        }
+      ],
+      "outputs": [
+        "src/nextjs/raw/Server.hx",
+        "src/nextjs/raw/server/MiddlewareConfig.hx",
+        "src/nextjs/raw/server/NextFetchEvent.hx",
+        "src/nextjs/raw/server/NextMiddleware.hx",
+        "src/nextjs/raw/server/NextProxy.hx",
+        "src/nextjs/raw/server/NextRequest.hx",
+        "src/nextjs/raw/server/NextResponse.hx",
+        "src/nextjs/raw/server/NextUrl.hx",
+        "src/nextjs/raw/server/ProxyConfig.hx",
+        "src/nextjs/raw/server/URLPattern.hx",
+        "src/nextjs/raw/server/UserAgent.hx"
+      ],
+      "fixture": "tests/next-server",
+      "owningBead": "nxhx-f34.3.5",
+      "reason": "Bind the public request, response, proxy, event, URL-pattern, user-agent, connection, and post-response APIs with typed JSON bodies, closed matcher discriminants, and no next/dist runtime dependency."
+    },
+    {
+      "id": "b05-web-contracts",
+      "module": "globalThis",
+      "strategy": "curated-public-type-projection",
+      "symbols": [
+        {
+          "export": "Request",
+          "expectedSignatureHash": "sha256:9a6d3e7cfa0dc7e2b6bdb8856ed88375ae5f1b925c96d38ff8a2be5a4cb40895"
+        },
+        {
+          "export": "Response",
+          "expectedSignatureHash": "sha256:b032b8c503cb18ece8277fee78c79f679c2db056db976cb43ede64aecb318d12"
+        }
+      ],
+      "outputs": [
+        "src/nextjs/raw/server/WebFormData.hx",
+        "src/nextjs/raw/server/WebRequest.hx",
+        "src/nextjs/raw/server/WebResponse.hx",
+        "src/nextjs/raw/server/WebSearchParams.hx"
+      ],
+      "fixture": "tests/next-server",
+      "owningBead": "nxhx-f34.3.5",
+      "reason": "Keep Route Handler Web objects native and structurally compatible while replacing Haxe 4.3.7's inherited Dynamic JSON results with explicit genes.ts.Unknown decoding boundaries and projecting current native FormData and URLSearchParams types without legacy broad iterators."
+    }
+  ]
+}

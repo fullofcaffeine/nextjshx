@@ -1,0 +1,10 @@
+-lib genes-ts
+-cp tests/cache-boundaries/negative
+-cp src
+--main cache_boundaries_negative.Fixture
+-js tests/cache-boundaries/.tmp/rejected.tsx
+
+--macro cache_boundaries_negative.Fixture.install()
+-D nextjshx.app-root=tests/cache-boundaries/next-app/app
+-D nextjshx.generated-root=tests/cache-boundaries/.tmp/generated
+-dce full

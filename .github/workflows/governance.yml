@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: governance-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   secret-scan:
     name: Full-history secret scan
@@ -62,7 +66,7 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - 20.19.3
+          - 20.9.0
           - 24.18.0
     steps:
       - name: Check out source
@@ -81,7 +85,7 @@ jobs:
         run: npm run test:support-matrix
 
   next-stable-fixture:
-    name: Stable Next fixture (Node ${{ matrix.node }})
+    name: Stable Next fixture (${{ matrix.bundler.name }}, Node ${{ matrix.node }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -90,8 +94,13 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - 20.19.3
+          - 20.9.0
           - 24.18.0
+        bundler:
+          - name: Turbopack
+            script: test:fixture:next-stable:turbopack
+          - name: webpack
+            script: test:fixture:next-stable:webpack
     steps:
       - name: Check out source
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
@@ -108,15 +117,71 @@ jobs:
           npx --no-install lix download
 
       - name: Compile, type-check, and build the stable fixture
-        run: npm run test:fixture:next-stable
+        run: npm run ${{ matrix.bundler.script }}
 
       - name: Smoke-test the production server
         run: npm run test:fixture:next-stable:smoke
 
-  baseline-test-harness:
-    name: Positive, negative, snapshot, package-shape, and compiler-gap harness
+  next-stable-declaration-drift:
+    name: Stable Next declaration drift (blocking)
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 20.19.3
+          cache: npm
+
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+
+      - name: Require a clean installed-package declaration report
+        run: npm run drift:next:stable
+
+  next-canary-declaration-drift:
+    name: Next canary declaration drift (non-blocking)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    continue-on-error: true
+    steps:
+      - name: Check out source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24.18.0
+          cache: npm
+
+      - name: Install locked tooling dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install the exact configured canary without lifecycle scripts
+        run: >-
+          npm install --prefix "$RUNNER_TEMP/next-canary" --ignore-scripts
+          --no-save --no-audit --no-fund next@16.3.0-canary.87
+
+      - name: Classify canary declaration drift
+        env:
+          NEXTJSHX_NEXT_PACKAGE_DIR: ${{ runner.temp }}/next-canary/node_modules/next
+        run: npm run drift:next:upstream
+
+      - name: Publish the classified report to the workflow summary
+        if: always()
+        run: |
+          report=.nextjshx/next-drift/next-upstream-drift.md
+          if test -f "$report"; then
+            cat "$report" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  baseline-test-harness:
+    name: Typed boundaries, production actions, snapshots, and package harness
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Check out source
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
@@ -134,6 +199,57 @@ jobs:
 
       - name: Run the reusable evidence harness
         run: npm run test:harness
+
+  showcase-matrix:
+    name: Maintained Haxe/Next showcase matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - name: Check out source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 20.19.3
+          cache: npm
+
+      - name: Install locked dependencies and Haxe libraries
+        run: |
+          npm ci --ignore-scripts
+          npx --no-install lix download
+
+      - name: Compile, build, and browser-test every maintained showcase
+        run: npm run test:showcases
+
+  todoapp-production-e2e:
+    name: Todo app production Playwright E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - name: Check out source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 20.19.3
+          cache: npm
+
+      - name: Install locked dependencies and Haxe libraries
+        run: |
+          npm ci --ignore-scripts
+          npx --no-install lix download
+
+      - name: Verify the runner-provided system browser
+        run: command -v google-chrome
+
+      - name: Build and test the production todo app with zero retries
+        run: npm run test:example:todoapp
 
   security-tooling:
     name: Security tooling and bootstrap policy

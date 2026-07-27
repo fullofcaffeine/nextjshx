@@ -1,0 +1,263 @@
+{
+  "$schema": "../schemas/next-binding-overrides.schema.json",
+  "schemaVersion": 1,
+  "reviewedSurfaceHash": "sha256:2789fe465e2502593c4e1e2b8827ce1a1a718d9cfe8fb09e8c405b70629e233c",
+  "bootstrapReview": {
+    "bead": "nxhx-f34.3.2",
+    "reason": "Bootstrap the declaration IR and one mechanically provable literal-union binding before the broader B03-B05 binding work.",
+    "initialIrHash": "sha256:d44d95295813adf93efd64354fd256bb9044ca16c6db150b671c4f1ccb86ae60"
+  },
+  "safetyOverrides": [
+    {
+      "id": "dom-response-any",
+      "module": "globalThis",
+      "export": "Response",
+      "expectedSignatureHash": "sha256:b032b8c503cb18ece8277fee78c79f679c2db056db976cb43ede64aecb318d12",
+      "action": "map-any-to-genes-unknown",
+      "expectedOccurrences": 1,
+      "reason": "The DOM Response.json result is intentionally untyped upstream; generated Haxe must require an explicit genes.ts.Unknown decode boundary instead of propagating Dynamic.",
+      "owningBead": "nxhx-f34.3.5"
+    },
+    {
+      "id": "next-config-any",
+      "module": "next",
+      "export": "NextConfig",
+      "expectedSignatureHash": "sha256:e7f519c7fdf899381c233d28855ca1a9dc936235dab220f2e6cfe5bd7d6c6e87",
+      "action": "map-any-to-genes-unknown",
+      "expectedOccurrences": 1,
+      "reason": "Next preserves an open plugin/configuration escape hatch here; Haxe callers must cross a named Unknown boundary rather than receive implicit Dynamic.",
+      "owningBead": "nxhx-f34.3.3"
+    },
+    {
+      "id": "form-props-any",
+      "module": "next/form",
+      "export": "FormProps",
+      "expectedSignatureHash": "sha256:28f79fb46d388d2b58abbd8b5f3994f3bccc84d09bd2727e026861887cb5e56c",
+      "action": "map-any-to-genes-unknown",
+      "expectedOccurrences": 1,
+      "reason": "React's inherited form boundary contains an upstream any; the raw Haxe prop surface must retain uncertainty explicitly as genes.ts.Unknown.",
+      "owningBead": "nxhx-f34.3.4"
+    },
+    {
+      "id": "link-props-any",
+      "module": "next/link",
+      "export": "LinkProps",
+      "expectedSignatureHash": "sha256:4fc42af13a0c32ec07c56b3a5aeb0f979dd63f8fe26a9c581f840381d6c51664",
+      "action": "map-any-to-genes-unknown",
+      "expectedOccurrences": 1,
+      "reason": "The generic route parameter defaults to any upstream; generated Haxe must surface an explicit Unknown until B04 supplies the typed RouteHref facade.",
+      "owningBead": "nxhx-f34.3.4"
+    },
+    {
+      "id": "link-component-any",
+      "module": "next/link",
+      "export": "default",
+      "expectedSignatureHash": "sha256:824862ef93de7d0e9b075b1e549d1f2d0c2a86f1e4a9fdada39764444c45871a",
+      "action": "map-any-to-genes-unknown",
+      "expectedOccurrences": 2,
+      "reason": "The default Link component repeats the open route generic in its callable declarations; both sites require the same explicit Unknown policy as LinkProps.",
+      "owningBead": "nxhx-f34.3.4"
+    },
+    {
+      "id": "next-response-unknown",
+      "module": "next/server",
+      "export": "NextResponse",
+      "expectedSignatureHash": "sha256:1711d5a0ab8bc1842e0f019faaf2eca66104b97e2a9299f93a18eccdb0381198",
+      "action": "allow-external-unknown",
+      "expectedOccurrences": 4,
+      "reason": "NextResponse models arbitrary HTTP body data with TypeScript unknown. Preserve that safe upstream boundary and require explicit application decoding.",
+      "owningBead": "nxhx-f34.3.5"
+    },
+    {
+      "id": "route-any",
+      "module": "next/types",
+      "export": "Route",
+      "expectedSignatureHash": "sha256:00a3fb74517d190c41aaca0156f94c72e778efacc0cc98d6ba71e2610e75e175",
+      "action": "map-any-to-genes-unknown",
+      "expectedOccurrences": 1,
+      "reason": "Next's fallback Route generic is any when typed routes are unavailable; the raw binding must use Unknown while the semantic layer provides generated route literals.",
+      "owningBead": "nxhx-f34.3.3"
+    },
+    {
+      "id": "script-props-any",
+      "module": "next/script",
+      "export": "ScriptProps",
+      "expectedSignatureHash": "sha256:958b86f5e84475b076cef6859f4c095abcec21a6fa6346a33e7c7abbe7bf3bd5",
+      "action": "map-any-to-genes-unknown",
+      "expectedOccurrences": 2,
+      "reason": "Script callbacks inherit browser event payloads typed as any upstream; both occurrences must remain explicit Unknown values at the Haxe boundary.",
+      "owningBead": "nxhx-f34.3.4"
+    }
+  ],
+  "generators": [
+    {
+      "module": "next/types",
+      "export": "ServerRuntime",
+      "expectedSignatureHash": "sha256:4f39fd954bd488855f3403e10efa7f2de15fa97baa423a8ecdb14ceb705238a5",
+      "strategy": "string-literal-union-with-undefined",
+      "output": "src/nextjs/raw/ServerRuntime.hx",
+      "owningBead": "nxhx-f34.3.3",
+      "values": [
+        {
+          "typescript": "nodejs",
+          "haxe": "NodeJs"
+        },
+        {
+          "typescript": "experimental-edge",
+          "haxe": "ExperimentalEdge"
+        },
+        {
+          "typescript": "edge",
+          "haxe": "Edge"
+        }
+      ]
+    }
+  ],
+  "acceptedTransitions": [
+    {
+      "fromIrHash": "sha256:d44d95295813adf93efd64354fd256bb9044ca16c6db150b671c4f1ccb86ae60",
+      "toIrHash": "sha256:f47426a5ab817eb7a690998857254f13458fee40717163f4dd8856fd4c30e92d",
+      "classifications": [
+        "breaking"
+      ],
+      "bead": "nxhx-f34.3.3",
+      "reason": "Replace the 20 B03 pending markers with signature-pinned, hash-locked curated core and navigation bindings after their Haxe failures and strict generated-TypeScript parity fixture passed."
+    },
+    {
+      "fromIrHash": "sha256:f47426a5ab817eb7a690998857254f13458fee40717163f4dd8856fd4c30e92d",
+      "toIrHash": "sha256:96c98e19ced54f46f1eb188c2491b0eac57b63caccc6eb2bb912e4a193965c24",
+      "classifications": [
+        "breaking"
+      ],
+      "bead": "nxhx-f34.3.3",
+      "reason": "Refine the RedirectType runtime object to exact push and replace property literals and prove both properties pass directly to Next interrupts without nullable TypeScript casts."
+    },
+    {
+      "fromIrHash": "sha256:96c98e19ced54f46f1eb188c2491b0eac57b63caccc6eb2bb912e4a193965c24",
+      "toIrHash": "sha256:cd987a5afb6d64e0c8605a3e9badd88e6848214c06c6c391edd837a14cda6b52",
+      "classifications": [
+        "breaking"
+      ],
+      "bead": "nxhx-f34.3.4",
+      "reason": "Replace all 18 B04 pending component, lazy-loading, script, and font markers with direct-import curated bindings after strict TSX parity passed; also correct impossible Haxe dynamic/Dynamic paths and use lower-camel Google font members while preserving the exact public Next modules."
+    },
+    {
+      "fromIrHash": "sha256:cd987a5afb6d64e0c8605a3e9badd88e6848214c06c6c391edd837a14cda6b52",
+      "toIrHash": "sha256:ed08e67a8429867a79f307e31d51c9802a4e63fc007d952e8ee2f00df73373ff",
+      "classifications": [
+        "breaking"
+      ],
+      "bead": "nxhx-f34.3.4",
+      "reason": "Remove next/dynamic's build-generated webpack and modules callbacks from the emitted options projection after review confirmed both retain upstream any-valued loader-map seams; application-authored loader, loading, and ssr options remain unchanged and strict TSX parity stays green."
+    },
+    {
+      "fromIrHash": "sha256:ed08e67a8429867a79f307e31d51c9802a4e63fc007d952e8ee2f00df73373ff",
+      "toIrHash": "sha256:1272dbfbf1e330ddfd632e751ee9d20770cb8b730ef85ab94164776131145df8",
+      "classifications": [
+        "breaking"
+      ],
+      "bead": "nxhx-f34.3.5",
+      "reason": "Replace all 27 P0 Web, headers, cache, and server pending markers with direct-import curated bindings after strict Route Handler parity passed; project native Request and Response through safe JSON-unknown views, separate cookie reads from context-restricted mutation intent, and retain the two P2 exports as explicit follow-up work."
+    },
+    {
+      "fromIrHash": "sha256:1272dbfbf1e330ddfd632e751ee9d20770cb8b730ef85ab94164776131145df8",
+      "toIrHash": "sha256:850b529e74bb1886d80905d4a4f7704e25f1762bba53235c47bae4b22e4ab22b",
+      "classifications": [
+        "breaking"
+      ],
+      "bead": "nxhx-f34.3.5",
+      "reason": "Refine the B05 safe Web projections after parity review: cover the standard Request and Response instance fields and common BodyInit variants, accept native Request constructor inputs, use exact NextResponse initializer projections, and keep read-only header callbacks assignable while preserving the strict JSON-unknown boundary and green Route Handler parity."
+    },
+    {
+      "fromIrHash": "sha256:850b529e74bb1886d80905d4a4f7704e25f1762bba53235c47bae4b22e4ab22b",
+      "toIrHash": "sha256:331f39186055e79a8a9b1cf9e1e7a9da6686d30edccb4064e922a9a8354820ea",
+      "classifications": [
+        "breaking"
+      ],
+      "bead": "nxhx-f34.5.7",
+      "reason": "Add current typed FormData and URLSearchParams host projections plus request body initialization needed by the semantic JSON/form/query codec boundary, after both the strict B05 server parity suite and the codec TypeScript/runtime/compile-failure suite passed without broad values or unchecked casts."
+    },
+    {
+      "fromIrHash": "sha256:331f39186055e79a8a9b1cf9e1e7a9da6686d30edccb4064e922a9a8354820ea",
+      "toIrHash": "sha256:5cc4548c4a85f0b21f6a2f566f71c3f326995df407d9bb3ffeeb5b64ba904220",
+      "classifications": [
+        "breaking"
+      ],
+      "bead": "nxhx-f34.5.2",
+      "reason": "Allow a genes.react.Element to satisfy the existing ReactNode boundary type so Haxe server pages can compose typed children into generated Client Component refs without casts; the focused fixture proves exact emitted props, raw-import and unserializable negatives, strict Next build acceptance, and hydrated browser behavior while the B04 component parity suite guards existing consumers."
+    },
+    {
+      "fromIrHash": "sha256:5cc4548c4a85f0b21f6a2f566f71c3f326995df407d9bb3ffeeb5b64ba904220",
+      "toIrHash": "sha256:3031a53cb826a176d3c28b1eac19463d4020f6e32b519f7ecd5f8431800e9974",
+      "classifications": [
+        "breaking"
+      ],
+      "bead": "nxhx-f34.5.8.3",
+      "reason": "Mark the six reviewed next/navigation use-prefixed exports as React Hooks by typed field metadata so Client Component diagnostics recognize aliases without inferring Hook identity from names; the client fixture proves top-level usePathname through a strict Next build and hydrated browser while conditional, loop, callback, protected-block, and early-return controls fail at their Haxe call sites."
+    },
+    {
+      "fromIrHash": "sha256:3031a53cb826a176d3c28b1eac19463d4020f6e32b519f7ecd5f8431800e9974",
+      "toIrHash": "sha256:b6083432bcec3aa680b7aabbd029b0ee272ab43f9ed17e0b748861c7c3a29cc0",
+      "classifications": [
+        "breaking"
+      ],
+      "bead": "nxhx-f34.5.8.3",
+      "reason": "Extend the same explicit React Hook identity to the reviewed next/compat/router migration Hook and next/link status Hook so all currently bound Next Hooks participate in the typed placement audit; their existing strict public-binding fixtures continue to own TypeScript parity while Hook diagnostics remain a compile-time-only annotation."
+    },
+    {
+      "fromIrHash": "sha256:b6083432bcec3aa680b7aabbd029b0ee272ab43f9ed17e0b748861c7c3a29cc0",
+      "toIrHash": "sha256:76a9ad09a1ad9296c037aae4b2757a5ce8761094f97ed91bb352adf6c989357d",
+      "classifications": [
+        "breaking"
+      ],
+      "bead": "nxhx-f34.2.11",
+      "reason": "Adopt the merged genes-ts Haxe-authoritative HXX checker by attaching reviewed component property contracts, replacing opaque zero-runtime Image and Script property wrappers with inspectable structural aliases, and aligning ReactNode with the closed Genes child marker. The focused Next component suite proves valid markup, ten Haxe failures before output, and six independent native TypeScript controls."
+    },
+    {
+      "fromIrHash": "sha256:76a9ad09a1ad9296c037aae4b2757a5ce8761094f97ed91bb352adf6c989357d",
+      "toIrHash": "sha256:9b723378fcf529eadad52ae38b70665efced85d9e45c860b4161f45a7584eeb5",
+      "classifications": [
+        "breaking"
+      ],
+      "bead": "nxhx-f34.5.8.9",
+      "reason": "Reuse the reviewed zero-runtime Tuple2 projection for ReadonlyURLSearchParams entry pairs so Haxe preserves both fixed string slots instead of widening them to Array<String>; the navigation fixture proves the emitted [string, string] iterator, rejects an Int key at the Haxe source span, and retains strict Next TypeScript parity with no runtime wrapper."
+    },
+    {
+      "fromIrHash": "sha256:9b723378fcf529eadad52ae38b70665efced85d9e45c860b4161f45a7584eeb5",
+      "toIrHash": "sha256:285291bde099ec157f6f054c78e47392c213112d1159f097d42c23c841e05c97",
+      "classifications": [
+        "breaking"
+      ],
+      "bead": "nxhx-ble.3.4",
+      "reason": "Use the reviewed current WebFormData projection for next/form action callbacks instead of Haxe 4.3.7's legacy js.html.FormData declaration; the component fixture proves exact globalThis.FormData TypeScript signatures, and the Todo production and browser suites exercise the same closed action boundary."
+    },
+    {
+      "fromIrHash": "sha256:285291bde099ec157f6f054c78e47392c213112d1159f097d42c23c841e05c97",
+      "toIrHash": "sha256:eb6644bbd2ff8ce8ac1affbaac178d47944e5f324e4198665ea0010b929240a0",
+      "classifications": [
+        "behavioral-review-required",
+        "breaking"
+      ],
+      "bead": "nxhx-0dg",
+      "reason": "Adopt security-patched Next 16.2.12 after comparing its declaration archive with 16.2.10: no reviewed export signature changed, the only curated/generated Haxe byte changes are version documentation in AppRouterInstance and ServerRuntime, and the full strict binding and Next fixture gates remain required before closure."
+    },
+    {
+      "fromIrHash": "sha256:eb6644bbd2ff8ce8ac1affbaac178d47944e5f324e4198665ea0010b929240a0",
+      "toIrHash": "sha256:39401830c427c903d3d07bff309f5191deaca12f07bda2a77038429fee38a544",
+      "classifications": [
+        "breaking"
+      ],
+      "bead": "nxhx-f34.7.5.2.1",
+      "reason": "Extend the current WebFormData projection with its exact string-or-Blob entry union, forEach callback, and union-preserving append alias so Haxe-authored React action Hooks can clone retry payloads without Dynamic, casts, assertions, or native TypeScript glue; strict server, Client Component, Todo production, and browser fixtures own parity."
+    },
+    {
+      "fromIrHash": "sha256:39401830c427c903d3d07bff309f5191deaca12f07bda2a77038429fee38a544",
+      "toIrHash": "sha256:70bbfaa6d7635aa09d43a3be7d8cb5ce7d45880cedcecc6456abd40a7fdafc4e",
+      "classifications": [
+        "breaking"
+      ],
+      "bead": "nxhx-f34.7.5.2.1",
+      "reason": "Close WebFormData get and getAll over the same exact string-or-Blob entry union instead of exposing broad unknown; the form decoder performs the one required runtime string guard locally, while strict server, codec, Client Component, Todo production, and browser fixtures prove the public contract."
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "$schema": "https://nextjshx.dev/schemas/adapter-plan.schema.json",
+  "schemaVersion": 1,
+  "toolchain": {
+    "nextjshx": "0.0.0-development",
+    "haxe": "4.3.7",
+    "genesTs": "1.38.2+f0ffa29e6d49fe81541977c6a3aae6b80000cec6",
+    "next": "16.2.12"
+  },
+  "intents": [
+    {
+      "kind": "route-handler",
+      "source": {
+        "typeName": "route_handlers.positive.EchoHandlers",
+        "fieldName": "remove",
+        "typePosition": {
+          "file": "tests/route-handlers/src/route_handlers/positive/EchoHandlers.hx",
+          "startLine": 20,
+          "startCharacter": 1,
+          "endLine": 35,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/route-handlers/src/route_handlers/positive/EchoHandlers.hx",
+          "startLine": 32,
+          "startCharacter": 2,
+          "endLine": 34,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/route-handlers/src/route_handlers/positive/EchoHandlers.hx",
+          "startLine": 19,
+          "startCharacter": 1,
+          "endLine": 19,
+          "endCharacter": 13
+        }
+      },
+      "segmentPath": "api/(v1)/echo/[id]",
+      "targetPath": "api/(v1)/echo/[id]/route.ts",
+      "implementation": {
+        "modulePath": "../../../../../../.tmp/src-gen/route_handlers/positive/EchoHandlers",
+        "symbol": "EchoHandlers"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../../../.tmp/src-gen/route_handlers/positive/EchoHandlers",
+          "symbol": "EchoHandlers",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "next/server",
+          "symbol": "NextRequest",
+          "alias": "NextJsHxRouteRequest",
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "named",
+          "name": "DELETE",
+          "sourceField": "remove",
+          "signature": "(request: NextJsHxRouteRequest, context: RouteContext<\"/api/echo/[id]\">) => globalThis.Response"
+        },
+        {
+          "kind": "named",
+          "name": "GET",
+          "sourceField": "get",
+          "signature": "(request: NextJsHxRouteRequest, context: RouteContext<\"/api/echo/[id]\">) => Promise<globalThis.Response>"
+        },
+        {
+          "kind": "named",
+          "name": "POST",
+          "sourceField": "post",
+          "signature": "(request: NextJsHxRouteRequest, context: RouteContext<\"/api/echo/[id]\">) => Promise<globalThis.Response>"
+        }
+      ],
+      "config": []
+    }
+  ]
+}

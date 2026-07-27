@@ -1,0 +1,13 @@
+-lib genes-ts
+-cp src
+-cp tests/metadata-segment/src
+-main metadata_segment.NoRuntime
+-js tests/metadata-segment/.tmp/typescript/index.tsx
+-D genes.ts
+-D genes.ts.no_extension
+-D genes.ts.jsx_import_source=react
+-D nextjshx.app-root=tests/metadata-segment/.tmp/app
+-D nextjshx.generated-root=tests/metadata-segment/.tmp/typescript
+--macro metadata_segment.MetadataSegmentFixture.install('tests/metadata-segment/.tmp/typescript-plan.json')
+--macro include('metadata_segment.positive')
+-dce full

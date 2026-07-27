@@ -1,0 +1,8 @@
+-lib genes-ts
+-cp src
+-cp tests/next-server/src
+-main next_server.NegativeCacheProfile
+-js tests/next-server/.tmp/negative-cache-profile.ts
+-D genes.ts
+-D genes.ts.no_extension
+-dce full

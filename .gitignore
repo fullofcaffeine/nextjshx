@@ -17,6 +17,13 @@ coverage/
 .turbo/
 .nextjshx/
 src-gen/
+examples/showcase-*/public/styles.css
+examples/mixed-adoption/public/styles.css
+examples/todoapp-next/public/styles.css
+tests/environment-boundaries/next-app/generated/
+tests/environment-boundaries/next-app/app/negative/page.tsx
+tests/client-components/next-app/app/components/InteractiveCounter.tsx
+tests/client-components/next-app/app/page.tsx
 next-env.d.ts
 *.tsbuildinfo
 __pycache__/
@@ -24,6 +31,9 @@ __pycache__/
 *.log
 *.tmp
 *.temp
+.audit/
+repomix-output*.xml
+repomix-output*.zip
 
 # Credentials and private local configuration (never commit)
 .env

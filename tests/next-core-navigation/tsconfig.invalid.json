@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    ".tmp/invalid-metadata.ts",
+    ".tmp/next_core_navigation/InvalidMetadataConsumer.ts",
+    ".tmp/nextjs/raw/metadata/Metadata.ts"
+  ],
+  "exclude": []
+}

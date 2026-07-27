@@ -1,0 +1,103 @@
+{
+  "$schema": "../../schemas/next-surface-fixtures.schema.json",
+  "schemaVersion": 1,
+  "fixtures": [
+    {
+      "id": "p0-core-types",
+      "priority": "P0",
+      "mode": "typescript-declaration-resolution",
+      "modules": [
+        "next",
+        "next/types"
+      ],
+      "proves": "The pinned TypeScript checker resolves every selected core type and reproduces its reviewed signature hash."
+    },
+    {
+      "id": "p0-components",
+      "priority": "P0",
+      "mode": "typescript-declaration-resolution",
+      "modules": [
+        "next/form",
+        "next/image",
+        "next/link"
+      ],
+      "proves": "The pinned TypeScript checker resolves the selected default components, props, and public helper exports."
+    },
+    {
+      "id": "p0-navigation",
+      "priority": "P0",
+      "mode": "typescript-declaration-resolution",
+      "modules": [
+        "next/navigation"
+      ],
+      "proves": "The pinned TypeScript checker resolves the supported hooks, URL search contract, redirect value, and navigation interrupts."
+    },
+    {
+      "id": "p0-server",
+      "priority": "P0",
+      "mode": "typescript-declaration-resolution",
+      "modules": [
+        "next/cache",
+        "next/headers",
+        "next/server"
+      ],
+      "proves": "The pinned TypeScript checker resolves the reviewed server, request-header, cache, middleware, and proxy declarations."
+    },
+    {
+      "id": "p0-web-contracts",
+      "priority": "P0",
+      "mode": "typescript-declaration-resolution",
+      "modules": [
+        "globalThis"
+      ],
+      "proves": "The pinned TypeScript DOM library resolves Request and Response as the platform contracts used by Route Handlers."
+    },
+    {
+      "id": "p1-fonts",
+      "priority": "P1",
+      "mode": "typescript-declaration-resolution",
+      "modules": [
+        "next/font/google",
+        "next/font/local"
+      ],
+      "proves": "The pinned TypeScript checker resolves the deliberately narrow Google loader sample and the public local-font loader."
+    },
+    {
+      "id": "p1-lazy-script",
+      "priority": "P1",
+      "mode": "typescript-declaration-resolution",
+      "modules": [
+        "next/dynamic",
+        "next/script"
+      ],
+      "proves": "The pinned TypeScript checker resolves the selected lazy-loading and script component declarations without private helpers."
+    },
+    {
+      "id": "p2-compat-router",
+      "priority": "P2",
+      "mode": "typescript-declaration-resolution",
+      "modules": [
+        "next/compat/router"
+      ],
+      "proves": "The pinned TypeScript checker resolves only the nullable compatibility hook promised for incremental migration."
+    },
+    {
+      "id": "p2-og",
+      "priority": "P2",
+      "mode": "typescript-declaration-resolution",
+      "modules": [
+        "next/og"
+      ],
+      "proves": "The pinned TypeScript checker resolves ImageResponse through its documented public entrypoint rather than next/dist."
+    },
+    {
+      "id": "p2-web-vitals",
+      "priority": "P2",
+      "mode": "typescript-declaration-resolution",
+      "modules": [
+        "next/web-vitals"
+      ],
+      "proves": "The pinned TypeScript checker resolves the public reporting hook while keeping the bundled metric type non-public."
+    }
+  ]
+}

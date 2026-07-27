@@ -1,0 +1,542 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nextjshx.dev/schemas/next-binding-ir-v1.json",
+  "title": "NextJsHx normalized binding IR",
+  "description": "Version-pinned declaration input, safety policy, ownership, and generated Haxe artifacts for the reviewed Next.js surface.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "protocol",
+    "version",
+    "generatedBy",
+    "sources",
+    "packages",
+    "surfaceHash",
+    "exports",
+    "generatedExterns",
+    "curatedExterns",
+    "irHash"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../schemas/next-binding-ir.schema.json"
+    },
+    "protocol": {
+      "const": "nextjshx.next-binding-ir"
+    },
+    "version": {
+      "const": 1
+    },
+    "generatedBy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "script",
+        "typescriptVersion"
+      ],
+      "properties": {
+        "script": {
+          "const": "scripts/bindings/sync-next-bindings.mjs"
+        },
+        "typescriptVersion": {
+          "$ref": "#/$defs/semver"
+        }
+      }
+    },
+    "sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allowlist",
+        "surface",
+        "overrides",
+        "implementations"
+      ],
+      "properties": {
+        "allowlist": {
+          "const": "config/next-public-entrypoints.json"
+        },
+        "surface": {
+          "const": "surface/next-public-surface.json"
+        },
+        "overrides": {
+          "const": "config/next-binding-overrides.json"
+        },
+        "implementations": {
+          "const": "config/next-binding-implementations.json"
+        }
+      }
+    },
+    "packages": {
+      "$ref": "#/$defs/packages"
+    },
+    "surfaceHash": {
+      "$ref": "#/$defs/digest"
+    },
+    "exports": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/export"
+      }
+    },
+    "generatedExterns": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/generatedExtern"
+      }
+    },
+    "curatedExterns": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/curatedExternGroup"
+      }
+    },
+    "irHash": {
+      "$ref": "#/$defs/digest"
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "bead": {
+      "type": "string",
+      "pattern": "^nxhx-[a-z0-9]+(?:\\.[0-9]+)*$"
+    },
+    "portablePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//).+$"
+    },
+    "packages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "next",
+        "typescript"
+      ],
+      "properties": {
+        "next": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "version"
+          ],
+          "properties": {
+            "name": {
+              "const": "next"
+            },
+            "version": {
+              "$ref": "#/$defs/semver"
+            }
+          }
+        },
+        "typescript": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "importName",
+            "name",
+            "version"
+          ],
+          "properties": {
+            "importName": {
+              "const": "typescript"
+            },
+            "name": {
+              "const": "@typescript/typescript6"
+            },
+            "version": {
+              "$ref": "#/$defs/semver"
+            }
+          }
+        }
+      }
+    },
+    "declaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package",
+        "path",
+        "syntaxKind",
+        "declaredName",
+        "declarationHash",
+        "documentationHash",
+        "normalizedText",
+        "typeConstructs",
+        "internal"
+      ],
+      "properties": {
+        "package": {
+          "enum": [
+            "next",
+            "@typescript/typescript6"
+          ]
+        },
+        "path": {
+          "$ref": "#/$defs/portablePath"
+        },
+        "syntaxKind": {
+          "type": "string",
+          "pattern": "^[A-Za-z]+$"
+        },
+        "declaredName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "declarationHash": {
+          "$ref": "#/$defs/digest"
+        },
+        "documentationHash": {
+          "$ref": "#/$defs/digest"
+        },
+        "normalizedText": {
+          "type": "string",
+          "minLength": 1
+        },
+        "typeConstructs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z]+$"
+          }
+        },
+        "internal": {
+          "type": "boolean"
+        }
+      }
+    },
+    "appliedOverride": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "action",
+        "occurrences",
+        "target",
+        "owningBead"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "action": {
+          "enum": [
+            "map-any-to-genes-unknown",
+            "allow-external-unknown"
+          ]
+        },
+        "occurrences": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "target": {
+          "const": "genes.ts.Unknown"
+        },
+        "owningBead": {
+          "$ref": "#/$defs/bead"
+        }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "anyOccurrences",
+        "unknownOccurrences",
+        "appliedOverrides"
+      ],
+      "properties": {
+        "anyOccurrences": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unknownOccurrences": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "appliedOverrides": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/appliedOverride"
+          }
+        }
+      }
+    },
+    "pendingGeneration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "owningBead"
+      ],
+      "properties": {
+        "status": {
+          "const": "pending"
+        },
+        "owningBead": {
+          "$ref": "#/$defs/bead"
+        }
+      }
+    },
+    "completedGeneration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "strategy",
+        "output",
+        "owningBead"
+      ],
+      "properties": {
+        "status": {
+          "const": "generated"
+        },
+        "strategy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "output": {
+          "$ref": "#/$defs/portablePath"
+        },
+        "owningBead": {
+          "$ref": "#/$defs/bead"
+        }
+      }
+    },
+    "curatedGeneration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "implementation",
+        "strategy",
+        "owningBead",
+        "fixture"
+      ],
+      "properties": {
+        "status": {
+          "const": "curated"
+        },
+        "implementation": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "strategy": {
+          "enum": [
+            "curated-public-module-extern",
+            "curated-public-type-projection"
+          ]
+        },
+        "owningBead": {
+          "$ref": "#/$defs/bead"
+        },
+        "fixture": {
+          "$ref": "#/$defs/portablePath"
+        }
+      }
+    },
+    "export": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "module",
+        "name",
+        "priority",
+        "kind",
+        "stability",
+        "signatureHash",
+        "haxeTypePath",
+        "exposure",
+        "fixture",
+        "declarations",
+        "safety",
+        "generation"
+      ],
+      "properties": {
+        "module": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "priority": {
+          "enum": [
+            "P0",
+            "P1",
+            "P2"
+          ]
+        },
+        "kind": {
+          "enum": [
+            "type",
+            "class",
+            "function",
+            "component",
+            "value"
+          ]
+        },
+        "stability": {
+          "enum": [
+            "stable",
+            "unstable",
+            "legacy",
+            "migration"
+          ]
+        },
+        "signatureHash": {
+          "$ref": "#/$defs/digest"
+        },
+        "haxeTypePath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "haxeMember": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exposure": {
+          "enum": [
+            "raw-only",
+            "raw-and-semantic"
+          ]
+        },
+        "fixture": {
+          "$ref": "#/$defs/portablePath"
+        },
+        "declarations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/declaration"
+          }
+        },
+        "safety": {
+          "$ref": "#/$defs/safety"
+        },
+        "generation": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/pendingGeneration"
+            },
+            {
+              "$ref": "#/$defs/completedGeneration"
+            },
+            {
+              "$ref": "#/$defs/curatedGeneration"
+            }
+          ]
+        }
+      }
+    },
+    "generatedExtern": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "module",
+        "export",
+        "output",
+        "sha256"
+      ],
+      "properties": {
+        "module": {
+          "type": "string",
+          "minLength": 1
+        },
+        "export": {
+          "type": "string",
+          "minLength": 1
+        },
+        "output": {
+          "$ref": "#/$defs/portablePath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "curatedOutput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/portablePath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "curatedExternGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "module",
+        "exports",
+        "strategy",
+        "owningBead",
+        "fixture",
+        "outputs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "module": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exports": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "strategy": {
+          "enum": [
+            "curated-public-module-extern",
+            "curated-public-type-projection"
+          ]
+        },
+        "owningBead": {
+          "$ref": "#/$defs/bead"
+        },
+        "fixture": {
+          "$ref": "#/$defs/portablePath"
+        },
+        "outputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/curatedOutput"
+          }
+        }
+      }
+    }
+  }
+}

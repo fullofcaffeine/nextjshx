@@ -10,6 +10,9 @@ class NegativeDeclarations {
 	@:routeCase public static final group = 0;
 	@:routeCase public static final slot = 0;
 	@:routeCase public static final interception = 0;
+	@:routeCase public static final interceptionDepth = 0;
+	@:routeCase public static final interceptionEmpty = 0;
+	@:routeCase public static final interceptionMultiple = 0;
 	@:routeCase public static final duplicate = 0;
 	@:routeCase public static final placement = 0;
 	@:routeCase public static final missing = 0;

@@ -3,7 +3,11 @@
   "schemaVersion": 1,
   "positive": [
     {
-      "id": "next-stable-component",
+      "id": "generated-server-runtime",
+      "build": "tests/next-binding-pipeline/build-generated.hxml"
+    },
+    {
+      "id": "next-stable-app-router",
       "build": "tests/fixtures/next-stable/build.hxml"
     }
   ],

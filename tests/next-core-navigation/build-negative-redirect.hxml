@@ -1,0 +1,7 @@
+-lib genes-ts
+-cp src
+-cp tests/next-core-navigation/src
+-main next_core_navigation.NegativeRedirectType
+-js tests/next-core-navigation/.tmp/negative-redirect.js
+-D genes.ts.no_extension
+-dce full

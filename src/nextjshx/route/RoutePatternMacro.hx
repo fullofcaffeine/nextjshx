@@ -13,7 +13,7 @@ class RoutePatternMacro {
 			case Parsed(pattern): pattern;
 			case Rejected(diagnostic):
 				Context.error('[${diagnostic.code}] ${diagnostic.message}', position);
-				new RoutePattern("", "/", [], []);
+				new RoutePattern("", "/", [], [], [], RouteTopologyKind.Canonical, []);
 		};
 	}
 	#end

@@ -16,6 +16,7 @@ const APPLICATION_PATH = path.join(OUTPUT_ROOT, "application.js");
 const SNAPSHOT_PATH = path.join(ROOT, "tests/snapshots/route-patterns-v1.json");
 const SOURCE_FILE = "tests/route-patterns/src/route_fixture/NegativeDeclarations.hx";
 const HAXE_VERSION = "4.3.7";
+const MODE = process.argv[2] ?? "verify";
 const ANSI_ESCAPE = /\x1b\[[0-?]*[ -/]*[@-~]/g;
 const CHARACTER_DIAGNOSTIC =
   /^(.*):(\d+): characters (\d+)-(\d+) : \[([A-Z0-9-]+)\] (.+)$/;
@@ -59,7 +60,7 @@ const NEGATIVE_CASES = [
     range: { kind: "characters", start: 14, end: 44 },
     code: "NXHX-ROUTE-GROUP-0001",
     message:
-      'Route-group segment "(marketing)" in route "(marketing)/todos" is deferred by ADR 0002; it cannot be silently removed from the public URL.',
+      'Route-group segment "(marketing())" in route "(marketing())/todos" must contain one named, portable group such as (marketing).',
   },
   {
     id: "slot",
@@ -67,7 +68,7 @@ const NEGATIVE_CASES = [
     range: { kind: "characters", start: 14, end: 43 },
     code: "NXHX-ROUTE-SLOT-0001",
     message:
-      'Parallel-route segment "@modal" in route "todos/@modal/[id]" is not supported by the P0 Haxe route grammar; keep this route native until slot semantics are implemented.',
+      'Parallel-route segment "@children" in route "todos/@children/[id]" must name one slot field such as @modal; @children is reserved by Next.',
   },
   {
     id: "interception",
@@ -75,11 +76,35 @@ const NEGATIVE_CASES = [
     range: { kind: "characters", start: 14, end: 51 },
     code: "NXHX-ROUTE-INTERCEPTION-0001",
     message:
-      'Intercepting-route segment "(..)photo" in route "feed/(..)photo/[id]" is not supported by the P0 Haxe route grammar.',
+      'Route "(..)photo/[id]" cannot use (..) at the App Router root; use (.) for a root sibling.',
+  },
+  {
+    id: "interception-depth",
+    line: 13,
+    range: { kind: "characters", start: 14, end: 56 },
+    code: "NXHX-ROUTE-INTERCEPTION-0001",
+    message:
+      'Route "feed/(..)(..)photo/[id]" cannot use (..)(..) with fewer than two preceding route segments.',
+  },
+  {
+    id: "interception-empty",
+    line: 14,
+    range: { kind: "characters", start: 14, end: 56 },
+    code: "NXHX-ROUTE-INTERCEPTION-0001",
+    message:
+      'Intercepting-route segment "(..)" in route "feed/(..)" must attach its marker directly to a static or dynamic target segment.',
+  },
+  {
+    id: "interception-multiple",
+    line: 15,
+    range: { kind: "characters", start: 14, end: 59 },
+    code: "NXHX-ROUTE-INTERCEPTION-0001",
+    message:
+      'Route "feed/(.)photo/(.)detail/[id]" contains more than one interception marker; Next permits one resolved interception target.',
   },
   {
     id: "duplicate",
-    line: 13,
+    line: 16,
     range: { kind: "characters", start: 14, end: 48 },
     code: "NXHX-ROUTE-PARAM-DUPLICATE-0001",
     message:
@@ -87,7 +112,7 @@ const NEGATIVE_CASES = [
   },
   {
     id: "placement",
-    line: 14,
+    line: 17,
     range: { kind: "characters", start: 14, end: 48 },
     code: "NXHX-ROUTE-PARAM-PLACEMENT-0001",
     message:
@@ -95,14 +120,14 @@ const NEGATIVE_CASES = [
   },
   {
     id: "missing",
-    line: 15,
+    line: 18,
     range: { kind: "characters", start: 14, end: 46 },
     code: "NXHX-ROUTE-PARAM-MISSING-0001",
     message: 'Params for route "todos/[id]" are missing required field "id" for segment 2.',
   },
   {
     id: "extra",
-    line: 32,
+    line: 35,
     range: { kind: "characters", start: 2, end: 21 },
     code: "NXHX-ROUTE-PARAM-EXTRA-0001",
     message:
@@ -110,7 +135,7 @@ const NEGATIVE_CASES = [
   },
   {
     id: "wrong-scalar",
-    line: 36,
+    line: 39,
     range: { kind: "characters", start: 2, end: 15 },
     code: "NXHX-ROUTE-PARAM-TYPE-0001",
     message:
@@ -118,14 +143,14 @@ const NEGATIVE_CASES = [
   },
   {
     id: "wrong-catch-all",
-    line: 40,
+    line: 43,
     range: { kind: "characters", start: 2, end: 20 },
     code: "NXHX-ROUTE-PARAM-TYPE-0001",
     message: 'Catch-all route parameter "slug" must be Array<String>; found String.',
   },
   {
     id: "wrong-optional-catch-all",
-    line: 44,
+    line: 47,
     range: { kind: "characters", start: 2, end: 33 },
     code: "NXHX-ROUTE-PARAM-TYPE-0001",
     message:
@@ -133,7 +158,7 @@ const NEGATIVE_CASES = [
   },
   {
     id: "optional-field",
-    line: 48,
+    line: 51,
     range: { kind: "characters", start: 2, end: 41 },
     code: "NXHX-ROUTE-PARAM-TYPE-0001",
     message:
@@ -141,7 +166,7 @@ const NEGATIVE_CASES = [
   },
   {
     id: "missing-codec",
-    line: 54,
+    line: 57,
     range: { kind: "characters", start: 2, end: 26 },
     code: "NXHX-ROUTE-PARAM-TYPE-0001",
     message:
@@ -149,19 +174,19 @@ const NEGATIVE_CASES = [
   },
   {
     id: "invalid-codec",
-    line: 70,
-    range: { kind: "lines", start: 70, end: 72 },
+    line: 73,
+    range: { kind: "lines", start: 73, end: 75 },
     code: "NXHX-ROUTE-CODEC-0001",
     message:
       'Route codec "route_fixture.NegativeDeclarations.BadNumericIdCodec" encode must have exact signature encode(value:route_fixture.BadNumericId):String.',
   },
   {
     id: "not-anonymous",
-    line: 23,
+    line: 26,
     range: { kind: "characters", start: 14, end: 51 },
     code: "NXHX-ROUTE-PARAMS-0001",
     message:
-      'Params for route "todos/[id]" must be an anonymous typedef with exactly its dynamic fields; found String.',
+      'Params for route "todos/[id]" must be an anonymous typedef or non-generic @:structInit class with exactly its dynamic fields; found String.',
   },
 ];
 
@@ -207,22 +232,33 @@ function runHaxe(build, genesSource, extraArgs = [], expectedStatus = 0) {
 function normalizedPlan(file) {
   const value = JSON.parse(fs.readFileSync(file, "utf8"));
   assert.deepEqual(Object.keys(value).sort(), ["routes", "schemaVersion"]);
-  assert.equal(value.schemaVersion, 1);
+  assert.equal(value.schemaVersion, 2);
   const routes = value.routes.map((route) => {
     assert.deepEqual(Object.keys(route).sort(), [
       "filesystemPath",
+      "interception",
+      "parallelSlots",
       "parameters",
       "publicPath",
+      "publicSegments",
       "segments",
+      "topology",
     ]);
+    const segment = (value) => ({
+      source: value.source,
+      publicSource: value.publicSource,
+      kind: value.kind,
+      segmentIndex: value.segmentIndex,
+      interception: value.interception,
+    });
     return {
       filesystemPath: route.filesystemPath,
       publicPath: route.publicPath,
-      segments: route.segments.map((segment) => ({
-        source: segment.source,
-        kind: segment.kind,
-        segmentIndex: segment.segmentIndex,
-      })),
+      topology: route.topology,
+      parallelSlots: route.parallelSlots,
+      interception: route.interception,
+      segments: route.segments.map(segment),
+      publicSegments: route.publicSegments.map(segment),
       parameters: route.parameters.map((parameter) => ({
         name: parameter.name,
         kind: parameter.kind,
@@ -232,7 +268,7 @@ function normalizedPlan(file) {
       })),
     };
   });
-  return `${JSON.stringify({ schemaVersion: 1, routes }, null, 2)}\n`;
+  return `${JSON.stringify({ schemaVersion: 2, routes }, null, 2)}\n`;
 }
 
 function repositoryRelative(file) {
@@ -278,6 +314,11 @@ function parseDiagnostic(output, fixtureId) {
 }
 
 try {
+  assert(new Set(["verify", "update"]).has(MODE), `expected verify or update mode, found ${MODE}`);
+  assert(
+    MODE !== "update" || !/^(?:1|true)$/i.test(process.env.CI ?? ""),
+    "route-pattern snapshot updates are disabled in CI",
+  );
   verifyHaxeVersion();
   const genesSource = genesClassPath();
   fs.rmSync(OUTPUT_ROOT, { recursive: true, force: true });
@@ -288,11 +329,15 @@ try {
   const forward = normalizedPlan(FORWARD_PATH);
   const reverse = normalizedPlan(REVERSE_PATH);
   assert.equal(reverse, forward, "route registration order changed the canonical route model");
-  assert.equal(
-    fs.readFileSync(SNAPSHOT_PATH, "utf8"),
-    forward,
-    "route-pattern snapshot drifted; review the P0 grammar and Haxe binding contract",
-  );
+  if (MODE === "update") {
+    fs.writeFileSync(SNAPSHOT_PATH, forward, "utf8");
+  } else {
+    assert.equal(
+      fs.readFileSync(SNAPSHOT_PATH, "utf8"),
+      forward,
+      "route-pattern snapshot drifted; review the App Router grammar and Haxe binding contract",
+    );
+  }
   assert(!forward.includes(ROOT), "route model leaked the compiler host's absolute workspace path");
   assert(!fs.existsSync(APPLICATION_PATH), "--no-output unexpectedly published application JavaScript");
 
@@ -313,7 +358,7 @@ try {
   }
 
   console.log(
-    `route-patterns: OK: 7 canonical positives and ${NEGATIVE_CASES.length} exact fail-closed diagnostics`,
+    `route-patterns: OK: 15 topology positives and ${NEGATIVE_CASES.length} exact fail-closed diagnostics`,
   );
 } catch (error) {
   console.error(`[route-patterns] ERROR: ${error.message}`);

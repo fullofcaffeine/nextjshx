@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" role="img" aria-labelledby="title desc">
+  <title id="title">Frame 01 indoor garden</title>
+  <desc id="desc">Terracotta growing frame with three trays and leafy plants.</desc>
+  <rect width="720" height="720" fill="#ef6d4c"/>
+  <circle cx="110" cy="102" r="58" fill="#f4f3cf" opacity=".3"/>
+  <path d="M172 598h376M214 598V138h292v460M214 180h292" fill="none" stroke="#27182e" stroke-width="18" stroke-linecap="square"/>
+  <rect x="238" y="302" width="244" height="42" rx="8" fill="#27182e"/>
+  <rect x="238" y="435" width="244" height="42" rx="8" fill="#27182e"/>
+  <rect x="238" y="564" width="244" height="34" rx="8" fill="#27182e"/>
+  <path d="M276 302c-1-58 53-75 70-116 29 51 19 97-22 116m74 0c-8-42 23-65 45-94 15 46 2 81-23 94M279 435c0-41 34-65 56-92 15 41 3 72-27 92m83 0c-2-55 42-81 66-113 12 54-9 92-40 113" fill="#e8ff49" stroke="#27182e" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M360 184v379" stroke="#f4f3cf" stroke-width="5" stroke-dasharray="10 15" opacity=".7"/>
+  <text x="54" y="672" fill="#27182e" font-family="monospace" font-size="18" font-weight="700" letter-spacing="4">FRAME 01 / WINDOW FARM</text>
+</svg>

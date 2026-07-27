@@ -1,5 +1,17 @@
 {
   "name": "nextjshx-next-stable-fixture",
   "version": "0.0.0",
-  "private": true
+  "private": true,
+  "packageManager": "npm@10.8.2",
+  "scripts": {
+    "build": "nextjshx build"
+  },
+  "dependencies": {
+    "next": "16.2.12",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "typescript": "6.0.2"
+  }
 }

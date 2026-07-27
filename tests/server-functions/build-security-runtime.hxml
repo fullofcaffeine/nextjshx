@@ -1,0 +1,8 @@
+-lib genes-ts
+-cp src
+-cp tests/server-functions/security
+-main server_function_security.GuardedActionRuntime
+-js tests/server-functions/.tmp/security-runtime.js
+-D dts
+-D js-es=6
+-dce full

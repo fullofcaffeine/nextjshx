@@ -1,0 +1,8 @@
+-lib genes-ts
+-cp src
+-cp tests/route-hrefs/src
+-main route_href_fixture.NegativeDeclarations
+-js tests/route-hrefs/.tmp/negative/application.ts
+-D genes.ts
+-D js-es=6
+-dce full

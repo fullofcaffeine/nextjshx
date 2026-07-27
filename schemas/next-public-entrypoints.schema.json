@@ -1,0 +1,267 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nextjshx.dev/schemas/next-public-entrypoints-v1.json",
+  "title": "NextJsHx public Next.js entrypoint allowlist",
+  "description": "Reviewed public Next.js and Web exports that NextJsHx may bind for the exact stable package lane.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "packages",
+    "entrypoints",
+    "excludedEntrypoints"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../schemas/next-public-entrypoints.schema.json"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "packages": {
+      "$ref": "#/$defs/packages"
+    },
+    "entrypoints": {
+      "type": "array",
+      "minItems": 17,
+      "items": {
+        "$ref": "#/$defs/entrypoint"
+      }
+    },
+    "excludedEntrypoints": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/excludedEntrypoint"
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "module": {
+      "type": "string",
+      "pattern": "^(?:next(?:/[a-z0-9*_-]+)*|globalThis)$"
+    },
+    "haxeTypePath": {
+      "type": "string",
+      "pattern": "^(?:[a-z_][A-Za-z0-9_]*\\.)+[A-Z][A-Za-z0-9_]*$"
+    },
+    "fixtureReference": {
+      "type": "string",
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[A-Za-z0-9._/-]+#[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "packages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "next",
+        "typescript"
+      ],
+      "properties": {
+        "next": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "version"
+          ],
+          "properties": {
+            "name": {
+              "const": "next"
+            },
+            "version": {
+              "$ref": "#/$defs/semver"
+            }
+          }
+        },
+        "typescript": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "importName",
+            "name",
+            "version"
+          ],
+          "properties": {
+            "importName": {
+              "const": "typescript"
+            },
+            "name": {
+              "const": "@typescript/typescript6"
+            },
+            "version": {
+              "$ref": "#/$defs/semver"
+            }
+          }
+        }
+      }
+    },
+    "moduleSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "module"
+        }
+      }
+    },
+    "globalSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "library"
+      ],
+      "properties": {
+        "kind": {
+          "const": "global"
+        },
+        "library": {
+          "const": "lib.dom.d.ts"
+        }
+      }
+    },
+    "export": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "stability",
+        "signatureHash",
+        "haxeTypePath",
+        "exposure"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^(?:default|[A-Za-z_$][A-Za-z0-9_$]*)$"
+        },
+        "kind": {
+          "enum": [
+            "type",
+            "class",
+            "function",
+            "component",
+            "value"
+          ]
+        },
+        "stability": {
+          "enum": [
+            "stable",
+            "unstable",
+            "migration"
+          ]
+        },
+        "signatureHash": {
+          "$ref": "#/$defs/digest"
+        },
+        "haxeTypePath": {
+          "$ref": "#/$defs/haxeTypePath"
+        },
+        "haxeMember": {
+          "type": "string",
+          "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*$"
+        },
+        "exposure": {
+          "enum": [
+            "raw-only",
+            "raw-and-semantic"
+          ]
+        }
+      }
+    },
+    "entrypoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "module",
+        "source",
+        "priority",
+        "fixture",
+        "selectionRationale",
+        "exports"
+      ],
+      "properties": {
+        "module": {
+          "$ref": "#/$defs/module"
+        },
+        "source": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/moduleSource"
+            },
+            {
+              "$ref": "#/$defs/globalSource"
+            }
+          ]
+        },
+        "priority": {
+          "enum": [
+            "P0",
+            "P1",
+            "P2"
+          ]
+        },
+        "fixture": {
+          "$ref": "#/$defs/fixtureReference"
+        },
+        "selectionRationale": {
+          "type": "string",
+          "minLength": 20
+        },
+        "exports": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/export"
+          }
+        }
+      }
+    },
+    "excludedEntrypoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "module",
+        "priority",
+        "stability",
+        "reason"
+      ],
+      "properties": {
+        "module": {
+          "$ref": "#/$defs/module"
+        },
+        "priority": {
+          "const": "P3"
+        },
+        "stability": {
+          "enum": [
+            "legacy",
+            "experimental"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 30
+        }
+      }
+    }
+  }
+}

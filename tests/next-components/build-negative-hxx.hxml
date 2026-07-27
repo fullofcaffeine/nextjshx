@@ -1,0 +1,9 @@
+-lib genes-ts
+-cp src
+-cp tests/next-components/src
+-main next_components.NextComponentHxxNegative
+-js tests/next-components/.tmp/negative-hxx.tsx
+-D genes.ts
+-D genes.ts.no_extension
+-D genes.ts.jsx_import_source=react
+-dce full

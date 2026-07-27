@@ -1,0 +1,10 @@
+-lib genes-ts
+-cp haxe
+-cp ../showcase-ui/haxe
+-cp ../../src
+--main FieldAtlasMain
+-js src-gen/index.tsx
+
+--macro field_atlas.AdapterPlan.install()
+--macro include('field_atlas')
+-dce full

@@ -1,0 +1,23 @@
+{
+  "name": "@nextjshx/showcase-blog",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "npm@10.8.2",
+  "scripts": {
+    "styles": "tailwindcss -i styles/app.css -o public/styles.css --minify",
+    "dev": "node ../../scripts/examples/dev-with-styles.mjs",
+    "build": "npm run styles && nextjshx build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@nextjshx/showcase-ui": "0.0.0",
+    "next": "16.2.12",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.3.3",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.2"
+  }
+}

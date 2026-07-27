@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" role="img" aria-labelledby="title desc">
+  <title id="title">Mist Column growing tower</title>
+  <desc id="desc">Olive growing column with a circular light and nine planting sites.</desc>
+  <rect width="720" height="720" fill="#d9e36d"/>
+  <circle cx="360" cy="152" r="104" fill="none" stroke="#27182e" stroke-width="14"/>
+  <circle cx="360" cy="152" r="72" fill="none" stroke="#f4f3cf" stroke-width="8" stroke-dasharray="18 12"/>
+  <path d="M322 184h76l44 385H278Z" fill="#515c31" stroke="#27182e" stroke-width="14" stroke-linejoin="round"/>
+  <ellipse cx="360" cy="569" rx="128" ry="38" fill="#27182e"/>
+  <g fill="#e8ff49" stroke="#27182e" stroke-width="7">
+    <path d="M306 282c-54-3-72-40-75-72 50 1 77 26 75 72Z"/><path d="M414 282c54-3 72-40 75-72-50 1-77 26-75 72Z"/>
+    <path d="M296 390c-58-2-78-41-82-77 54 1 84 29 82 77Z"/><path d="M424 390c58-2 78-41 82-77-54 1-84 29-82 77Z"/>
+    <path d="M288 492c-49-1-66-34-69-64 46 1 71 24 69 64Z"/><path d="M432 492c49-1 66-34 69-64-46 1-71 24-69 64Z"/>
+  </g>
+  <g fill="#f4f3cf"><circle cx="360" cy="282" r="12"/><circle cx="360" cy="390" r="12"/><circle cx="360" cy="492" r="12"/></g>
+  <text x="42" y="672" fill="#27182e" font-family="monospace" font-size="18" font-weight="700" letter-spacing="4">MIST COLUMN / NINE SITES</text>
+</svg>

@@ -1,7 +1,9 @@
-// Temporary F05 proof adapter. ADR 0001 requires generated, manifest-owned
-// adapters once the adapter publisher exists.
-import { HelloView } from "../src-gen/app/HelloView";
-
+// Native-owned root route retained beside the generated /haxe route to prove
+// that NextJsHx adoption does not claim or overwrite existing convention files.
 export default function Page() {
-  return HelloView.render();
+  return (
+    <main id="native-root">
+      <p>This root page remains native TypeScript.</p>
+    </main>
+  );
 }

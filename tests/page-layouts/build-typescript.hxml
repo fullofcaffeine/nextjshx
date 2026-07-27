@@ -1,0 +1,13 @@
+-lib genes-ts
+-cp src
+-cp tests/page-layouts/src
+-main page_layouts.NoRuntime
+-js tests/page-layouts/.tmp/typescript/index.tsx
+-D genes.ts
+-D genes.ts.no_extension
+-D genes.ts.jsx_import_source=react
+-D nextjshx.app-root=tests/page-layouts/next-app/app
+-D nextjshx.generated-root=tests/page-layouts/.tmp/typescript
+--macro page_layouts.PageLayoutFixture.install('tests/page-layouts/.tmp/typescript-plan.json')
+--macro include('page_layouts.positive')
+-dce full

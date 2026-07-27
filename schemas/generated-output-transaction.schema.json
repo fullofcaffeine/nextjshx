@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nextjshx.dev/schemas/generated-output-transaction-v1.json",
+  "title": "NextJsHx generated-output transaction journal v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "allowedOutputFiles",
+    "allowedOutputRoots",
+    "changes",
+    "intendedManifestMode",
+    "intendedManifestSha256",
+    "manifestPath",
+    "phase",
+    "previousManifestMode",
+    "previousManifestSha256",
+    "protocol",
+    "transactionId",
+    "version"
+  ],
+  "properties": {
+    "protocol": { "const": "nextjshx.generated-output-transaction" },
+    "version": { "const": 1 },
+    "transactionId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "phase": {
+      "enum": [
+        "prepared",
+        "publishing",
+        "published",
+        "rolling-back",
+        "committed"
+      ]
+    },
+    "manifestPath": {
+      "type": "string",
+      "pattern": "^\\.nextjshx/(?!(?:transaction\\.json$|transactions/|plans/))(?!.*(?:^|/)\\.\\.?/)[^\\u0000-\\u001f\\\\]+\\.json$"
+    },
+    "allowedOutputRoots": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 0,
+        "maxLength": 4096,
+        "pattern": "^(?:|(?!/)(?!.*(?:^|/)\\.\\.?/)[^\\u0000-\\u001f\\\\]+)$"
+      }
+    },
+    "allowedOutputFiles": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 4096,
+        "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?/)[^\\u0000-\\u001f\\\\]+\\.tsx?$"
+      }
+    },
+    "previousManifestSha256": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "previousManifestMode": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 511
+    },
+    "intendedManifestSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "intendedManifestMode": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 511
+    },
+    "changes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/change" }
+    }
+  },
+  "$defs": {
+    "change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "disposition",
+        "intendedOwnershipSha256",
+        "intendedMode",
+        "intendedSha256",
+        "path",
+        "previousOwnershipSha256",
+        "previousMode",
+        "previousSha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?/)[^\\u0000-\\u001f\\\\]+\\.tsx?$"
+        },
+        "disposition": { "enum": ["create", "update", "unchanged", "remove"] },
+        "previousOwnershipSha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "intendedOwnershipSha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "previousSha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "intendedSha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "previousMode": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 511
+        },
+        "intendedMode": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 511
+        }
+      }
+    }
+  }
+}

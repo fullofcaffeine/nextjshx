@@ -1,0 +1,85 @@
+import {Register} from "../genes/Register"
+
+export class Boot {
+	declare static __toStr: Function;
+	static __string_rec(o: any | null, s: string): string {
+		if (o == null) {
+			return "null";
+		};
+		if (s.length >= 5) {
+			return "<...>";
+		};
+		let t: string = typeof(o);
+		if (t == "function" && (o.__name__ || o.__ename__)) {
+			t = "object";
+		};
+		switch (t) {
+			case "function": {
+				return "<function>";
+				break;
+			}
+			case "object": {
+				if (((o) instanceof Array)) {
+					let str: string = "[";
+					s += "\t";
+					let _g_1: number = 0;
+					const _g1_1: number = o.length;
+					while (_g_1 < _g1_1) {
+						const i: number = _g_1++;
+						str += ((i > 0) ? "," : "") + Boot.__string_rec((o[i] ?? null), s);
+					};
+					str += "]";
+					return str;
+				};
+				let tostr: any | null;
+				try {
+					tostr = o.toString;
+				}catch (_g_2) {
+					return "???";
+				};
+				if (tostr != null && tostr != Object.toString && typeof(tostr) == "function") {
+					const s2: string = o.toString();
+					if (s2 != "[object Object]") {
+						return s2;
+					};
+				};
+				let str_1: string = "{\n";
+				s += "\t";
+				const hasp: boolean = o.hasOwnProperty != null;
+				let k: string = null!;
+				for( k in o ) {;
+				if (hasp && !o.hasOwnProperty(k)) {
+					continue;
+				};
+				if (k == "prototype" || k == "__class__" || k == "__super__" || k == "__interfaces__" || k == "__properties__") {
+					continue;
+				};
+				if (str_1.length != 2) {
+					str_1 += ", \n";
+				};
+				str_1 += s + k + " : " + Boot.__string_rec((o[k] ?? null), s);
+				};
+				s = s.substring(1);
+				str_1 += "\n" + s + "}";
+				return str_1;
+				break;
+			}
+			case "string": {
+				return o;
+				break;
+			}
+			default: {
+				return String(o);
+			}
+		};
+	}
+	static get __name__(): string {
+		return "js.Boot"
+	}
+	get __class__(): Function {
+		return Boot
+	}
+}
+Register.setHxClass("js.Boot", Boot);
+
+;Boot.__toStr = ({}).toString

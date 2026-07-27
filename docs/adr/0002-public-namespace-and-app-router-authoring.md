@@ -3,8 +3,14 @@
 - Status: Accepted
 - Date: 2026-07-16
 - Decision owners: project owner and NextJsHx maintainers
-- Related Beads: `nxhx-f34.1.4` (`NXHX-F04`)
+- Related Beads: `nxhx-f34.1.4` (`NXHX-F04`), `nxhx-f34.4.6` (`NXHX-A06`), `nxhx-ble.2`
 - Related PRD sections: 8.3, 10, 11, 12
+
+> Component-authoring amendment: ADR 0004 supersedes the primary
+> `@:next.clientComponent(path)` plus `ClientComponent.ref(Type)` ergonomics
+> selected here. The namespace, per-type declaration, native adapter, and
+> ownership decisions remain in force; the implementation retains this form as
+> a controlled compatibility/explicit-placement path.
 
 ## Context
 
@@ -88,7 +94,8 @@ For example, a raw navigation façade may be used directly:
 ```haxe
 package app.auth;
 
-import nextjs.raw.navigation.Navigation;
+import nextjs.raw.Navigation;
+import nextjs.raw.navigation.Never;
 
 class RequireSession {
   public static function redirectToLogin():Never {
@@ -100,10 +107,10 @@ class RequireSession {
 The relevant generated TypeScript shape remains a public Next.js import:
 
 ```ts
-import { redirect } from "next/navigation";
+import * as Navigation from "next/navigation";
 
 export function redirectToLogin(): never {
-  return redirect("/login");
+  return Navigation.redirect("/login");
 }
 ```
 
@@ -122,12 +129,15 @@ One annotated application class declares one Next convention module or
 boundary. The class-level metadata selects the adapter kind and target. Static
 fields select the implementation exports.
 
-The initial syntax is:
+The accepted syntax is:
 
 | Haxe declaration | Generated target relative to the detected App Router root | Export contract |
 | --- | --- | --- |
 | `@:next.page("todos/[id]")` | `todos/[id]/page.tsx` | default component plus reviewed page named exports |
 | `@:next.layout("")` | `layout.tsx` | default component plus reviewed layout named exports |
+| `@:next.loading("todos")` | `todos/loading.tsx` | default zero-argument server component |
+| `@:next.error("todos")` | `todos/error.tsx` | `"use client"` plus a default component with exact Error/reset props |
+| `@:next.notFound("todos")` | `todos/not-found.tsx` | default zero-argument server component |
 | `@:next.route("api/todos/[id]")` | `api/todos/[id]/route.ts` | named HTTP method exports |
 | `@:next.clientComponent("todos/_components/TodoToggle")` | `todos/_components/TodoToggle.tsx` | `"use client"` plus a default component |
 | `@:next.serverFunctions("todos/actions")` | `todos/actions.ts` | `"use server"` plus named async functions |
@@ -276,6 +286,68 @@ export default function Layout(props: LayoutProps<"/">) {
 Root-layout HTML/body behavior is proven by the real fixture and Next build,
 not by string matching the Haxe source.
 
+### Metadata, static params, and segment-config amendment
+
+On 2026-07-17, `nxhx-f34.4.7` amended this decision to implement the previously
+reserved `metadata`, `generateMetadata`, `generateStaticParams`, and `segment`
+fields. While developing the stable consumer, a Haxe-owned route that needed
+these ordinary Next capabilities still required a native TypeScript convention
+file. That split duplicated route ownership, and a generic config passthrough
+would have hidden syntax-level literals from Next's plugin or deferred invalid
+values until the framework build.
+
+The amendment therefore accepts:
+
+- exact static `Metadata`, or a mutually exclusive typed `generateMetadata`;
+- common Promise-shaped `MetadataProps` for pages/layouts and page-only
+  `PageMetadataProps` when query input is required;
+- zero-argument `generateStaticParams` returning a synchronous or Promise array
+  whose element type exactly matches the dynamic route; and
+- compile-time-only `SegmentConfig.create({...})` with the reviewed stable
+  `runtime`, `preferredRegion`, `dynamicParams`, `revalidate`, and
+  `maxDuration` literals.
+
+The segment marker is removed before genes-ts generation. The adapter plan
+stores only tagged data, and the host emits direct `export const` literals under
+an exact Next 16.2.12 version gate. Next typegen, strict TypeScript, the Next
+plugin, and `next build` remain independent oracles; this is an authoring layer,
+not a config runtime. Invalid route shapes, structural metadata props,
+conflicting metadata sources, runtime expressions, experimental values, and
+unknown fields fail before publication. The detailed contract and positive and
+negative examples are in the
+[metadata and segment-config reference](../metadata-and-segment-config.md).
+
+### Loading, error, and not-found amendment
+
+On 2026-07-17, `nxhx-f34.4.6` amended this accepted decision to add exact
+loading, error, and not-found annotations. While building the stable Next
+consumer, these boundaries exposed a Haxe-specific ergonomics gap: a native
+bridge required authors to duplicate convention filenames and TypeScript
+module semantics, while `error.tsx` additionally required a first-position
+`"use client"` directive and an exact `Error & { digest?: string }` /
+`reset: () => void` contract. Leaving the three files native would make a
+common App Router path less safe and less discoverable than the page/layout
+layer without adding useful runtime flexibility.
+
+The amendment therefore accepts three narrow declarations:
+
+- `@:next.loading(path)` and `@:next.notFound(path)` each require a public
+  static zero-argument `render` returning `Element` or `Promise<Element>` and
+  remain Server Components;
+- `@:next.error(path)` requires a synchronous public static `render` accepting
+  semantic `nextjs.app.ErrorProps` and returning `Element`; and
+- the renderer derives the exact filename and one default export, while the
+  error adapter automatically begins with `"use client"`.
+
+This is an authoring improvement, not a parallel boundary runtime. Next still
+owns streaming, error capture and reset, not-found selection, hydration, and
+HTTP status. Strict generated TypeScript and `next build` remain independent
+oracles. A structural error-props substitute, asynchronous error render,
+unexpected public export, wrong result, edited target, or missing directive
+fails before publication. The full positive and negative examples are in the
+[special-file reference](../special-files.md), and the production fixture
+proves streamed loading, a hydrated HTTP 404, and browser-driven error reset.
+
 ### Route Handler declaration
 
 A Route Handler class:
@@ -295,6 +367,7 @@ package app.api;
 
 import genes.js.Async.await;
 import nextjs.raw.server.NextRequest;
+import nextjs.raw.server.WebResponse;
 import nextjs.route.RouteContext;
 
 typedef TodoRouteParams = {
@@ -308,7 +381,7 @@ class TodoRoute {
   public static function get(
     request:NextRequest,
     context:RouteContext<TodoRouteParams>
-  ):Promise<Response> {
+  ):Promise<WebResponse> {
     final params = await(context.params);
     return ResponseJson.ok(Todos.find(params.id), TodoCodec);
   }
@@ -318,7 +391,7 @@ class TodoRoute {
   public static function delete(
     request:NextRequest,
     context:RouteContext<TodoRouteParams>
-  ):Promise<Response> {
+  ):Promise<WebResponse> {
     return TodoAuthorization.delete(request, context);
   }
 }
@@ -478,8 +551,8 @@ support and evidence.
 
 The initial model intentionally has a small export vocabulary:
 
-- `render` is the implementation selected for a page, layout, or client
-  component default export;
+- `render` is the implementation selected for a page, layout, loading, error,
+  not-found, or client component default export;
 - `@:next.GET`, `@:next.POST`, `@:next.PUT`, `@:next.PATCH`,
   `@:next.DELETE`, `@:next.HEAD`, and `@:next.OPTIONS` select Route Handler
   named exports;
@@ -521,22 +594,47 @@ Native TypeScript routes coexist by file ownership. NextJsHx does not need a
 semantic declaration for a native route, and it does not infer authority to
 replace one.
 
+### App Router topology amendment (2026-07-20)
+
+The accepted declaration grammar now distinguishes an adapter's filesystem
+topology from its canonical request URL. This amends the initial conservative
+deferral after focused Haxe fixtures, generated-adapter snapshots, CLI
+collision controls, strict Next type generation, a production build, and a
+browser navigation proof established the following contract:
+
+- named `(group)` and `@slot` segments remain in the generated filesystem
+  target but are omitted from the public URL;
+- `(.)`, `(..)`, `(..)(..)`, and `(...)` attach directly to one target segment
+  and resolve by URL-segment depth, not raw directory depth;
+- every route has one explicit topology role: canonical owner, parallel view,
+  or intercepted soft-navigation view;
+- intercepted views expose the canonical target through `PageProps` and
+  `href()`, require a canonical hard-navigation page, and cannot collide with
+  another view at the same slot/source/target identity;
+- a named `@:next.layoutSlots` props typedef extends `LayoutProps<Params>` with
+  required immutable `ReactNode` fields; and
+- `@:next.default("path/@slot")` owns the corresponding `default.tsx`, while
+  CLI preflight accepts exactly one Haxe or native default for every slot.
+
+These are compile-time ownership and typing rules over ordinary Next App
+Router files. They introduce no router, modal manager, slot registry, or
+runtime helper.
+
 ### Explicitly deferred syntax
 
-The following are outside the accepted initial authoring syntax:
+The following are outside the currently accepted authoring syntax:
 
-- parallel-route slots and `@slot` declarations;
-- intercepting-route syntax;
-- route groups in the typed Haxe path grammar;
 - Pages Router pages and legacy data functions;
-- Edge Runtime qualification;
-- `proxy`, instrumentation, metadata-route, image-generation, `template`,
-  `default`, `forbidden`, and `unauthorized` authoring annotations;
-- exact `loading`, `error`, and `not-found` annotations;
+- custom `pageExtensions` inventory and generation;
+- Edge Runtime compatibility qualification beyond accepting Next's stable
+  `runtime: "edge"` segment literal;
+- instrumentation, metadata-route, image-generation, `template`,
+  `global-error`, `forbidden`, and `unauthorized` authoring annotations;
 - directly client-marked page or layout declarations;
 - inline function-body Server Functions;
 - automatic route-parameter typedef synthesis;
-- typed search-parameter codecs beyond the raw `SearchParams` contract;
+- automatic inbound search-parameter decoding beyond the raw `SearchParams`
+  contract;
 - arbitrary named export aliases or directive strings;
 - experimental cache directive variants;
 - a user-maintained aggregate route declaration.
@@ -576,8 +674,8 @@ Costs and constraints:
   DCE precisely.
 - Adding a special file or export is an explicit product change rather than an
   arbitrary string escape.
-- Some valid advanced Next.js structures remain native TypeScript until their
-  Haxe model is proven.
+- Some valid but unmodeled Next.js structures remain native TypeScript until
+  their Haxe model is proven.
 
 No decision here authorizes a custom runtime, router, RPC protocol, or broad
 type cast. Generated modules remain ordinary Next.js and React modules.

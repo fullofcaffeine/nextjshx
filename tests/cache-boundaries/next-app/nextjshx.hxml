@@ -1,0 +1,11 @@
+-lib genes-ts
+-cp haxe
+-cp ../../../src
+--main CacheBoundariesMain
+-js src-gen/index.tsx
+
+--macro cache_boundaries.AdapterPlan.install('.nextjshx/default-plan.json')
+--macro include('cache_boundaries.app')
+--macro include('cache_boundaries.cache')
+--macro include('cache_boundaries.routes')
+-dce full

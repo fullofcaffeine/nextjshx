@@ -1,0 +1,19 @@
+-lib genes-ts
+-cp tests/mdx-components/positive
+-cp src
+--main MdxComponentsMain
+-js tests/mdx-components/.tmp/typescript/index.tsx
+
+--macro mdx_components.AdapterPlan.install()
+--macro include('mdx_components')
+-D nextjshx.app-root=tests/mdx-components/next-app/app
+-D nextjshx.generated-root=tests/mdx-components/.tmp/typescript
+-D genes.ts
+-D genes.ts.no_extension
+-D genes.ts.jsx_import_source=react
+-D genes.ts_output=typescript
+-D genes.ts_declaration_only_types
+-D genes.ts_no_root_export
+-D genes.ts_output_directory=tests/mdx-components/.tmp/typescript
+-D nextjshx.adapter-plan=tests/mdx-components/.tmp/plan.json
+-dce full

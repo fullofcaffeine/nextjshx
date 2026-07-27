@@ -10,4 +10,4 @@ echo "[beads-push] Scanning decoded current and historical Beads records..."
 bash "$ROOT_DIR/scripts/security/run-beads-gitleaks.sh"
 
 echo "[beads-push] Pushing the audited Dolt history..."
-bd -C "$ROOT_DIR" dolt push "$@"
+"$ROOT_DIR/.cache/beads-bin/bd" -C "$ROOT_DIR" dolt push "$@"

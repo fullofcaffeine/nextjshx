@@ -1,0 +1,64 @@
+[
+  {
+    "kind": "heading",
+    "level": 2,
+    "text": "Estuary recovery / morning brief"
+  },
+  {
+    "kind": "prose",
+    "paragraphs": [
+      "Six plots reported before the morning tide. Salinity stayed inside the seasonal band while the north transect gained measurable cover.",
+      "This payload is treated as untrusted remote data even though the showcase stores it locally for a deterministic build."
+    ]
+  },
+  {
+    "kind": "callout",
+    "tone": "insight",
+    "title": "Return before interpretation",
+    "body": "The highest single reading came from a plot with incomplete shade notes. Hold the conclusion until the afternoon return."
+  },
+  {
+    "kind": "metric",
+    "label": "Reviewed observations",
+    "value": "96.4%",
+    "detail": "2,330 of 2,418 records passed the closed decoder."
+  },
+  {
+    "kind": "data-series",
+    "title": "Cover change by transect",
+    "unit": "pts",
+    "points": [
+      {
+        "label": "North",
+        "value": 14.2
+      },
+      {
+        "label": "Central",
+        "value": 8.6
+      },
+      {
+        "label": "South",
+        "value": 11.1
+      }
+    ]
+  },
+  {
+    "kind": "quote",
+    "text": "A clean payload is not yet a true observation.",
+    "attribution": "Morning review / note 17"
+  },
+  {
+    "kind": "code",
+    "language": "json",
+    "caption": "The remote source can carry text, never executable JSX.",
+    "source": "{\"kind\":\"metric\",\"label\":\"Reviewed\",\"value\":\"96.4%\"}"
+  },
+  {
+    "kind": "media",
+    "src": "/atlas-transect.svg",
+    "alt": "A diagram of six field plots along an estuary transect",
+    "caption": "Plate 02 / observation plots from upper marsh to tidal edge",
+    "width": 1200,
+    "height": 640
+  }
+]

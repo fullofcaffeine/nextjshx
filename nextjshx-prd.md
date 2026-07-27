@@ -70,7 +70,7 @@ The initial implementation should pin a machine-readable compatibility baseline 
 
 | Surface | Initial contract |
 |---|---|
-| Next.js | Stable `16.2.x`, initially exercised at `16.2.10` |
+| Next.js | Stable `16.2.x`, initially exercised at `16.2.12` |
 | Next.js upstream source | Exact tag/commit recorded from `../nextjs`; read-only |
 | App model | App Router first |
 | Node.js | Next.js floor `>=20.9.0`; CI tests the floor and one pinned current LTS |
@@ -607,18 +607,18 @@ Breaking or unsupported drift opens a P0/P1 Bead and fails the sync lane. Additi
 #### P1 breadth
 
 - `template.tsx`;
-- `default.tsx`;
+- `default.tsx` (implemented for typed parallel-slot fallbacks);
 - `forbidden.tsx` and `unauthorized.tsx` where supported;
-- `proxy.ts`;
+- `proxy.ts` (implemented at the root convention);
 - `instrumentation.ts` and client instrumentation;
 - metadata route files such as sitemap, robots, manifest, and generated images;
-- route groups in the typed route model;
+- route groups in the typed route model (implemented);
 - robust mixed TS/Haxe route discovery.
 
 #### P2/P3 breadth
 
-- parallel routes and slots;
-- intercepting routes;
+- parallel routes and typed layout slots (implemented);
+- intercepting routes with canonical hard-navigation ownership (implemented);
 - advanced metadata image generation;
 - Edge runtime qualification;
 - Pages Router authoring and legacy data functions;
@@ -684,8 +684,12 @@ Rules:
 - domain abstracts must have an explicit route codec or be safely string-backed;
 - duplicate dynamic parameter names are rejected;
 - malformed, reserved, or traversal-like segment paths fail before file generation;
-- route groups are stripped from the public URL but retained in the filesystem path;
-- slots/intercepting syntax remains unsupported until dedicated semantics and tests exist.
+- route groups and slots are stripped from the public URL but retained in the filesystem path;
+- all four interception markers resolve by URL-segment depth and retain their
+  filesystem spelling only in adapter ownership;
+- intercepted views require an ordinary canonical page for hard navigation;
+- named layout slots are required immutable `ReactNode` fields and require one
+  Haxe-owned or native `default` convention each.
 
 ### 11.4 Route references and URL generation
 
@@ -937,6 +941,16 @@ Requirements:
 - arguments and return values satisfy a conservative React Server Function serialization contract;
 - functions may accept `FormData` through a faithful Web API extern;
 - authentication and authorization are explicit application responsibilities and prominently documented;
+- the semantic guarded-action path requires a closed decoder, current-request
+  authenticator, authenticated target resolver, exact-operation authorizer,
+  mutation callback, rejection mapping, and public-result projection in one
+  inferred config;
+- only that guarded pipeline may construct its operation-scoped authorization
+  witness, and only after the application callbacks succeed for the current
+  invocation;
+- guarded control flow proves stage presence, order, and short-circuiting, not
+  session freshness, tenant scoping, policy correctness, transaction safety, or
+  result secrecy;
 - error policy is explicit: thrown framework interrupt, typed result, or documented exception;
 - cache invalidation helpers remain direct Next calls;
 - no secret/token should be accepted from a client argument when it should be read from cookies or headers.
@@ -1068,7 +1082,7 @@ Use `.nextjshx/manifest.json` with an exact schema version. A suggested v1 shape
   "protocol": "nextjshx.generated-output",
   "version": 1,
   "generation": "sha256-of-sorted-path-digests",
-  "nextVersion": "16.2.10",
+  "nextVersion": "16.2.12",
   "genesVersion": "1.27.0",
   "outputs": [
     {
@@ -1212,15 +1226,26 @@ The command must be idempotent and covered by snapshot/package-shape tests.
 
 The development command orchestrates rather than replaces Next:
 
-- start or connect to a Haxe compilation server;
-- watch Haxe and relevant config files;
-- serialize generation runs so two publishers cannot race;
+- reserve a fresh loopback port and own one Haxe compilation server for the
+  invocation; never attach implicitly to an unknown existing server;
+- resolve Lix's Node shim to the real compiler pinned by the nearest `.haxerc`
+  for native server protocol, with a reported direct-compilation fallback;
+- derive the watch graph from nested HXML, classpaths, resources, scoped
+  libraries, config/lock/tool identity, and explicitly declared extra inputs;
+- serialize generation runs so two publishers cannot race, and collapse edits
+  received during an active compile into one newest-state follow-up;
 - debounce only enough to avoid duplicate writes;
-- preserve the last good adapters on a failed compile;
-- start `next dev` with ordinary arguments passed through;
-- let Next/Turbopack own HMR;
-- prefix diagnostics by source (`haxe`, `nextjshx`, `next`, `tsc`) without hiding raw errors;
-- terminate child processes cleanly.
+- require a successful initial generation or an exact manifest-verified
+  last-good tree before starting Next;
+- preserve exact last-good generated and adapter bytes on a failed compile,
+  then recover on the next valid edit without restarting Next;
+- start one `next dev` with reviewed ordinary arguments passed through after an
+  explicit separator;
+- let Next/Turbopack own HMR and React Fast Refresh;
+- prefix diagnostics by source (`haxe`, `nextjshx`, `next`, `tsc`) without
+  hiding raw errors; and
+- handle interrupt, termination, and hangup during startup or steady state,
+  terminating only invocation-owned process groups with bounded escalation.
 
 ### 15.5 `nextjshx build`
 
@@ -1410,7 +1435,8 @@ At minimum:
 - route handler with duplicate/unsupported method;
 - route handler returning an incompatible value;
 - request JSON read as a domain type without a decoder;
-- unsupported parallel/intercepting route syntax in a P0 declaration;
+- malformed or depth-invalid parallel/intercepting topology, duplicate view
+  ownership, orphan interception, and a named slot without one default;
 - public binding drift not covered by an override.
 
 ### 17.3 Reference todo application
@@ -1517,6 +1543,21 @@ Keep comments concise:
 ### 19.1 Server Function security
 
 Documentation and examples must require authentication and authorization inside every sensitive Server Function. Generated wrappers do not confer trust.
+
+The selected semantic design is the guarded pipeline in
+[ADR 0005](docs/adr/0005-server-function-security-ergonomics.md). It invokes a
+closed decoder, request-local application authenticator, authenticated target
+resolver, and exact-operation authorizer before constructing a private witness
+for the mutation callback. Missing targets and denied policy share a coarse
+unavailable result by default, and the domain result must pass through an
+explicit public projection.
+
+This is an omission-resistant control-flow contract, not an automatic security
+or authorization system. No metadata, body-call scan, broad cast, or generated
+adapter may assert that application identity, ownership, tenancy, policy, or
+disclosure rules are correct. Native Next origin checks, body-size limits,
+action IDs, direct POST reachability, and framework interrupts remain native and
+are not reimplemented.
 
 ### 19.2 Input validation
 
@@ -1763,9 +1804,8 @@ Exit criteria:
 
 Candidates:
 
-- proxy and instrumentation if not already complete;
+- instrumentation and remaining root conventions;
 - metadata routes and image generation;
-- parallel/intercepting routes;
 - Edge runtime qualification;
 - Pages Router interop/authoring;
 - route discovery across monorepos/multi-zones;

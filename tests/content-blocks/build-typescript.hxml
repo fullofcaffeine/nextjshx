@@ -1,0 +1,10 @@
+-lib genes-ts
+-cp src
+-cp tests/content-blocks/src
+-main content_blocks.ContentBlockRuntime
+-js tests/content-blocks/.tmp/typescript/index.tsx
+-D genes.ts
+-D genes.ts.no_extension
+-D genes.ts.jsx_import_source=react
+-D js-es=6
+-dce full

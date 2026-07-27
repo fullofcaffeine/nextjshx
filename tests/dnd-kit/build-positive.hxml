@@ -1,0 +1,10 @@
+-lib genes-ts
+-cp src
+-cp tests/dnd-kit/src
+-main dnd_kit.Positive
+-js tests/dnd-kit/.tmp/typescript/index.tsx
+-D genes.ts
+-D genes.ts.no_extension
+-D genes.ts.jsx_import_source=react
+--macro dnd_kit.Fixture.install()
+-dce full

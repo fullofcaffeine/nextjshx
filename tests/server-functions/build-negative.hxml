@@ -1,0 +1,12 @@
+-lib genes-ts
+-cp src
+-cp tests/server-functions/negative
+-main server_functions_negative.NoRuntime
+-js tests/server-functions/.tmp/rejected.tsx
+--no-output
+-D genes.ts
+-D genes.ts.no_extension
+-D nextjshx.app-root=tests/server-functions/next-app/app
+-D nextjshx.generated-root=tests/server-functions/.tmp/generated
+--macro server_functions_negative.Fixture.install()
+--macro server_functions_negative.Fixture.reject()

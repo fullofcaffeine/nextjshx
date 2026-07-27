@@ -256,9 +256,22 @@ class RouteParameterValidator {
 	public static function validate(pattern:RoutePattern, paramsType:Type, position:Position):RouteParameterValidation {
 		final fields = switch resolveAliases(paramsType) {
 			case TAnonymous(reference): reference.get().fields.copy();
+			case TInst(reference, parameters):
+				final definition = reference.get();
+				if (parameters.length == 0 && definition.params.length == 0 && definition.meta.has(":structInit")) {
+					definition.fields.get().filter(field -> switch field.kind {
+						case FVar(_, _): true;
+						case _: false;
+					});
+				} else {
+					fail("NXHX-ROUTE-PARAMS-0001",
+						'Params for route "${pattern.filesystemPath}" must be an anonymous typedef or non-generic @:structInit class with exactly its dynamic fields; found ${typeName(paramsType)}.',
+						position);
+					[];
+				}
 			case _:
 				fail("NXHX-ROUTE-PARAMS-0001",
-					'Params for route "${pattern.filesystemPath}" must be an anonymous typedef with exactly its dynamic fields; found ${typeName(paramsType)}.',
+					'Params for route "${pattern.filesystemPath}" must be an anonymous typedef or non-generic @:structInit class with exactly its dynamic fields; found ${typeName(paramsType)}.',
 					position);
 				[];
 		};

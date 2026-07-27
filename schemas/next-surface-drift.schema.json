@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nextjshx.dev/schemas/next-surface-drift-v1.json",
+  "title": "NextJsHx binding surface drift report",
+  "description": "Actionable compatibility classification between two normalized binding IR documents.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "protocol",
+    "version",
+    "generatedBy",
+    "baseline",
+    "candidate",
+    "counts",
+    "changes",
+    "decision",
+    "reportHash"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../schemas/next-surface-drift.schema.json"
+    },
+    "protocol": {
+      "const": "nextjshx.next-surface-drift"
+    },
+    "version": {
+      "const": 1
+    },
+    "generatedBy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "script"
+      ],
+      "properties": {
+        "script": {
+          "const": "scripts/bindings/sync-next-bindings.mjs"
+        }
+      }
+    },
+    "baseline": {
+      "$ref": "#/$defs/identity"
+    },
+    "candidate": {
+      "$ref": "#/$defs/identity"
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "compatible",
+        "additive",
+        "behavioralReviewRequired",
+        "breaking",
+        "unsupportedConstruct"
+      ],
+      "properties": {
+        "compatible": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "additive": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "behavioralReviewRequired": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "breaking": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unsupportedConstruct": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/change"
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "exitCode",
+        "action"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "clean",
+            "compatible",
+            "review-required",
+            "blocked"
+          ]
+        },
+        "exitCode": {
+          "enum": [
+            0,
+            1,
+            2
+          ]
+        },
+        "action": {
+          "type": "string",
+          "minLength": 20
+        }
+      }
+    },
+    "reportHash": {
+      "$ref": "#/$defs/digest"
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "portablePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//).+$"
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "irHash",
+        "nextVersion"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/portablePath"
+        },
+        "irHash": {
+          "$ref": "#/$defs/digest"
+        },
+        "nextVersion": {
+          "$ref": "#/$defs/semver"
+        }
+      }
+    },
+    "change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification",
+        "code",
+        "module",
+        "message",
+        "owner",
+        "fixture"
+      ],
+      "properties": {
+        "classification": {
+          "enum": [
+            "compatible",
+            "additive",
+            "behavioral-review-required",
+            "breaking",
+            "unsupported-construct"
+          ]
+        },
+        "code": {
+          "type": "string",
+          "pattern": "^NXHX-DRIFT-[A-Z0-9-]+$"
+        },
+        "module": {
+          "type": "string",
+          "minLength": 1
+        },
+        "export": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "minLength": 10
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^nxhx-[a-z0-9]+(?:\\.[0-9]+)*$"
+        },
+        "fixture": {
+          "$ref": "#/$defs/portablePath"
+        }
+      }
+    }
+  }
+}

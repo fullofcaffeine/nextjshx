@@ -1,4 +1,5 @@
 -lib genes-ts
+-cp src
 -cp tests/fixtures/next-stable/haxe
 --main FixtureMain
 
@@ -10,9 +11,15 @@
 -D genes.ts.no_extension
 # React 19 exposes JSX from the module rather than as a global namespace.
 -D genes.ts.jsx_import_source=react
+-D nextjshx.app-root=tests/fixtures/next-stable/app
+-D nextjshx.generated-root=tests/fixtures/next-stable/src-gen
+-D nextjshx.adapter-plan-output=tests/fixtures/next-stable/.nextjshx/snapshot-plan.json
 
-# The authored TypeScript adapter cannot make its Haxe module enter the typed
-# graph. Include the owning package; @:keep selects the external entry while
-# full DCE remains free to remove unmarked declarations.
+# Generated TypeScript adapters cannot make their Haxe modules enter the typed
+# graph. Include the owning package; the declaration macro applies @:keep only
+# to external entries while full DCE remains free to remove other declarations.
+--macro next_stable.AdapterPlan.install()
 --macro include('app')
+--macro include('special_file_fixture')
+--macro include('request_proxy_fixture')
 -dce full

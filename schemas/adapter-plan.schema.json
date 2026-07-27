@@ -330,10 +330,17 @@
           "enum": [
             "page",
             "layout",
+            "loading",
+            "error",
+            "not-found",
+            "default",
             "route-handler",
             "client-component",
+            "react-hook",
             "server-function",
-            "proxy"
+            "cache-function",
+            "proxy",
+            "mdx-components"
           ]
         },
         "source": {

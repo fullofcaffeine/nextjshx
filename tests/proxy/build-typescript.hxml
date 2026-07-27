@@ -1,0 +1,12 @@
+-lib genes-ts
+-cp src
+-cp tests/proxy/src
+-main proxy_fixture.NoRuntime
+-js tests/proxy/.tmp/typescript/index.ts
+-D genes.ts
+-D genes.ts.no_extension
+-D nextjshx.app-root=tests/proxy/next-app/app
+-D nextjshx.generated-root=tests/proxy/.tmp/typescript
+--macro proxy_fixture.ProxyFixture.install('tests/proxy/.tmp/typescript-plan.json')
+--macro include('proxy_fixture.positive')
+-dce full

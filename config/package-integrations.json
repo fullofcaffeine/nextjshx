@@ -1,0 +1,674 @@
+{
+  "$schema": "https://nextjshx.dev/schemas/package-integrations-v1.json",
+  "schemaVersion": 1,
+  "integrations": [
+    {
+      "id": "cmdk",
+      "package": "cmdk",
+      "version": "1.1.1",
+      "license": "MIT",
+      "integrity": "sha512-Vsv7kFaXm+ptHDMZ7izaRsP70GgrW9NBNGswt9OZaVBLlE0SNpDq8eu/VGXyF9r7M0azK3Wy7OlYXsuyYLFzHg==",
+      "repository": "https://github.com/pacocoursey/cmdk",
+      "categories": [
+        "headless-behavior"
+      ],
+      "strategies": [
+        "haxe-facade",
+        "native-source",
+        "raw-extern",
+        "semantic-facade"
+      ],
+      "declaredBy": [
+        "examples/showcase-ui/package.json"
+      ],
+      "modules": [
+        {
+          "specifier": "cmdk",
+          "declaration": "dist/index.d.ts",
+          "declarationSha256": "bb703864a1bc9ca5ac3589ffd83785f6dc86f7f6c485c97d7ffd53438777cb9e",
+          "requiredExports": [
+            "Command",
+            "CommandDialog",
+            "CommandEmpty",
+            "CommandGroup",
+            "CommandInput",
+            "CommandItem",
+            "CommandList",
+            "CommandRoot",
+            "CommandSeparator"
+          ]
+        }
+      ],
+      "haxeSources": [
+        "examples/showcase-ui/haxe/showcase/ui/Command.hx",
+        "examples/todoapp-next/haxe/todoapp/client/TodoCommandCenter.hx",
+        "src/nextjs/raw/integrations/cmdk/Command.hx",
+        "tests/showcase-ui/src/showcase_ui/HxxNegative.hx",
+        "tests/showcase-ui/src/showcase_ui/SurfaceConsumer.hx"
+      ],
+      "nativeSources": [
+        "examples/showcase-ui/src/components/ui/command.tsx"
+      ],
+      "evidence": [
+        "docs/cmdk.md",
+        "docs/package-integrations.md",
+        "docs/radix-shadcn.md",
+        "examples/showcase-ui/README.md",
+        "examples/todoapp-next/README.md",
+        "scripts/examples/todoapp-next.mjs",
+        "scripts/testing/package-integrations.mjs",
+        "scripts/testing/showcase-ui.mjs",
+        "tests/e2e/todoapp-next.spec.mjs",
+        "tests/showcase-ui/README.md"
+      ]
+    },
+    {
+      "id": "dnd-kit-helpers",
+      "package": "@dnd-kit/helpers",
+      "version": "0.5.0",
+      "license": "MIT",
+      "integrity": "sha512-i4y+51/icSw+OHMr/su19qhnmNhAzh8PnBwXvapFYTd+64oodIyJRiRkB+hhfxAfnur7RYSW8qacDTrXjg2XOg==",
+      "repository": "https://github.com/clauderic/dnd-kit",
+      "categories": [
+        "headless-behavior"
+      ],
+      "strategies": [
+        "raw-extern",
+        "semantic-facade"
+      ],
+      "declaredBy": [
+        "examples/todoapp-next/package.json",
+        "package.json"
+      ],
+      "modules": [
+        {
+          "specifier": "@dnd-kit/helpers",
+          "declaration": "dist/index.d.ts",
+          "declarationSha256": "b49c4bab250429648dec2d62aab10efebcf2e9e15dd036a3ae8af87e8519b729",
+          "requiredExports": [
+            "arrayMove"
+          ]
+        }
+      ],
+      "haxeSources": [
+        "src/nextjs/integrations/dndkit/DndKit.hx",
+        "src/nextjs/integrations/dndkit/ReorderResult.hx",
+        "src/nextjs/raw/integrations/dndkit/ArrayMove.hx",
+        "tests/dnd-kit/src/dnd_kit/Positive.hx"
+      ],
+      "nativeSources": [],
+      "evidence": [
+        "docs/dnd-kit.md",
+        "docs/package-integrations.md",
+        "scripts/testing/dnd-kit.mjs",
+        "tests/dnd-kit/README.md"
+      ]
+    },
+    {
+      "id": "dnd-kit-react",
+      "package": "@dnd-kit/react",
+      "version": "0.5.0",
+      "license": "MIT",
+      "integrity": "sha512-abQPLI8lmfVE+v/n+pqy5WFxrw6T2Yg0UQZsL78dp5DKci7dKTVDjvLWqvass+XTFtzJmsZEjk1NdqE6xG8Jiw==",
+      "repository": "https://github.com/clauderic/dnd-kit",
+      "categories": [
+        "generic-hook",
+        "headless-behavior"
+      ],
+      "strategies": [
+        "raw-extern",
+        "semantic-facade"
+      ],
+      "declaredBy": [
+        "examples/todoapp-next/package.json",
+        "package.json"
+      ],
+      "modules": [
+        {
+          "specifier": "@dnd-kit/react",
+          "declaration": "index.d.ts",
+          "declarationSha256": "c94ec52f2aa8e04f7281b1c530eef37db738314c462676b7dd01b72d8b5c7bd8",
+          "requiredExports": [
+            "DragDropProvider"
+          ]
+        },
+        {
+          "specifier": "@dnd-kit/react/sortable",
+          "declaration": "sortable.d.ts",
+          "declarationSha256": "7297e64d0b8abd708d87d41669087d53fbd5f2af29baf233a9744ef3dbed94eb",
+          "requiredExports": [
+            "useSortable"
+          ]
+        }
+      ],
+      "haxeSources": [
+        "src/nextjs/integrations/dndkit/DndKit.hx",
+        "src/nextjs/integrations/dndkit/ReorderResult.hx",
+        "src/nextjs/raw/integrations/dndkit/DndIdentifier.hx",
+        "src/nextjs/raw/integrations/dndkit/DragDropProvider.hx",
+        "src/nextjs/raw/integrations/dndkit/DragEndEvent.hx",
+        "src/nextjs/raw/integrations/dndkit/Sortable.hx",
+        "src/nextjshx/integrations/dndkit/DndKitHookBindings.hx",
+        "tests/dnd-kit/src/dnd_kit/Fixture.hx",
+        "tests/dnd-kit/src/dnd_kit/NegativeMain.hx",
+        "tests/dnd-kit/src/dnd_kit/OutsideHook.hx",
+        "tests/dnd-kit/src/dnd_kit/Positive.hx",
+        "tests/dnd-kit/src/dnd_kit/WrongCallback.hx",
+        "tests/dnd-kit/src/dnd_kit/WrongId.hx",
+        "tests/dnd-kit/src/dnd_kit/WrongIndex.hx",
+        "tests/dnd-kit/src/dnd_kit/WrongRefTarget.hx",
+        "tests/dnd-kit/src/dnd_kit/WrongRefValue.hx"
+      ],
+      "nativeSources": [
+        "tests/dnd-kit/react-lint/SortableRow.tsx"
+      ],
+      "evidence": [
+        "docs/dnd-kit.md",
+        "docs/package-integrations.md",
+        "scripts/testing/dnd-kit.mjs",
+        "tests/dnd-kit/README.md"
+      ]
+    },
+    {
+      "id": "mdx-loader",
+      "package": "@mdx-js/loader",
+      "version": "3.1.1",
+      "license": "MIT",
+      "integrity": "sha512-0TTacJyZ9mDmY+VefuthVshaNIyCGZHJG2fMnGaDttCt8HmjUF7SizlHJpaCDoGnN635nK1wpzfpx/Xx5S4WnQ==",
+      "repository": "https://github.com/mdx-js/mdx",
+      "categories": [
+        "build-plugin",
+        "content",
+        "mdx"
+      ],
+      "strategies": [
+        "native-source"
+      ],
+      "declaredBy": [
+        "examples/showcase-field-atlas/package.json"
+      ],
+      "modules": [
+        {
+          "specifier": "@mdx-js/loader",
+          "declaration": "index.d.cts",
+          "declarationSha256": "14dc59515df877246e9fed91f34c893f988d4b822d217a6a59ec466bafb9506e",
+          "requiredExports": [
+            "default"
+          ]
+        }
+      ],
+      "haxeSources": [
+        "examples/showcase-field-atlas/haxe/field_atlas/AdapterPlan.hx"
+      ],
+      "nativeSources": [
+        "examples/showcase-field-atlas/next.config.mjs"
+      ],
+      "evidence": [
+        "docs/mdx-and-content.md",
+        "docs/package-integrations.md",
+        "examples/showcase-field-atlas/README.md",
+        "scripts/examples/showcases.mjs",
+        "scripts/testing/package-integrations.mjs"
+      ]
+    },
+    {
+      "id": "mdx-react",
+      "package": "@mdx-js/react",
+      "version": "3.1.1",
+      "license": "MIT",
+      "integrity": "sha512-f++rKLQgUVYDAtECQ6fn/is15GkEH9+nZPM3MS0RcxVqoTfawHvDlSCH7JbMhAM6uJ32v3eXLvLmLvjGu7PTQw==",
+      "repository": "https://github.com/mdx-js/mdx",
+      "categories": [
+        "content",
+        "mdx",
+        "react"
+      ],
+      "strategies": [
+        "generated-adapter",
+        "haxe-facade",
+        "native-source"
+      ],
+      "declaredBy": [
+        "examples/showcase-field-atlas/package.json"
+      ],
+      "modules": [
+        {
+          "specifier": "@mdx-js/react",
+          "declaration": "index.d.ts",
+          "declarationSha256": "f10a971059aaf02f8ffe817554ce8e0f46b3395d6b2618ddda2796364efcd861",
+          "requiredExports": [
+            "MDXProvider",
+            "useMDXComponents"
+          ]
+        }
+      ],
+      "haxeSources": [
+        "examples/showcase-field-atlas/haxe/field_atlas/content/AtlasMdxComponents.hx"
+      ],
+      "nativeSources": [
+        "examples/showcase-field-atlas/next.config.mjs"
+      ],
+      "evidence": [
+        "docs/mdx-and-content.md",
+        "docs/package-integrations.md",
+        "examples/showcase-field-atlas/README.md",
+        "scripts/examples/showcases.mjs",
+        "scripts/testing/package-integrations.mjs"
+      ]
+    },
+    {
+      "id": "next-mdx",
+      "package": "@next/mdx",
+      "version": "16.2.12",
+      "license": "MIT",
+      "integrity": "sha512-bbKvq/7SIJZgQFRYL3wwnzLwCBviQfWi5UR61RDWwaMX3fV6iSqKfVr5SErRNA/PhMer/ylvErX4SVaGNrwKcw==",
+      "repository": "https://github.com/vercel/next.js",
+      "categories": [
+        "content",
+        "framework-plugin",
+        "mdx"
+      ],
+      "strategies": [
+        "generated-adapter",
+        "haxe-facade",
+        "native-source"
+      ],
+      "declaredBy": [
+        "examples/showcase-field-atlas/package.json"
+      ],
+      "modules": [
+        {
+          "specifier": "@next/mdx",
+          "declaration": "index.d.ts",
+          "declarationSha256": "b794712228ff47c020aa98b40f954fd4fa2b55c40d43ff087a678fe9e1e777e1",
+          "requiredExports": [
+            "default"
+          ]
+        }
+      ],
+      "haxeSources": [
+        "examples/showcase-field-atlas/haxe/field_atlas/AdapterPlan.hx",
+        "examples/showcase-field-atlas/haxe/field_atlas/content/AtlasMdxComponents.hx"
+      ],
+      "nativeSources": [
+        "examples/showcase-field-atlas/next.config.mjs"
+      ],
+      "evidence": [
+        "docs/mdx-and-content.md",
+        "docs/package-integrations.md",
+        "examples/showcase-field-atlas/README.md",
+        "scripts/examples/showcases.mjs",
+        "scripts/testing/package-integrations.mjs"
+      ]
+    },
+    {
+      "id": "nuqs",
+      "package": "nuqs",
+      "version": "2.9.1",
+      "license": "MIT",
+      "integrity": "sha512-xctOTExJ/M2lV9NBXTkLMb3vnGBLk/eMuZyiXSbj0jA24H6ie2d7/LJiaA0C30p5XCIWaDTZl5DEF/N2Yo1LCw==",
+      "repository": "https://github.com/47ng/nuqs",
+      "categories": [
+        "generic-hook"
+      ],
+      "strategies": [
+        "haxe-facade",
+        "native-source",
+        "raw-extern",
+        "semantic-facade"
+      ],
+      "declaredBy": [
+        "examples/todoapp-next/package.json",
+        "package.json",
+        "tests/client-components/hook-package/package.json",
+        "tests/client-components/next-app/package.json"
+      ],
+      "modules": [
+        {
+          "specifier": "nuqs",
+          "declaration": "dist/index.d.ts",
+          "declarationSha256": "e4d64b306ef7a94cf4d84684aa096ee8d7a2550e4eb565d7558474d736d8b2a6",
+          "requiredExports": [
+            "parseAsBoolean",
+            "parseAsFloat",
+            "parseAsInteger",
+            "parseAsString",
+            "parseAsStringLiteral",
+            "useQueryState"
+          ]
+        },
+        {
+          "specifier": "nuqs/adapters/next/app",
+          "declaration": "dist/adapters/next/app.d.ts",
+          "declarationSha256": "9f34ca413527b31f004092f8399e981d0b15d1410e1a0b94c10db8ade801e7b1",
+          "requiredExports": [
+            "NuqsAdapter"
+          ]
+        }
+      ],
+      "haxeSources": [
+        "examples/showcase-field-atlas/haxe/field_atlas/client/SignalPlot.hx",
+        "examples/todoapp-next/haxe/todoapp/client/SortableTodoList.hx",
+        "examples/todoapp-next/haxe/todoapp/client/TodoDiscovery.hx",
+        "src/nextjs/integrations/nuqs/Nuqs.hx",
+        "src/nextjs/integrations/nuqs/Parsers.hx",
+        "src/nextjs/integrations/nuqs/QueryState.hx",
+        "src/nextjs/raw/integrations/nuqs/Nuqs.hx",
+        "src/nextjs/raw/integrations/nuqs/NuqsAdapter.hx",
+        "src/nextjs/raw/integrations/nuqs/QueryOptions.hx",
+        "src/nextjs/raw/integrations/nuqs/QueryParser.hx",
+        "src/nextjs/raw/integrations/nuqs/QueryStateResult.hx",
+        "src/nextjshx/integrations/nuqs/NuqsHookBindings.hx",
+        "src/nextjshx/integrations/nuqs/NuqsMacro.hx",
+        "tests/client-components/next-app/haxe/client_components/app/HomePage.hx",
+        "tests/client-components/next-app/haxe/client_components/client/QueryHooks.hx",
+        "tests/client-components/next-app/haxe/client_components/client/QueryPanel.hx",
+        "tests/client-components/next-app/haxe/client_components/client/RawNuqsContracts.hx"
+      ],
+      "nativeSources": [
+        "tests/client-components/hook-package/index.ts",
+        "tests/client-components/next-app/app/haxe-hook-consumer.tsx"
+      ],
+      "evidence": [
+        "docs/nuqs.md",
+        "docs/package-integrations.md",
+        "examples/todoapp-next/README.md",
+        "scripts/examples/todoapp-next.mjs",
+        "scripts/testing/client-components.mjs",
+        "tests/client-components/README.md"
+      ]
+    },
+    {
+      "id": "radix-dialog",
+      "package": "@radix-ui/react-dialog",
+      "version": "1.1.19",
+      "license": "MIT",
+      "integrity": "sha512-+HhbN2+YtkRgVirjZ2afMeutQRuGOrdkWR5+EFC58SJojGmtyNQwYzgi6tHBpOxvFHefMtPeHdgtjz0BOGxFQg==",
+      "repository": "https://github.com/radix-ui/primitives",
+      "categories": [
+        "headless-behavior",
+        "polymorphic-component"
+      ],
+      "strategies": [
+        "haxe-facade",
+        "native-source"
+      ],
+      "declaredBy": [
+        "examples/showcase-ui/package.json"
+      ],
+      "modules": [
+        {
+          "specifier": "@radix-ui/react-dialog",
+          "declaration": "dist/index.d.mts",
+          "declarationSha256": "2059b04988eece7f6e992a5c218e9c5361b8fed24cb04caddb7e1cb4339e236b",
+          "requiredExports": [
+            "Close",
+            "Content",
+            "Description",
+            "Overlay",
+            "Portal",
+            "Root",
+            "Title",
+            "Trigger"
+          ]
+        }
+      ],
+      "haxeSources": [
+        "examples/showcase-ui/haxe/showcase/ui/Sheet.hx"
+      ],
+      "nativeSources": [
+        "examples/showcase-ui/src/components/ui/sheet.tsx"
+      ],
+      "evidence": [
+        "docs/package-integrations.md",
+        "docs/radix-shadcn.md",
+        "examples/showcase-ui/README.md",
+        "scripts/examples/showcases.mjs",
+        "scripts/testing/package-integrations.mjs",
+        "scripts/testing/showcase-ui.mjs",
+        "tests/showcase-ui/README.md",
+        "tests/showcase-ui/src/showcase_ui/HxxNegative.hx",
+        "tests/showcase-ui/src/showcase_ui/SurfaceConsumer.hx"
+      ]
+    },
+    {
+      "id": "radix-slot",
+      "package": "@radix-ui/react-slot",
+      "version": "1.3.0",
+      "license": "MIT",
+      "integrity": "sha512-MojKku4U/miO8Av4Dkb+ctMAQx7JmY96LmtDQlAarCRtd7rN52QCSzBF+XAvr5S6coSVj9HEPBgHAHKEJVk/WA==",
+      "repository": "https://github.com/radix-ui/primitives",
+      "categories": [
+        "polymorphic-component"
+      ],
+      "strategies": [
+        "haxe-facade",
+        "native-source"
+      ],
+      "declaredBy": [
+        "examples/showcase-ui/package.json"
+      ],
+      "modules": [
+        {
+          "specifier": "@radix-ui/react-slot",
+          "declaration": "dist/index.d.mts",
+          "declarationSha256": "b1d406c2a2a20858a7c052b5c5d720d05a47b3eb0786a385fd4ea8f0d7b7c29b",
+          "requiredExports": [
+            "Slot"
+          ]
+        }
+      ],
+      "haxeSources": [
+        "examples/showcase-ui/haxe/showcase/ui/Aria.hx",
+        "examples/showcase-ui/haxe/showcase/ui/Badge.hx",
+        "examples/showcase-ui/haxe/showcase/ui/Button.hx",
+        "examples/showcase-ui/haxe/showcase/ui/Slot.hx"
+      ],
+      "nativeSources": [
+        "examples/showcase-ui/src/components/ui/badge.tsx",
+        "examples/showcase-ui/src/components/ui/button.tsx"
+      ],
+      "evidence": [
+        "docs/package-integrations.md",
+        "docs/radix-shadcn.md",
+        "examples/showcase-ui/README.md",
+        "scripts/testing/package-integrations.mjs",
+        "scripts/testing/showcase-ui.mjs",
+        "tests/showcase-ui/README.md",
+        "tests/showcase-ui/src/showcase_ui/HxxNegative.hx",
+        "tests/showcase-ui/src/showcase_ui/SurfaceConsumer.hx"
+      ]
+    },
+    {
+      "id": "recharts",
+      "package": "recharts",
+      "version": "3.8.1",
+      "license": "MIT",
+      "integrity": "sha512-mwzmO1s9sFL0TduUpwndxCUNoXsBw3u3E/0+A+cLcrSfQitSG62L32N69GhqUrrT5qKcAE3pCGVINC6pqkBBQg==",
+      "repository": "https://github.com/recharts/recharts",
+      "categories": [
+        "visual-component"
+      ],
+      "strategies": [
+        "raw-extern",
+        "semantic-facade"
+      ],
+      "declaredBy": [
+        "examples/showcase-field-atlas/package.json",
+        "examples/todoapp-next/package.json",
+        "package.json"
+      ],
+      "modules": [
+        {
+          "specifier": "recharts",
+          "declaration": "types/index.d.ts",
+          "declarationSha256": "e99285f74c22ad823c0b9fac55316b84144e15eb91830034badd9eb0fafe71bf",
+          "requiredExports": [
+            "Bar",
+            "BarChart",
+            "CartesianGrid",
+            "XAxis",
+            "YAxis"
+          ]
+        }
+      ],
+      "haxeSources": [
+        "examples/showcase-field-atlas/haxe/field_atlas/client/SignalPlot.hx",
+        "examples/todoapp-next/haxe/todoapp/client/SortableTodoList.hx",
+        "examples/todoapp-next/haxe/todoapp/client/TodoPlanning.hx",
+        "src/nextjs/integrations/recharts/StackedBars.hx",
+        "src/nextjs/raw/integrations/recharts/Bar.hx",
+        "src/nextjs/raw/integrations/recharts/BarChart.hx",
+        "src/nextjs/raw/integrations/recharts/CartesianGrid.hx",
+        "src/nextjs/raw/integrations/recharts/ChartTypes.hx",
+        "src/nextjs/raw/integrations/recharts/XAxis.hx",
+        "src/nextjs/raw/integrations/recharts/YAxis.hx",
+        "tests/recharts/src/recharts_fixture/CategoryAsSeries.hx",
+        "tests/recharts/src/recharts_fixture/IncompleteRow.hx",
+        "tests/recharts/src/recharts_fixture/Positive.hx",
+        "tests/recharts/src/recharts_fixture/SeriesAsCategory.hx",
+        "tests/recharts/src/recharts_fixture/WrongBarSize.hx"
+      ],
+      "nativeSources": [],
+      "evidence": [
+        "docs/package-integrations.md",
+        "docs/recharts.md",
+        "examples/showcase-field-atlas/README.md",
+        "examples/todoapp-next/README.md",
+        "scripts/examples/showcases.mjs",
+        "scripts/examples/todoapp-next.mjs",
+        "scripts/testing/package-integrations.mjs",
+        "scripts/testing/recharts.mjs",
+        "tests/e2e/todoapp-next.spec.mjs",
+        "tests/recharts/README.md"
+      ]
+    },
+    {
+      "id": "rehype-pretty-code",
+      "package": "rehype-pretty-code",
+      "version": "0.14.5",
+      "license": "MIT",
+      "integrity": "sha512-+DhMMNMgOwmE0xu2RmagN63nR0GRObPIQ9TuoNdUYYIDcCr8nWXU1CJUG6yca7vg99Gp5d+62A/+ZvksmsQXjA==",
+      "repository": "https://github.com/rehype-pretty/rehype-pretty-code",
+      "categories": [
+        "content",
+        "mdx",
+        "rehype-plugin"
+      ],
+      "strategies": [
+        "native-source"
+      ],
+      "declaredBy": [
+        "examples/showcase-field-atlas/package.json"
+      ],
+      "modules": [
+        {
+          "specifier": "rehype-pretty-code",
+          "declaration": "dist/index.d.ts",
+          "declarationSha256": "c20c6267d89b11813a3a6af9b9531518c554bfcce896cc14eee2e567e8fd59b6",
+          "requiredExports": [
+            "default",
+            "rehypePrettyCode"
+          ]
+        }
+      ],
+      "haxeSources": [
+        "examples/showcase-field-atlas/haxe/field_atlas/AdapterPlan.hx"
+      ],
+      "nativeSources": [
+        "examples/showcase-field-atlas/next.config.mjs"
+      ],
+      "evidence": [
+        "docs/mdx-and-content.md",
+        "docs/package-integrations.md",
+        "examples/showcase-field-atlas/README.md",
+        "scripts/examples/showcases.mjs",
+        "scripts/testing/package-integrations.mjs"
+      ]
+    },
+    {
+      "id": "rehype-slug",
+      "package": "rehype-slug",
+      "version": "6.0.0",
+      "license": "MIT",
+      "integrity": "sha512-lWyvf/jwu+oS5+hL5eClVd3hNdmwM1kAC0BUvEGD19pajQMIzcNUd/k9GsfQ+FfECvX+JE+e9/btsKH0EjJT6A==",
+      "repository": "https://github.com/rehypejs/rehype-slug",
+      "categories": [
+        "content",
+        "mdx",
+        "rehype-plugin"
+      ],
+      "strategies": [
+        "native-source"
+      ],
+      "declaredBy": [
+        "examples/showcase-field-atlas/package.json"
+      ],
+      "modules": [
+        {
+          "specifier": "rehype-slug",
+          "declaration": "index.d.ts",
+          "declarationSha256": "4e3ab6678655e507463a9bfa1aa39a4a5497fac4c75e5f7f7a16c0b7d001c34a",
+          "requiredExports": [
+            "default"
+          ]
+        }
+      ],
+      "haxeSources": [
+        "examples/showcase-field-atlas/haxe/field_atlas/AdapterPlan.hx"
+      ],
+      "nativeSources": [
+        "examples/showcase-field-atlas/next.config.mjs"
+      ],
+      "evidence": [
+        "docs/mdx-and-content.md",
+        "docs/package-integrations.md",
+        "examples/showcase-field-atlas/README.md",
+        "scripts/examples/showcases.mjs",
+        "scripts/testing/package-integrations.mjs"
+      ]
+    },
+    {
+      "id": "remark-gfm",
+      "package": "remark-gfm",
+      "version": "4.0.1",
+      "license": "MIT",
+      "integrity": "sha512-1quofZ2RQ9EWdeN34S79+KExV1764+wCUGop5CPL1WGdD0ocPpu91lzPGbwWMECpEpd42kJGQwzRfyov9j4yNg==",
+      "repository": "https://github.com/remarkjs/remark-gfm",
+      "categories": [
+        "content",
+        "mdx",
+        "remark-plugin"
+      ],
+      "strategies": [
+        "native-source"
+      ],
+      "declaredBy": [
+        "examples/showcase-field-atlas/package.json"
+      ],
+      "modules": [
+        {
+          "specifier": "remark-gfm",
+          "declaration": "index.d.ts",
+          "declarationSha256": "7116e0399952e03afe9749a77ceaca29b0e1950989375066a9ddc9cb0b7dd252",
+          "requiredExports": [
+            "default"
+          ]
+        }
+      ],
+      "haxeSources": [
+        "examples/showcase-field-atlas/haxe/field_atlas/AdapterPlan.hx"
+      ],
+      "nativeSources": [
+        "examples/showcase-field-atlas/next.config.mjs"
+      ],
+      "evidence": [
+        "docs/mdx-and-content.md",
+        "docs/package-integrations.md",
+        "examples/showcase-field-atlas/README.md",
+        "scripts/examples/showcases.mjs",
+        "scripts/testing/package-integrations.mjs"
+      ]
+    }
+  ]
+}

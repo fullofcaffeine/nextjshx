@@ -14,6 +14,7 @@ const FIXTURE_ROOT = path.join(ROOT, "tests/adapter-plan");
 const OUTPUT_ROOT = path.join(FIXTURE_ROOT, ".tmp");
 const FORWARD_PATH = path.join(OUTPUT_ROOT, "forward.json");
 const REVERSE_PATH = path.join(OUTPUT_ROOT, "reverse.json");
+const OVERRIDE_PATH = path.join(OUTPUT_ROOT, "override.json");
 const DUPLICATE_PATH = path.join(OUTPUT_ROOT, "duplicate.json");
 const APPLICATION_PATH = path.join(OUTPUT_ROOT, "application.js");
 const SNAPSHOT_PATH = path.join(ROOT, "tests/snapshots/adapter-plan-v1.json");
@@ -42,8 +43,8 @@ function readJson(file) {
   return JSON.parse(fs.readFileSync(file, "utf8"));
 }
 
-function runHaxe(build, expectedStatus = 0) {
-  const result = spawnSync("haxe", [build], {
+function runHaxe(build, expectedStatus = 0, extraArgs = []) {
+  const result = spawnSync("haxe", [build, ...extraArgs], {
     cwd: ROOT,
     encoding: "utf8",
     env: { ...process.env, NO_COLOR: "1" },
@@ -126,8 +127,8 @@ function validatePlanContract(plan, encoded) {
   assert.deepEqual(plan.toolchain, {
     nextjshx: "0.0.0-development",
     haxe: "4.3.7",
-    genesTs: "1.32.0+1e7e323fdbda4c5b93689355294bd978e9170725",
-    next: "16.2.10",
+    genesTs: "1.38.2+f0ffa29e6d49fe81541977c6a3aae6b80000cec6",
+    next: "16.2.12",
   });
   assert.deepEqual(
     plan.intents.map((intent) => intent.targetPath),
@@ -138,7 +139,7 @@ function validatePlanContract(plan, encoded) {
   const [page, client] = plan.intents;
   assert.equal(page.kind, "page");
   assert.equal(client.kind, "client-component");
-  assert.deepEqual(page.exports.map((entry) => entry.name), ["default", "revalidate"]);
+  assert.deepEqual(page.exports.map((entry) => entry.name), ["default"]);
   assert.deepEqual(
     page.config.map((entry) => entry.name),
     ["dynamicParams", "preferredRegion", "revalidate", "runtime"],
@@ -211,11 +212,23 @@ try {
   fs.rmSync(OUTPUT_ROOT, { recursive: true, force: true });
   fs.mkdirSync(OUTPUT_ROOT, { recursive: true });
 
+  runHaxe("tests/adapter-plan/build-forward.hxml", 0, [
+    "-D",
+    "nextjshx.adapter-plan-output=tests/adapter-plan/.tmp/override.json",
+  ]);
+  assert(fs.existsSync(OVERRIDE_PATH), "the CLI adapter-plan output define was ignored");
+  assert(!fs.existsSync(FORWARD_PATH), "the default plan path was written despite the CLI override");
+
   runHaxe("tests/adapter-plan/build-forward.hxml");
   runHaxe("tests/adapter-plan/build-reverse.hxml");
 
   const forward = fs.readFileSync(FORWARD_PATH, "utf8");
   const reverse = fs.readFileSync(REVERSE_PATH, "utf8");
+  assert.equal(
+    fs.readFileSync(OVERRIDE_PATH, "utf8"),
+    forward,
+    "the CLI-selected plan differs from the registry's default output",
+  );
   assert.equal(reverse, forward, "registration order changed adapter-plan bytes");
   const plan = JSON.parse(forward);
   const validate = schemaValidator();
@@ -233,7 +246,7 @@ try {
   validateDuplicateDiagnostic(plan, duplicateOutput);
 
   console.log(
-    "adapter-plan: OK: schema v1, canonical bytes, portable positions, duplicate fail-closed behavior",
+    "adapter-plan: OK: schema v1, CLI output override, canonical bytes, portable positions, duplicate fail-closed behavior",
   );
 } catch (error) {
   console.error(`[adapter-plan] ERROR: ${error.message}`);

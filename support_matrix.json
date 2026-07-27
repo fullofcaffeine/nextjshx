@@ -1,7 +1,7 @@
 {
   "$schema": "./schemas/support-matrix.schema.json",
   "schemaVersion": 1,
-  "updated": "2026-07-16",
+  "updated": "2026-07-26",
   "releaseStatus": "foundation-only",
   "evidencePolicy": {
     "stablePackageLane": "required",
@@ -19,7 +19,7 @@
         "observedOn": "2026-07-16"
       },
       "ciVersions": [
-        "20.19.3",
+        "20.9.0",
         "24.18.0"
       ]
     },
@@ -36,7 +36,7 @@
     "next": {
       "stable": {
         "range": "16.2.x",
-        "version": "16.2.10",
+        "version": "16.2.12",
         "nodeEngine": ">=20.9.0",
         "reactPeer": "^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0",
         "reactDomPeer": "^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0"
@@ -45,7 +45,27 @@
         "version": "16.3.0-canary.87",
         "commit": "491f78099c3ea23be14e66c6d848b50204590e90",
         "gitDescribe": "v16.3.0-canary.87-11-g491f78099c",
-        "blocking": false
+        "blocking": false,
+        "followUps": [
+          {
+            "code": "NXHX-DRIFT-SIGNATURE-CHANGED",
+            "module": "next",
+            "export": "NextConfig",
+            "issue": "nxhx-r5o"
+          },
+          {
+            "code": "NXHX-DRIFT-SIGNATURE-CHANGED",
+            "module": "next/image",
+            "export": "default",
+            "issue": "nxhx-q90"
+          },
+          {
+            "code": "NXHX-DRIFT-DOCUMENTATION-CHANGED",
+            "module": "next/cache",
+            "export": "revalidateTag",
+            "issue": "nxhx-u5n"
+          }
+        ]
       }
     },
     "react": {
@@ -55,12 +75,12 @@
     },
     "genesTs": {
       "name": "genes-ts",
-      "version": "1.32.0",
-      "commit": "1e7e323fdbda4c5b93689355294bd978e9170725",
-      "gitDescribe": "v1.32.0-8-g1e7e323",
+      "version": "1.38.2",
+      "commit": "f0ffa29e6d49fe81541977c6a3aae6b80000cec6",
+      "gitDescribe": "v1.38.2",
       "haxeVersion": "4.3.7",
       "typescriptSpec": "npm:@typescript/typescript6@6.0.2",
-      "baselineReason": "The inspected sibling source is the implementation oracle and supersedes the older 1.27-era planning input; the required stable-package fixture is verified against this exact commit."
+      "baselineReason": "The exact stable v1.38.2 release commit retains the fully green Haxe-authoritative HXX checker from PR #10 and optional-children-spread fix from PR #11, the generalized generic-call and React SVG fixes merged through PR #22, and the React 19 form-action contract, closed callable-union contextual typing, explicit native-global identity, Promise-of-node async components, and closed zero-runtime object-record abstract props/spreads from PR #23. PR #25 keeps enum and scalar abstracts nominal while permitting zero-runtime closed record props. PR #27 adds a framework-neutral exact-null call rule so a literal accepted by an explicit null projection emits as plain null without weakening ordinary nullable-to-required safeguards. The stacked PR #28 separates exact JSX elements from broad ReactNode-style contracts so HXX rejects text, omission, and multiple children where a component requires one element, and preserves statically known extern component names in those diagnostics. Stacked PR #29 prints proven compiler-owned, one-use nested HXX children as canonical source TSX/JSX while retaining authored, shared, effectful, getter-observable, and createElement sequencing controls. Stacked PR #30 adds the closed React 19 native-dialog contract and exact `HTMLDialogElement` event targeting needed for Haxe-checked `<dialog open>`, including the generated-module-shadowing regression found by ts2hx. Stacked PR #31 makes intrinsic HXX ref targets element-specific, so a callback restricted to `HTMLInputElement` cannot be attached to `<li>` while valid callback and object refs retain their inferred DOM element type. PR #32 removes redundant enum-abstract assertions when Haxe has already proved the exact emitted primitive. Security PR #34 keeps the transitive lock on reviewed patched releases, including body-parser 1.20.6 after GHSA-v422-hmwv-36x6 surfaced during hosted validation, without changing compiler behavior. Stacked PR #35 binds explicit generic witnesses to the exact extern call target through fluent macro output and erases its compiler-only identity carrier from both output profiles. Stacked PR #37 recursively preserves closed enum-abstract leaves through callbacks, arrays, nullability, aliases, anonymous structures, and generic applications while leaving ordinary widened paths conservative; it adds no assertion, runtime helper, or framework-specific behavior. Stacked PR #38 retains canonical cleanup for proven-safe HXX children while preserving observable extern component-read order and preventing nested-function name evidence from creating duplicate outer declarations. NextJsHx pins the immutable v1.38.2 release commit through Lix. It adds framework-neutral module-function lowering so selected static Haxe bodies become genuine analyzer-visible module functions while retaining the public static method surface, property descriptor and key order, DCE, initialization order, declarations, source maps, and classic-output parity. Its complete local compiler, security, TypeScript 5/6/7, classic-output, source-map, declaration, ts2hx, and downstream NextJsHx Hook and Client Component matrix is green; every hosted check on genes-ts PR #40 is also green. PR #46 adds one framework-neutral complete-tree local-write plan shared by TypeScript, TSX, and classic ES2015 output, so initialized locals with no rebind emit as canonical const while direct writes, captured writes, initializer-free declarations, and opaque raw-syntax placeholders remain conservative let bindings. Its complete local and hosted compiler matrices are green, and the pinned NextJsHx Hook, route, UI, strict Next build, React lint, and hydrated-browser evidence passes on the exact release commit. PR #47, also included in v1.38.2, preserves exact Regroup declaration identity through reflected and direct declaration paths; its independent compiler matrix and the merged main CI are green."
     }
   },
   "lanes": [
@@ -70,21 +90,28 @@
       "status": "verified",
       "purpose": "Release-blocking compatibility lane using the exact published stable Next.js package and both supported Node CI versions.",
       "versions": {
-        "next": "16.2.10",
+        "next": "16.2.12",
         "react": "19.2.7",
         "reactDom": "19.2.7",
         "typescript": "6.0.2",
         "haxe": "4.3.7",
-        "genesTs": "1.32.0",
+        "genesTs": "1.38.2",
         "node": [
-          "20.19.3",
+          "20.9.0",
           "24.18.0"
+        ],
+        "bundlers": [
+          "turbopack",
+          "webpack"
         ]
       },
       "commands": {
         "implemented": [
           "npm run test:support-matrix",
+          "npm run drift:next:stable",
           "npm run test:fixture:next-stable",
+          "npm run test:fixture:next-stable:turbopack",
+          "npm run test:fixture:next-stable:webpack",
           "npm run test:fixture:next-stable:smoke"
         ],
         "planned": []
@@ -95,21 +122,23 @@
       "id": "source-upstream",
       "required": false,
       "status": "observed",
-      "purpose": "Non-blocking early-warning lane against an explicitly configured read-only Next.js source checkout.",
+      "purpose": "Non-blocking declaration early warning against an exact read-only Next.js source checkout or exact published canary package.",
       "versions": {
         "next": "16.3.0-canary.87",
         "react": "19.2.7",
         "reactDom": "19.2.7",
         "typescript": "6.0.2",
         "haxe": "4.3.7",
-        "genesTs": "1.32.0",
+        "genesTs": "1.38.2",
         "node": [
           "24.18.0"
-        ]
+        ],
+        "bundlers": []
       },
       "commands": {
         "implemented": [
-          "npm run support:require-upstream"
+          "npm run support:require-upstream",
+          "npm run drift:next:upstream"
         ],
         "planned": [
           "npm run test:fixture:next-upstream"
@@ -131,8 +160,8 @@
       ],
       "identity": {
         "name": "genes-ts",
-        "version": "1.32.0",
-        "commit": "1e7e323fdbda4c5b93689355294bd978e9170725",
+        "version": "1.38.2",
+        "commit": "f0ffa29e6d49fe81541977c6a3aae6b80000cec6",
         "haxeVersion": "4.3.7",
         "typescriptSpec": "npm:@typescript/typescript6@6.0.2"
       }
@@ -171,18 +200,21 @@
       {
         "name": "Turbopack",
         "status": "primary",
-        "reason": "The pinned stable Next.js release uses the framework's current default bundler path."
+        "reason": "The pinned stable Next.js release uses the framework's current default bundler path, verified on both supported Node versions."
       },
       {
         "name": "webpack",
         "status": "compatibility",
-        "reason": "A focused compatibility lane may be added after the stable Turbopack vertical slice is proven."
+        "reason": "The same stable production fixture and smoke contract run as a blocking compatibility lane on both supported Node versions."
       }
     ],
     "included": [
       "Next.js App Router",
       "Server Components by default",
       "Explicit client components and Server Functions",
+      "Version-gated React 19 Flight Date, Map, Set, typed-buffer, global-symbol, server-Promise, Server Function prop, and desktop/mobile Suspense streaming capabilities",
+      "Typed loading, error, and not-found convention files",
+      "Typed metadata, generated static params, and stable literal segment config",
       "Generated narrow convention adapters",
       "Published stable Next.js package as the blocking lane"
     ],

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" role="img" aria-labelledby="title desc">
+  <title id="title">Soil block press</title>
+  <desc id="desc">Stainless steel seed-block press on a cobalt field.</desc>
+  <rect width="720" height="720" fill="#596bea"/>
+  <path d="M210 486h300v118H210Z" fill="#f4f3cf" stroke="#27182e" stroke-width="16"/>
+  <path d="M252 486V272h216v214M286 272v-82h148v82" fill="none" stroke="#27182e" stroke-width="24" stroke-linejoin="round"/>
+  <path d="M322 190v-64h76v64" fill="none" stroke="#f4f3cf" stroke-width="20"/>
+  <rect x="276" y="322" width="168" height="102" fill="#bac0d4" stroke="#27182e" stroke-width="14"/>
+  <g fill="#27182e"><circle cx="310" cy="354" r="13"/><circle cx="360" cy="354" r="13"/><circle cx="410" cy="354" r="13"/><circle cx="310" cy="394" r="13"/><circle cx="360" cy="394" r="13"/><circle cx="410" cy="394" r="13"/></g>
+  <path d="M234 532h252M264 532v72m42-72v72m42-72v72m42-72v72m42-72v72m42-72v72" stroke="#ef6d4c" stroke-width="8"/>
+  <text x="42" y="672" fill="#f4f3cf" font-family="monospace" font-size="18" font-weight="700" letter-spacing="4">BLOCK PRESS / 20 MM</text>
+</svg>

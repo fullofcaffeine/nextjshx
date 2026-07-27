@@ -1,0 +1,16 @@
+-lib genes-ts
+-cp src
+-cp tests/client-components/next-app/haxe
+-main ClientComponentsMain
+-js tests/client-components/.tmp/typescript/index.tsx
+-D genes.ts
+-D genes.ts.no_extension
+-D genes.ts.jsx_import_source=react
+-D nextjshx.app-root=tests/client-components/next-app/app
+-D nextjshx.generated-root=tests/client-components/.tmp/typescript
+-D nextjshx.adapter-plan-output=tests/client-components/.tmp/plan.json
+--macro client_components.AdapterPlan.install()
+--macro include('client_components.app')
+--macro include('client_components.actions')
+--macro include('client_components.client')
+-dce full

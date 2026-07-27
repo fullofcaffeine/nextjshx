@@ -1,0 +1,10 @@
+-lib genes-ts
+-cp haxe
+-cp ../showcase-ui/haxe
+-cp ../../src
+--main BlogMain
+-js src-gen/index.tsx
+
+--macro blog.AdapterPlan.install()
+--macro include('blog.app')
+-dce full

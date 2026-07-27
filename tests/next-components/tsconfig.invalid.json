@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+		"oracle-invalid.tsx"
+  ],
+  "exclude": []
+}

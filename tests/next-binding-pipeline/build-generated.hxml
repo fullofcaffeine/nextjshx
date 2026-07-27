@@ -1,0 +1,6 @@
+-lib genes-ts
+-cp src
+-cp tests/next-binding-pipeline/src
+-main next_binding_pipeline.GeneratedConsumer
+-js tests/next-binding-pipeline/.tmp/generated.js
+--no-output

@@ -16,4 +16,7 @@ bash "$ROOT_DIR/scripts/security/run-beads-gitleaks.sh"
 echo "[pre-push] Verifying security tooling and workflow pins..."
 python3 "$ROOT_DIR/scripts/ci/check_security_tooling.py"
 
+echo "[pre-push] Running the medium-cost compiler and package gate..."
+npm --prefix "$ROOT_DIR" run test:prepush
+
 echo "[pre-push] OK"

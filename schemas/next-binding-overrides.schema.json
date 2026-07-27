@@ -1,0 +1,241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nextjshx.dev/schemas/next-binding-overrides-v1.json",
+  "title": "NextJsHx reviewed declaration overrides",
+  "description": "A deliberately small, signature-pinned exception set for unsafe upstream types and structured Haxe generators.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "reviewedSurfaceHash",
+    "bootstrapReview",
+    "safetyOverrides",
+    "generators",
+    "acceptedTransitions"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../schemas/next-binding-overrides.schema.json"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "reviewedSurfaceHash": {
+      "$ref": "#/$defs/digest"
+    },
+    "bootstrapReview": {
+      "$ref": "#/$defs/review"
+    },
+    "safetyOverrides": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "$ref": "#/$defs/safetyOverride"
+      }
+    },
+    "generators": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "$ref": "#/$defs/generator"
+      }
+    },
+    "acceptedTransitions": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "$ref": "#/$defs/acceptedTransition"
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "bead": {
+      "type": "string",
+      "pattern": "^nxhx-[a-z0-9]+(?:\\.[0-9]+)*$"
+    },
+    "portablePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//).+$"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 40
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bead",
+        "reason",
+        "initialIrHash"
+      ],
+      "properties": {
+        "bead": {
+          "$ref": "#/$defs/bead"
+        },
+        "reason": {
+          "$ref": "#/$defs/reason"
+        },
+        "initialIrHash": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "safetyOverride": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "module",
+        "export",
+        "expectedSignatureHash",
+        "action",
+        "expectedOccurrences",
+        "reason",
+        "owningBead"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "module": {
+          "type": "string",
+          "minLength": 1
+        },
+        "export": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expectedSignatureHash": {
+          "$ref": "#/$defs/digest"
+        },
+        "action": {
+          "enum": [
+            "map-any-to-genes-unknown",
+            "allow-external-unknown"
+          ]
+        },
+        "expectedOccurrences": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "reason": {
+          "$ref": "#/$defs/reason"
+        },
+        "owningBead": {
+          "$ref": "#/$defs/bead"
+        }
+      }
+    },
+    "literalValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "typescript",
+        "haxe"
+      ],
+      "properties": {
+        "typescript": {
+          "type": "string",
+          "minLength": 1
+        },
+        "haxe": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Za-z0-9]*$"
+        }
+      }
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "module",
+        "export",
+        "expectedSignatureHash",
+        "strategy",
+        "output",
+        "owningBead",
+        "values"
+      ],
+      "properties": {
+        "module": {
+          "type": "string",
+          "minLength": 1
+        },
+        "export": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Za-z0-9]*$"
+        },
+        "expectedSignatureHash": {
+          "$ref": "#/$defs/digest"
+        },
+        "strategy": {
+          "const": "string-literal-union-with-undefined"
+        },
+        "output": {
+          "$ref": "#/$defs/portablePath"
+        },
+        "owningBead": {
+          "$ref": "#/$defs/bead"
+        },
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/literalValue"
+          }
+        }
+      }
+    },
+    "acceptedTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fromIrHash",
+        "toIrHash",
+        "classifications",
+        "bead",
+        "reason"
+      ],
+      "properties": {
+        "fromIrHash": {
+          "$ref": "#/$defs/digest"
+        },
+        "toIrHash": {
+          "$ref": "#/$defs/digest"
+        },
+        "classifications": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "compatible",
+              "additive",
+              "behavioral-review-required",
+              "breaking",
+              "unsupported-construct"
+            ]
+          }
+        },
+        "bead": {
+          "$ref": "#/$defs/bead"
+        },
+        "reason": {
+          "$ref": "#/$defs/reason"
+        }
+      }
+    }
+  }
+}

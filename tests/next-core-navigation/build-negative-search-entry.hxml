@@ -1,0 +1,8 @@
+-lib genes-ts
+-cp src
+-cp tests/next-core-navigation/src
+-main next_core_navigation.NegativeSearchParamEntry
+-js tests/next-core-navigation/.tmp/negative-search-entry.ts
+-D genes.ts
+-D genes.ts.no_extension
+-dce full

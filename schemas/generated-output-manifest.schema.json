@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nextjshx.dev/schemas/generated-output-manifest-v1.json",
+  "title": "NextJsHx generated-output ownership manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "generation",
+    "nextVersion",
+    "genesVersion",
+    "outputs"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "nextjshx.generated-output"
+    },
+    "version": {
+      "const": 1
+    },
+    "generation": {
+      "$ref": "#/$defs/sha256"
+    },
+    "nextVersion": {
+      "$ref": "#/$defs/toolVersion"
+    },
+    "genesVersion": {
+      "$ref": "#/$defs/toolVersion"
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/output"
+      }
+    }
+  },
+  "$defs": {
+    "toolVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[^\\s\\u0000-\\u001F]+$"
+    },
+    "haxeType": {
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+    },
+    "portableTypescriptPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)(?!.*[\\u0000-\\u001F<>:\"|?*]).+\\.tsx?$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "kind",
+        "source",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/portableTypescriptPath"
+        },
+        "kind": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "source": {
+          "$ref": "#/$defs/haxeType"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+-lib genes-ts
+-cp src
+-cp tests/codecs/src
+-main codecs.CodecRuntime
+-js tests/codecs/.tmp/classic/index.js
+-D dts
+-D js-es=6
+-dce full

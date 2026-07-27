@@ -207,7 +207,8 @@
                 "version",
                 "commit",
                 "gitDescribe",
-                "blocking"
+                "blocking",
+                "followUps"
               ],
               "properties": {
                 "version": {
@@ -222,6 +223,13 @@
                 },
                 "blocking": {
                   "const": false
+                },
+                "followUps": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "$ref": "#/$defs/driftFollowUp"
+                  }
                 }
               }
             }
@@ -559,7 +567,8 @@
             "typescript",
             "haxe",
             "genesTs",
-            "node"
+            "node",
+            "bundlers"
           ],
           "properties": {
             "next": {
@@ -586,6 +595,16 @@
               "uniqueItems": true,
               "items": {
                 "$ref": "#/$defs/semver"
+              }
+            },
+            "bundlers": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "turbopack",
+                  "webpack"
+                ]
               }
             }
           }
@@ -623,6 +642,34 @@
         "reason": {
           "type": "string",
           "minLength": 20
+        }
+      }
+    },
+    "driftFollowUp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "module",
+        "export",
+        "issue"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^NXHX-DRIFT-[A-Z-]+$"
+        },
+        "module": {
+          "type": "string",
+          "minLength": 1
+        },
+        "export": {
+          "type": "string",
+          "minLength": 1
+        },
+        "issue": {
+          "type": "string",
+          "pattern": "^nxhx-[a-z0-9.]+$"
         }
       }
     }

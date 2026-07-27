@@ -1,0 +1,110 @@
+{
+  "snapshotVersion": 1,
+  "reviewedSurfaceHash": "sha256:2789fe465e2502593c4e1e2b8827ce1a1a718d9cfe8fb09e8c405b70629e233c",
+  "safetyOverrides": [
+    {
+      "id": "dom-response-any",
+      "module": "globalThis",
+      "export": "Response",
+      "expectedSignatureHash": "sha256:b032b8c503cb18ece8277fee78c79f679c2db056db976cb43ede64aecb318d12",
+      "action": "map-any-to-genes-unknown",
+      "expectedOccurrences": 1,
+      "reason": "The DOM Response.json result is intentionally untyped upstream; generated Haxe must require an explicit genes.ts.Unknown decode boundary instead of propagating Dynamic.",
+      "owningBead": "nxhx-f34.3.5"
+    },
+    {
+      "id": "next-config-any",
+      "module": "next",
+      "export": "NextConfig",
+      "expectedSignatureHash": "sha256:e7f519c7fdf899381c233d28855ca1a9dc936235dab220f2e6cfe5bd7d6c6e87",
+      "action": "map-any-to-genes-unknown",
+      "expectedOccurrences": 1,
+      "reason": "Next preserves an open plugin/configuration escape hatch here; Haxe callers must cross a named Unknown boundary rather than receive implicit Dynamic.",
+      "owningBead": "nxhx-f34.3.3"
+    },
+    {
+      "id": "form-props-any",
+      "module": "next/form",
+      "export": "FormProps",
+      "expectedSignatureHash": "sha256:28f79fb46d388d2b58abbd8b5f3994f3bccc84d09bd2727e026861887cb5e56c",
+      "action": "map-any-to-genes-unknown",
+      "expectedOccurrences": 1,
+      "reason": "React's inherited form boundary contains an upstream any; the raw Haxe prop surface must retain uncertainty explicitly as genes.ts.Unknown.",
+      "owningBead": "nxhx-f34.3.4"
+    },
+    {
+      "id": "link-props-any",
+      "module": "next/link",
+      "export": "LinkProps",
+      "expectedSignatureHash": "sha256:4fc42af13a0c32ec07c56b3a5aeb0f979dd63f8fe26a9c581f840381d6c51664",
+      "action": "map-any-to-genes-unknown",
+      "expectedOccurrences": 1,
+      "reason": "The generic route parameter defaults to any upstream; generated Haxe must surface an explicit Unknown until B04 supplies the typed RouteHref facade.",
+      "owningBead": "nxhx-f34.3.4"
+    },
+    {
+      "id": "link-component-any",
+      "module": "next/link",
+      "export": "default",
+      "expectedSignatureHash": "sha256:824862ef93de7d0e9b075b1e549d1f2d0c2a86f1e4a9fdada39764444c45871a",
+      "action": "map-any-to-genes-unknown",
+      "expectedOccurrences": 2,
+      "reason": "The default Link component repeats the open route generic in its callable declarations; both sites require the same explicit Unknown policy as LinkProps.",
+      "owningBead": "nxhx-f34.3.4"
+    },
+    {
+      "id": "next-response-unknown",
+      "module": "next/server",
+      "export": "NextResponse",
+      "expectedSignatureHash": "sha256:1711d5a0ab8bc1842e0f019faaf2eca66104b97e2a9299f93a18eccdb0381198",
+      "action": "allow-external-unknown",
+      "expectedOccurrences": 4,
+      "reason": "NextResponse models arbitrary HTTP body data with TypeScript unknown. Preserve that safe upstream boundary and require explicit application decoding.",
+      "owningBead": "nxhx-f34.3.5"
+    },
+    {
+      "id": "route-any",
+      "module": "next/types",
+      "export": "Route",
+      "expectedSignatureHash": "sha256:00a3fb74517d190c41aaca0156f94c72e778efacc0cc98d6ba71e2610e75e175",
+      "action": "map-any-to-genes-unknown",
+      "expectedOccurrences": 1,
+      "reason": "Next's fallback Route generic is any when typed routes are unavailable; the raw binding must use Unknown while the semantic layer provides generated route literals.",
+      "owningBead": "nxhx-f34.3.3"
+    },
+    {
+      "id": "script-props-any",
+      "module": "next/script",
+      "export": "ScriptProps",
+      "expectedSignatureHash": "sha256:958b86f5e84475b076cef6859f4c095abcec21a6fa6346a33e7c7abbe7bf3bd5",
+      "action": "map-any-to-genes-unknown",
+      "expectedOccurrences": 2,
+      "reason": "Script callbacks inherit browser event payloads typed as any upstream; both occurrences must remain explicit Unknown values at the Haxe boundary.",
+      "owningBead": "nxhx-f34.3.4"
+    }
+  ],
+  "generators": [
+    {
+      "module": "next/types",
+      "export": "ServerRuntime",
+      "expectedSignatureHash": "sha256:4f39fd954bd488855f3403e10efa7f2de15fa97baa423a8ecdb14ceb705238a5",
+      "strategy": "string-literal-union-with-undefined",
+      "output": "src/nextjs/raw/ServerRuntime.hx",
+      "owningBead": "nxhx-f34.3.3",
+      "values": [
+        {
+          "typescript": "nodejs",
+          "haxe": "NodeJs"
+        },
+        {
+          "typescript": "experimental-edge",
+          "haxe": "ExperimentalEdge"
+        },
+        {
+          "typescript": "edge",
+          "haxe": "Edge"
+        }
+      ]
+    }
+  ]
+}

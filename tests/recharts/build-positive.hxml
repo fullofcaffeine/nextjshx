@@ -1,0 +1,9 @@
+-lib genes-ts
+-cp src
+-cp tests/recharts/src
+-main recharts_fixture.Positive
+-js tests/recharts/.tmp/typescript/index.tsx
+-D genes.ts
+-D genes.ts.no_extension
+-D genes.ts.jsx_import_source=react
+-dce full

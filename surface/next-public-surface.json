@@ -1,0 +1,2574 @@
+{
+  "$schema": "../schemas/next-public-surface.schema.json",
+  "protocol": "nextjshx.next-public-surface",
+  "version": 1,
+  "generatedBy": {
+    "script": "scripts/bindings/next-surface.mjs",
+    "typescriptVersion": "6.0.2"
+  },
+  "sources": {
+    "allowlist": "config/next-public-entrypoints.json",
+    "fixtures": "tests/next-surface/fixtures.json",
+    "packages": {
+      "next": {
+        "name": "next",
+        "version": "16.2.12"
+      },
+      "typescript": {
+        "importName": "typescript",
+        "name": "@typescript/typescript6",
+        "version": "6.0.2"
+      }
+    }
+  },
+  "publicEntrypoints": [
+    {
+      "module": "globalThis",
+      "source": {
+        "kind": "global",
+        "library": "lib.dom.d.ts"
+      },
+      "priority": "P0",
+      "fixture": "tests/next-surface/fixtures.json#p0-web-contracts",
+      "selectionRationale": "Project the native Web Request and Response contracts through safe Haxe views so Route Handlers retain platform compatibility while JSON decoding uses explicit unknown instead of Haxe 4.3.7 Dynamic.",
+      "entrypointDeclaration": {
+        "package": "@typescript/typescript6",
+        "path": "lib/lib.dom.d.ts"
+      },
+      "exports": [
+        {
+          "name": "Request",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:9a6d3e7cfa0dc7e2b6bdb8856ed88375ae5f1b925c96d38ff8a2be5a4cb40895",
+          "haxeTypePath": "nextjs.raw.server.WebRequest",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "@typescript/typescript6",
+              "path": "lib/lib.dom.d.ts",
+              "syntaxKind": "InterfaceDeclaration",
+              "declaredName": "Request",
+              "declarationHash": "sha256:061071c3d508f19893ab9fd7b1c714ca831aebfa41d11346aa15505f77dca0b1",
+              "internal": false
+            },
+            {
+              "package": "@typescript/typescript6",
+              "path": "lib/lib.dom.d.ts",
+              "syntaxKind": "VariableDeclaration",
+              "declaredName": "Request",
+              "declarationHash": "sha256:89276c973442422345a154d8bc95977a68676f9227cb65a87c1409ed1a194382",
+              "internal": false
+            }
+          ]
+        },
+        {
+          "name": "Response",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:b032b8c503cb18ece8277fee78c79f679c2db056db976cb43ede64aecb318d12",
+          "haxeTypePath": "nextjs.raw.server.WebResponse",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "@typescript/typescript6",
+              "path": "lib/lib.dom.d.ts",
+              "syntaxKind": "InterfaceDeclaration",
+              "declaredName": "Response",
+              "declarationHash": "sha256:d0845799f16b238fb2ff6580c92a31de35db43b76428da3a1e58b8fa5818d065",
+              "internal": false
+            },
+            {
+              "package": "@typescript/typescript6",
+              "path": "lib/lib.dom.d.ts",
+              "syntaxKind": "VariableDeclaration",
+              "declaredName": "Response",
+              "declarationHash": "sha256:8100d6e15ded6e82db148893f4aecc2f089537579787f7a1454d62f4858a3c83",
+              "internal": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P0",
+      "fixture": "tests/next-surface/fixtures.json#p0-core-types",
+      "selectionRationale": "Bind the App Router configuration and metadata contracts without importing the complete Pages Router-oriented root surface.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "index.d.ts"
+      },
+      "exports": [
+        {
+          "name": "Metadata",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:2f0bf8024c0199975df23772a4a4fc4dc58f4d3c6e2ea65b5825336f460a175b",
+          "haxeTypePath": "nextjs.raw.metadata.Metadata",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/lib/metadata/types/metadata-interface.d.ts",
+              "syntaxKind": "InterfaceDeclaration",
+              "declaredName": "Metadata",
+              "declarationHash": "sha256:79a10deb8c5d7f711e579fbb2b85caa02f234dbdd41143daaa5bba84749b732c",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "NextConfig",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:e7f519c7fdf899381c233d28855ca1a9dc936235dab220f2e6cfe5bd7d6c6e87",
+          "haxeTypePath": "nextjs.raw.NextConfig",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/config-shared.d.ts",
+              "syntaxKind": "InterfaceDeclaration",
+              "declaredName": "NextConfig",
+              "declarationHash": "sha256:f3f6dfce98f395e1ca89f39ff80fce0e372c385e6a7f64e4f3577193da34c385",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "ResolvingMetadata",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:10a8438ac22c574d18dfbfeadbcfd31910bb0056fc352ed618138799a58d2fb4",
+          "haxeTypePath": "nextjs.raw.metadata.ResolvingMetadata",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/lib/metadata/types/metadata-interface.d.ts",
+              "syntaxKind": "TypeAliasDeclaration",
+              "declaredName": "ResolvingMetadata",
+              "declarationHash": "sha256:08fd91c3826fab44da1fc568e1c2f40567abfa6c5f1ac422332cd3b2b0081164",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "ResolvingViewport",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:b416f9e552943e66e1af1b4a9ddb8ac1b700a59e53942e99577d177858f07f27",
+          "haxeTypePath": "nextjs.raw.metadata.ResolvingViewport",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/lib/metadata/types/metadata-interface.d.ts",
+              "syntaxKind": "TypeAliasDeclaration",
+              "declaredName": "ResolvingViewport",
+              "declarationHash": "sha256:e21d4db2fad578a33a07071e51b3a24f22dcf9166e2eb5f26d47819f26fe3113",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "Viewport",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:11628a08d0f9ac5de6f4204dfb0b9c3e24f08a2a9172de6a4e2564047980acb1",
+          "haxeTypePath": "nextjs.raw.metadata.Viewport",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/lib/metadata/types/metadata-interface.d.ts",
+              "syntaxKind": "InterfaceDeclaration",
+              "declaredName": "Viewport",
+              "declarationHash": "sha256:f345e83854d519bb4164f36802ce12dad1e5f06337c1ad24fa57032d7b72cc18",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next/cache",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P0",
+      "fixture": "tests/next-surface/fixtures.json#p0-server",
+      "selectionRationale": "Cover the complete documented cache and revalidation entrypoint, with unstable aliases visibly classified instead of silently normalized.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "cache.d.ts"
+      },
+      "exports": [
+        {
+          "name": "cacheLife",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:d6591aabe36985c8842231e7c0357063c85986480864b0ba9552ebd2292416ec",
+          "haxeTypePath": "nextjs.raw.Cache",
+          "haxeMember": "cacheLife",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "cache.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "cacheLife",
+              "declarationHash": "sha256:97c5250032fc163a282d80f167821f8dd70b2aebeec1310340925fbb4a217180",
+              "internal": false
+            },
+            {
+              "package": "next",
+              "path": "cache.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "cacheLife",
+              "declarationHash": "sha256:a69a185d0dfaca8dec85787f60b6e36de2b0e6c49dc4e26afda219f66b86ce34",
+              "internal": false
+            },
+            {
+              "package": "next",
+              "path": "cache.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "cacheLife",
+              "declarationHash": "sha256:446d3b3b913b10ca73a986d50a91c1091ac71194290c9587cc74d2794e7a11ad",
+              "internal": false
+            },
+            {
+              "package": "next",
+              "path": "cache.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "cacheLife",
+              "declarationHash": "sha256:3e475384a5a5d37341a168069d832577f933b4b6165fcc0ad68636171da629da",
+              "internal": false
+            },
+            {
+              "package": "next",
+              "path": "cache.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "cacheLife",
+              "declarationHash": "sha256:33c2c206bba5446410ecaf847a8c155d7e853b1fa5147e4859ef10804cb3bb9d",
+              "internal": false
+            },
+            {
+              "package": "next",
+              "path": "cache.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "cacheLife",
+              "declarationHash": "sha256:d5c500ffb63c96ff21bb1379a7c9e36a4e5202a56a396c08154850f80a528a07",
+              "internal": false
+            },
+            {
+              "package": "next",
+              "path": "cache.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "cacheLife",
+              "declarationHash": "sha256:526232e613b8b1ebc51cc8f4d63516205074d26647aa180fc67be6cf9edecd6e",
+              "internal": false
+            },
+            {
+              "package": "next",
+              "path": "cache.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "cacheLife",
+              "declarationHash": "sha256:b0272a16a59eca0ce3f1910ddaa95079932e988bc1d03551e57c71eec4617ada",
+              "internal": false
+            },
+            {
+              "package": "next",
+              "path": "cache.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "cacheLife",
+              "declarationHash": "sha256:7da1a059024d8b97b0ddc8fb6fa482a4a01353de15089183a85415e78260422d",
+              "internal": false
+            }
+          ]
+        },
+        {
+          "name": "cacheTag",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:ab2dce1106bb5641e4aabd2364fddb74d5e3c40021bb9fc9d838cfc2b4c71954",
+          "haxeTypePath": "nextjs.raw.Cache",
+          "haxeMember": "cacheTag",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/use-cache/cache-tag.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "cacheTag",
+              "declarationHash": "sha256:0295ac281480b2781261dd1f7dc860176b94be4ea1f679ed2b1a2ca72e61a7e7",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "refresh",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:3067014e5aef5eed8a6b207ee76ca45171faf131ce4a84b744b6201495126074",
+          "haxeTypePath": "nextjs.raw.Cache",
+          "haxeMember": "refresh",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/web/spec-extension/revalidate.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "refresh",
+              "declarationHash": "sha256:0ac5209ebe50a02e42ba57ab03114b4552bd4b1c7a8c3fb7f00b9378ffe02b6a",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "revalidatePath",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:dc526e48bbb07518c505678a59307738e4b3de2258f123dc6608926eb27c1d87",
+          "haxeTypePath": "nextjs.raw.Cache",
+          "haxeMember": "revalidatePath",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/web/spec-extension/revalidate.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "revalidatePath",
+              "declarationHash": "sha256:c125701d87accc36edad4d406137df7a54eb74d7397ad84e5a183870f44cd77e",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "revalidateTag",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:b5c9264e648b7b61acf03db366b1d62f469982dc399f803c5d3c1b4d4363e9b7",
+          "haxeTypePath": "nextjs.raw.Cache",
+          "haxeMember": "revalidateTag",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/web/spec-extension/revalidate.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "revalidateTag",
+              "declarationHash": "sha256:3f91fe4c869e25338f453a7927b2dfc5e02f3a36b283530e568d1d50d8f65f77",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "unstable_cache",
+          "kind": "function",
+          "stability": "unstable",
+          "signatureHash": "sha256:4ca1513eea06643cf9aeb85194af9dd3611dd33356d4f4942a04c2b2b6f63ca1",
+          "haxeTypePath": "nextjs.raw.Cache",
+          "haxeMember": "unstable_cache",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/web/spec-extension/unstable-cache.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "unstable_cache",
+              "declarationHash": "sha256:87bb1f7a8158a7882f445ccaa3d9cd4802eb5f1bc3d742abd035e1c933ddc380",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "unstable_cacheLife",
+          "kind": "function",
+          "stability": "unstable",
+          "signatureHash": "sha256:9f2b80e702d293a174eb3236fcf110f79d64f94c0b9902e76bb8124c0bbdff69",
+          "haxeTypePath": "nextjs.raw.Cache",
+          "haxeMember": "unstable_cacheLife",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "cache.d.ts",
+              "syntaxKind": "VariableDeclaration",
+              "declaredName": "unstable_cacheLife",
+              "declarationHash": "sha256:93bcd7131cc56c79bcaa7f56554bde8bc101e9384bfd6b0837a10b9301acd332",
+              "internal": false
+            }
+          ]
+        },
+        {
+          "name": "unstable_cacheTag",
+          "kind": "function",
+          "stability": "unstable",
+          "signatureHash": "sha256:69cba17aac2585fc20d1d54bcdb18ea6b571daa42a1fcf9266221f8aac6e30ec",
+          "haxeTypePath": "nextjs.raw.Cache",
+          "haxeMember": "unstable_cacheTag",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "cache.d.ts",
+              "syntaxKind": "VariableDeclaration",
+              "declaredName": "unstable_cacheTag",
+              "declarationHash": "sha256:c826d2b1511c19469bd12103df270c5e5f0f566937f28110c5680da96f1da1d3",
+              "internal": false
+            }
+          ]
+        },
+        {
+          "name": "unstable_noStore",
+          "kind": "function",
+          "stability": "unstable",
+          "signatureHash": "sha256:fb38e864fcae06081ee37359d24e39c7b799a56a2d2872c6297a7e5e8a4cda74",
+          "haxeTypePath": "nextjs.raw.Cache",
+          "haxeMember": "unstable_noStore",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/web/spec-extension/unstable-no-store.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "unstable_noStore",
+              "declarationHash": "sha256:08e2aa4061d62c7fcf297428122b9fbefe4c7e7c7dc9d51adb9608ed72b75763",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "updateTag",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:85be20ba6855e788b5fb37a767e906532b5adffec696c003c0a7608aa24b87bc",
+          "haxeTypePath": "nextjs.raw.Cache",
+          "haxeMember": "updateTag",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/web/spec-extension/revalidate.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "updateTag",
+              "declarationHash": "sha256:14127dce83aa85322f66a1f2e49c99a50ee0f9ddeacadc65d7c0f5b89c22ab73",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next/form",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P0",
+      "fixture": "tests/next-surface/fixtures.json#p0-components",
+      "selectionRationale": "Expose the complete documented App Router form component boundary and its closed props contract.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "form.d.ts"
+      },
+      "exports": [
+        {
+          "name": "FormProps",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:28f79fb46d388d2b58abbd8b5f3994f3bccc84d09bd2727e026861887cb5e56c",
+          "haxeTypePath": "nextjs.raw.components.FormProps",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/form-shared.d.ts",
+              "syntaxKind": "TypeAliasDeclaration",
+              "declaredName": "FormProps",
+              "declarationHash": "sha256:f70fe42fea83fb648ade164c4c3345de098f7d59c25af4b84af060c531b0d957",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "default",
+          "kind": "component",
+          "stability": "stable",
+          "signatureHash": "sha256:2e76e2be8be45fc57b4a85faa77cc87873d1197db1895227145afd7f3d698e4f",
+          "haxeTypePath": "nextjs.raw.components.Form",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/form.d.ts",
+              "syntaxKind": "VariableDeclaration",
+              "declaredName": "Form",
+              "declarationHash": "sha256:fbff65617fa8e196f7d7e6fee99f854f01052b6bae34c2fc643c89ef4e45a7f8",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next/headers",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P0",
+      "fixture": "tests/next-surface/fixtures.json#p0-server",
+      "selectionRationale": "Expose every documented async request-header boundary while retaining Next's read-versus-mutation return types.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "headers.d.ts"
+      },
+      "exports": [
+        {
+          "name": "cookies",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:c29b12ef96c45bd45a4d7bdb545b65592c46c8b3bebde274b49e43824782d53a",
+          "haxeTypePath": "nextjs.raw.Headers",
+          "haxeMember": "cookies",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/request/cookies.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "cookies",
+              "declarationHash": "sha256:64f31af9bb4fd3d4e19767f655110ef419f8e424bee6d2922f5e169d9ca9cb14",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "draftMode",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:b85481d54b7d6cbd74739c4751147560fd5005a3f2c9aa172b05ad5b1e7e3009",
+          "haxeTypePath": "nextjs.raw.Headers",
+          "haxeMember": "draftMode",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/request/draft-mode.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "draftMode",
+              "declarationHash": "sha256:f44a497ab795e2deda0c025c0f3fb6ae665b057634a7de65d6517bc905df8167",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "headers",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:b013487265de27a24c485ae30c977d7cbdbbb21d569d78d97943d39f1ad4f348",
+          "haxeTypePath": "nextjs.raw.Headers",
+          "haxeMember": "headers",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/request/headers.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "headers",
+              "declarationHash": "sha256:12cf53b56a903502433f5ecd8f0883c76255ef1e67b5297907c9c3a61f10aeb1",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next/image",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P0",
+      "fixture": "tests/next-surface/fixtures.json#p0-components",
+      "selectionRationale": "Bind the documented image component, loader contracts, static data, and pure props helper without exposing optimizer internals.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "image.d.ts"
+      },
+      "exports": [
+        {
+          "name": "ImageLoaderProps",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:bbf83174a7da3dc0e2f0f74b8588299894e12bdd97a65e4d38ee5c56e547b7ae",
+          "haxeTypePath": "nextjs.raw.components.ImageLoaderProps",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/shared/lib/image-config.d.ts",
+              "syntaxKind": "TypeAliasDeclaration",
+              "declaredName": "ImageLoaderProps",
+              "declarationHash": "sha256:3f5a2ec19dc5142f686d5534497d9dfd0f1cd61b0d80310b3e82020010da6f08",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "ImageProps",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:7c266d2c9afe01ee0dd2f918a84fc56d50cb2b8615fa2e7c6f2bd88b83c1c266",
+          "haxeTypePath": "nextjs.raw.components.ImageProps",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/shared/lib/get-img-props.d.ts",
+              "syntaxKind": "TypeAliasDeclaration",
+              "declaredName": "ImageProps",
+              "declarationHash": "sha256:700dfe389cad7be115e5b0ebe36aea84516b3df97fe61e1ea03d8665fbc8aaf6",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "StaticImageData",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:1b7ac855b22c4694b5d5bb33ce9975dca8e997e8d580367d375e1cd73e2c6d38",
+          "haxeTypePath": "nextjs.raw.components.StaticImageData",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/shared/lib/get-img-props.d.ts",
+              "syntaxKind": "InterfaceDeclaration",
+              "declaredName": "StaticImageData",
+              "declarationHash": "sha256:47e8b5d4232661145c0c3b9463c0021f9e015d44aa6214832e28347887709e24",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "default",
+          "kind": "component",
+          "stability": "stable",
+          "signatureHash": "sha256:12ca137b361aa162ba2a8f3031880224935843c17956a764be05a37a3fd7e46e",
+          "haxeTypePath": "nextjs.raw.components.Image",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/image-component.d.ts",
+              "syntaxKind": "VariableDeclaration",
+              "declaredName": "Image",
+              "declarationHash": "sha256:f95ecdbb0b047025d20afcbfdd2e73c8e0ae19a5f70ad63ef9c06f28afb7e6b0",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "getImageProps",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:8a137c14f5a7ffddc1ed54791500fba2dc351ad859df12f112672b90c797bd1e",
+          "haxeTypePath": "nextjs.raw.components.Image",
+          "haxeMember": "getImageProps",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/shared/lib/image-external.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "getImageProps",
+              "declarationHash": "sha256:34f951da984b681cf300a3e20e5e867b1941a74e2bb99fe651a1ab5aca68a069",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next/link",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P0",
+      "fixture": "tests/next-surface/fixtures.json#p0-components",
+      "selectionRationale": "Cover the documented default component, its props, and link-status hook while leaving implementation helpers private.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "link.d.ts"
+      },
+      "exports": [
+        {
+          "name": "LinkProps",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:4fc42af13a0c32ec07c56b3a5aeb0f979dd63f8fe26a9c581f840381d6c51664",
+          "haxeTypePath": "nextjs.raw.components.LinkProps",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/link.d.ts",
+              "syntaxKind": "InterfaceDeclaration",
+              "declaredName": "LinkProps",
+              "declarationHash": "sha256:026f1434636f14d63585b702752074ac7d1b6b75f6b42b0676be813bd9f48871",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "default",
+          "kind": "component",
+          "stability": "stable",
+          "signatureHash": "sha256:824862ef93de7d0e9b075b1e549d1f2d0c2a86f1e4a9fdada39764444c45871a",
+          "haxeTypePath": "nextjs.raw.components.Link",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/link.d.ts",
+              "syntaxKind": "VariableDeclaration",
+              "declaredName": "Link",
+              "declarationHash": "sha256:ef3175fdfefdf80cbb4a7eba3fe321ae0419262305ec2c2ebeded3e7c5ec4f9d",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "useLinkStatus",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:0b168b8d2ec32c9cca4b8b4bd41ed452f827fd72db75428464f8bcc4c50f69c0",
+          "haxeTypePath": "nextjs.raw.components.Link",
+          "haxeMember": "useLinkStatus",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/link.d.ts",
+              "syntaxKind": "VariableDeclaration",
+              "declaredName": "useLinkStatus",
+              "declarationHash": "sha256:a25cf0eac4ab87c87a85ccebfcbf1d5f6d1a94b15fadfc61943904bcb377b0e9",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next/navigation",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P0",
+      "fixture": "tests/next-surface/fixtures.json#p0-navigation",
+      "selectionRationale": "Cover documented App Router hooks and non-returning navigation interrupts while excluding server-insertion and unstable error helpers.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "navigation.d.ts"
+      },
+      "exports": [
+        {
+          "name": "ReadonlyURLSearchParams",
+          "kind": "class",
+          "stability": "stable",
+          "signatureHash": "sha256:587f2d1b84d82e72ce4a3575c17d451c6d625103ddfa5eba7fb8d060acf9da95",
+          "haxeTypePath": "nextjs.raw.navigation.ReadonlyURLSearchParams",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/components/readonly-url-search-params.d.ts",
+              "syntaxKind": "ClassDeclaration",
+              "declaredName": "ReadonlyURLSearchParams",
+              "declarationHash": "sha256:1f5d7d0c55b2ffc7682b4d59da7611e3e5b8e90fd69c5693b14521a796ea2618",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "RedirectType",
+          "kind": "value",
+          "stability": "stable",
+          "signatureHash": "sha256:d2b50c4586d638bdd7bb3ce47f3f3e4ac7a17b78ad2eab587f26f9ced4c54a3a",
+          "haxeTypePath": "nextjs.raw.Navigation",
+          "haxeMember": "RedirectType",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/components/navigation.react-server.d.ts",
+              "syntaxKind": "VariableDeclaration",
+              "declaredName": "RedirectType",
+              "declarationHash": "sha256:2b238771a4e81426e2c046efd7fb855345593c37be83ba973d74533f2050e4d6",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "forbidden",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:abec9c7b10b88c1d1b97e3eb62f08339b4fef6589f73723461fc5f753c05e9c0",
+          "haxeTypePath": "nextjs.raw.Navigation",
+          "haxeMember": "forbidden",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/components/forbidden.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "forbidden",
+              "declarationHash": "sha256:a9e6cd4edad4b82659a2d7a782f5bae1995106740824e1ff5eae56d5eb4dd5e8",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "notFound",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:6d255f4e57f9aa950d09d50ff4fb84294c34cfdc993531cbe6d9e263494eab78",
+          "haxeTypePath": "nextjs.raw.Navigation",
+          "haxeMember": "notFound",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/components/not-found.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "notFound",
+              "declarationHash": "sha256:319ebe20351174c6433d685017109e8080d893b451f0b7c484c88e8589cc4837",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "permanentRedirect",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:6e3c920beda76c5d7e4a68432c2593fe554fe6e3d351605996a728971ad9555c",
+          "haxeTypePath": "nextjs.raw.Navigation",
+          "haxeMember": "permanentRedirect",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/components/redirect.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "permanentRedirect",
+              "declarationHash": "sha256:d44bc6fb525ba68c7a42f0c11efbd7939d98c94f3e122cbfb6e1160f4bf7afc6",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "redirect",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:a9f7c9cec326a4c3d97323fb6c85b43717dff74e84a9b0edbdc4bd4fea6f4377",
+          "haxeTypePath": "nextjs.raw.Navigation",
+          "haxeMember": "redirect",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/components/redirect.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "redirect",
+              "declarationHash": "sha256:b8f5b130b9063ec5ab65bc6aec299ff3e4a323281f50aab8c101756513d11bba",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "unauthorized",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:de1bf382555a3df17350ceb7013f2ddece1f34ed26815ae170af3d85702dd659",
+          "haxeTypePath": "nextjs.raw.Navigation",
+          "haxeMember": "unauthorized",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/components/unauthorized.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "unauthorized",
+              "declarationHash": "sha256:f3a962b9e44beb68119c73b479b792b4493193f1ee3b465b1933626b864e5bf2",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "useParams",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:f1262903b757e1fee1bb18413c6f4e9074abeee233ee07d96fbf78935a437ce4",
+          "haxeTypePath": "nextjs.raw.Navigation",
+          "haxeMember": "useParams",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/components/navigation.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "useParams",
+              "declarationHash": "sha256:fb4f204f4630396cc5fab9eb1a372a1b84111226da5192b1921481f617017778",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "usePathname",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:152a3bd5712e70a775a920e4dca29a65e8ea038874bf28d4a91cc473d4ad32cb",
+          "haxeTypePath": "nextjs.raw.Navigation",
+          "haxeMember": "usePathname",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/components/navigation.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "usePathname",
+              "declarationHash": "sha256:e7e5591cbdeb37f47335922f70ecfc9db17e8f97dcc5e584f0d03236fb0b8017",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "useRouter",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:670eb465f0f98c3b46e55549a109322603ef82a5004defc1f47a09965e284fbb",
+          "haxeTypePath": "nextjs.raw.Navigation",
+          "haxeMember": "useRouter",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/components/navigation.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "useRouter",
+              "declarationHash": "sha256:1aabd5ee3a7fe79a260a66aaeae4715202867bbbac6958de2a5338f9b86a0f17",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "useSearchParams",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:1c0e235305ce6fbfae2ac6550e0d987826e85202da26777a6b5440e0eefcc146",
+          "haxeTypePath": "nextjs.raw.Navigation",
+          "haxeMember": "useSearchParams",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/components/navigation.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "useSearchParams",
+              "declarationHash": "sha256:3a5718b90b86d9fe973b1955bd03b6358c6f92194b206e1e2b08817ad29bc3b6",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "useSelectedLayoutSegment",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:9f3e6cc738e4a7950924603aaecb08b5470f093b18e6ce12b0f4a8dcbdc63818",
+          "haxeTypePath": "nextjs.raw.Navigation",
+          "haxeMember": "useSelectedLayoutSegment",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/components/navigation.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "useSelectedLayoutSegment",
+              "declarationHash": "sha256:4f8cf28b80f52e7cf2946b412bf34b9095c1804681387503c25e7b1dbe00b1f3",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "useSelectedLayoutSegments",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:cfa160ff234d7d7460d851320c0d24207338521a33589691d1bb482f5cbc0de4",
+          "haxeTypePath": "nextjs.raw.Navigation",
+          "haxeMember": "useSelectedLayoutSegments",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/components/navigation.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "useSelectedLayoutSegments",
+              "declarationHash": "sha256:0bb5f7039beec91c66f2e421d20e73c9cc137a0efffc723a8dbb6436196798ac",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next/server",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P0",
+      "fixture": "tests/next-surface/fixtures.json#p0-server",
+      "selectionRationale": "Bind request, response, middleware and proxy boundaries plus documented helpers; ImageResponse remains the separate P2 next/og promise.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "server.d.ts"
+      },
+      "exports": [
+        {
+          "name": "MiddlewareConfig",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:5a022dfae5f1542147148fe61224a7750b61a85bb5791133851d72dc7e9bfc23",
+          "haxeTypePath": "nextjs.raw.server.MiddlewareConfig",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/build/segment-config/middleware/middleware-config.d.ts",
+              "syntaxKind": "TypeAliasDeclaration",
+              "declaredName": "MiddlewareConfigInput",
+              "declarationHash": "sha256:772034f3ff4688c19905b040b0b24619cc31d3ecddd723ab8574f09a34cc64a8",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "NextFetchEvent",
+          "kind": "class",
+          "stability": "stable",
+          "signatureHash": "sha256:1b122b8ebf740da35a402adf6d9109f4b52793155f3f999030ed6efbca1b0ecf",
+          "haxeTypePath": "nextjs.raw.server.NextFetchEvent",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/web/spec-extension/fetch-event.d.ts",
+              "syntaxKind": "ClassDeclaration",
+              "declaredName": "NextFetchEvent",
+              "declarationHash": "sha256:f0d146830a17b04d24d1cf5788cfc05953200fcb511f2028067efcba755b6591",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "NextMiddleware",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:0d8576de33f9f9f8ad7158bccf70a0b1d2fb7571334fe229fd76598596ddc2cb",
+          "haxeTypePath": "nextjs.raw.server.NextMiddleware",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/web/types.d.ts",
+              "syntaxKind": "TypeAliasDeclaration",
+              "declaredName": "NextMiddleware",
+              "declarationHash": "sha256:deb9fe1adec01433ab9d5db3894b55c6a972aa3784b8ebbcb56cfbc2aa952013",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "NextProxy",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:66b9b30da9d89c07432b17868842d4d40e05fd9b5b1f752f6ab9a19e3924fd49",
+          "haxeTypePath": "nextjs.raw.server.NextProxy",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/web/types.d.ts",
+              "syntaxKind": "TypeAliasDeclaration",
+              "declaredName": "NextProxy",
+              "declarationHash": "sha256:0cd2256b50c855089a2c08d00e1d583deddedacc197eae2654acc6077596eb6f",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "NextRequest",
+          "kind": "class",
+          "stability": "stable",
+          "signatureHash": "sha256:14cd03aec93af5d0d8ecca90b39a76df8b4f8b6e18ccc6cf4741557c187ef4ec",
+          "haxeTypePath": "nextjs.raw.server.NextRequest",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/web/spec-extension/request.d.ts",
+              "syntaxKind": "ClassDeclaration",
+              "declaredName": "NextRequest",
+              "declarationHash": "sha256:7f6461894e955d1383fb70a5dc15d0a6291b8df6811f64b657e6a1c30ce519df",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "NextResponse",
+          "kind": "class",
+          "stability": "stable",
+          "signatureHash": "sha256:1711d5a0ab8bc1842e0f019faaf2eca66104b97e2a9299f93a18eccdb0381198",
+          "haxeTypePath": "nextjs.raw.server.NextResponse",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/web/spec-extension/response.d.ts",
+              "syntaxKind": "ClassDeclaration",
+              "declaredName": "NextResponse",
+              "declarationHash": "sha256:dfe6acfe7ffc8747b2760919d36246b6853ad3022c68ded6b73da194b9cfde3f",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "ProxyConfig",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:674c139bb91354bdf91589b0e77c7986861378519fba39f2f30e8973b61c9b1f",
+          "haxeTypePath": "nextjs.raw.server.ProxyConfig",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/build/segment-config/middleware/middleware-config.d.ts",
+              "syntaxKind": "TypeAliasDeclaration",
+              "declaredName": "MiddlewareConfigInput",
+              "declarationHash": "sha256:772034f3ff4688c19905b040b0b24619cc31d3ecddd723ab8574f09a34cc64a8",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "URLPattern",
+          "kind": "class",
+          "stability": "stable",
+          "signatureHash": "sha256:7b49a1c5ea627420977721e7774a54da83f2b257bdf66752f7c95cf5fc0069d8",
+          "haxeTypePath": "nextjs.raw.server.URLPattern",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/compiled/@edge-runtime/primitives/url.d.ts",
+              "syntaxKind": "ClassDeclaration",
+              "declaredName": "_URLPattern",
+              "declarationHash": "sha256:7f170c8578ccf6d677054c283fe11f208a97dedcc93d8f7706db29fdb4905a32",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "after",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:f0423f652002026e5608ef0ca630dd44820121dedb5b42374c13cb72ff54b557",
+          "haxeTypePath": "nextjs.raw.Server",
+          "haxeMember": "after",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/after/after.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "after",
+              "declarationHash": "sha256:00395c21b55808a2421d31204cd0da67ec669f4c3135aa75626c7558bf733dc8",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "connection",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:17e5f40c0a5bfbaead8d126ca53ced1f40d2288cc12645a3d8030544cbb4ed55",
+          "haxeTypePath": "nextjs.raw.Server",
+          "haxeMember": "connection",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/request/connection.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "connection",
+              "declarationHash": "sha256:0ef69633803697d78ad770676628d3312f708db4b05795fdd6a0eaeb9cc2b6c7",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "userAgent",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:8067b45c9b8b7e33e03b2d5f713d97e5376422620d84a436a852c828494434c9",
+          "haxeTypePath": "nextjs.raw.Server",
+          "haxeMember": "userAgent",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/web/spec-extension/user-agent.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "userAgent",
+              "declarationHash": "sha256:4b5b719b825fc93176c99b9e9ed9773ccc02bed114a667147526dc866a4c3084",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "userAgentFromString",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:d76117e5658f8e7a3b1c98777b41340d53a0f76103354dcf2d931cc51c7270a1",
+          "haxeTypePath": "nextjs.raw.Server",
+          "haxeMember": "userAgentFromString",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/web/spec-extension/user-agent.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "userAgentFromString",
+              "declarationHash": "sha256:dfdc5a103e523cff65d99b08648374ad1eda559985772c1b80ebdd148b73deb2",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next/types",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P0",
+      "fixture": "tests/next-surface/fixtures.json#p0-core-types",
+      "selectionRationale": "Expose only the route and server-runtime types needed at App Router boundaries; the wider legacy data-fetching surface stays native.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "types.d.ts"
+      },
+      "exports": [
+        {
+          "name": "Route",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:00a3fb74517d190c41aaca0156f94c72e778efacc0cc98d6ba71e2610e75e175",
+          "haxeTypePath": "nextjs.raw.Route",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/types.d.ts",
+              "syntaxKind": "TypeAliasDeclaration",
+              "declaredName": "Route",
+              "declarationHash": "sha256:bf8f3ca75af0f68a1d09a102de6d4bd332f38e1c2b9615a80d9875addfaf85d7",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "ServerRuntime",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:4f39fd954bd488855f3403e10efa7f2de15fa97baa423a8ecdb14ceb705238a5",
+          "haxeTypePath": "nextjs.raw.ServerRuntime",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/types.d.ts",
+              "syntaxKind": "TypeAliasDeclaration",
+              "declaredName": "ServerRuntime",
+              "declarationHash": "sha256:633975daae91cad5b437bd33c871393702e199946fbf9ceb8c6669f280fd85bf",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next/dynamic",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P1",
+      "fixture": "tests/next-surface/fixtures.json#p1-lazy-script",
+      "selectionRationale": "Expose the documented lazy component loader and its two user-authored option contracts, not internal loadable implementation types.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "dynamic.d.ts"
+      },
+      "exports": [
+        {
+          "name": "DynamicOptions",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:b7300fc7649dfd2b931120f91398b3117b51e7695affb775a1923eb05b8b5d2a",
+          "haxeTypePath": "nextjs.raw.lazy.DynamicOptions",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/shared/lib/dynamic.d.ts",
+              "syntaxKind": "TypeAliasDeclaration",
+              "declaredName": "DynamicOptions",
+              "declarationHash": "sha256:13022c2f96046ba8e49669e4dc060d8cfbf45ef9e6bb6041ff6e8fa23ad890f0",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "Loader",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:3b972faca8d63d9b87eecc8749bbb9112e61c7d9dde7e0027c266128a3e4d18e",
+          "haxeTypePath": "nextjs.raw.lazy.Loader",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/shared/lib/dynamic.d.ts",
+              "syntaxKind": "TypeAliasDeclaration",
+              "declaredName": "Loader",
+              "declarationHash": "sha256:747954e60940b59e7d1bdcf271cde0f0964e7719b591889aa5e932b9ecb1241d",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "default",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:40245b6492e763a85f0a1cc2e4d024e9db648b2438a1104fc95efa84de7308f1",
+          "haxeTypePath": "nextjs.raw.DynamicComponent",
+          "haxeMember": "load",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/shared/lib/dynamic.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "dynamic",
+              "declarationHash": "sha256:c26853060bf5dfe59bb6d84aa008ed09bc744e1c4ae7439753b16b415a1cf173",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next/font/google",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P1",
+      "fixture": "tests/next-surface/fixtures.json#p1-fonts",
+      "selectionRationale": "Start with representative variable and static Google loaders; adding another font remains an explicit reviewed allowlist change.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "font/google/index.d.ts"
+      },
+      "exports": [
+        {
+          "name": "Inter",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:3d543618b534e3fd40a52a6ed1727d806e8598610459640f01d968cbbc3f07d5",
+          "haxeTypePath": "nextjs.raw.font.Google",
+          "haxeMember": "inter",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/compiled/@next/font/dist/google/index.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "Inter",
+              "declarationHash": "sha256:30351d98d77cda73481d4ae36e6d9fa54ceef78d6914bcdff78702251f1532e1",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "Roboto",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:7b8768861053468512c5c59423ad80d9e60834f50cb95a6a7eb9023e384f534a",
+          "haxeTypePath": "nextjs.raw.font.Google",
+          "haxeMember": "roboto",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/compiled/@next/font/dist/google/index.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "Roboto",
+              "declarationHash": "sha256:f6b4432e453f6fc8a312686915eff3756ce4bae0980c752cd1b8b22d3f355b4f",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next/font/local",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P1",
+      "fixture": "tests/next-surface/fixtures.json#p1-fonts",
+      "selectionRationale": "Expose the complete public local-font default loader while keeping its generated support types implementation-only.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "font/local/index.d.ts"
+      },
+      "exports": [
+        {
+          "name": "default",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:8970f66d13131d6e369faea915faffeeeabf2da5c9b4a9bb1ebc0b944ed0d0d3",
+          "haxeTypePath": "nextjs.raw.font.Local",
+          "haxeMember": "load",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/compiled/@next/font/dist/local/index.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "localFont",
+              "declarationHash": "sha256:737388447590c49ed8fcd37d1d6121b656918cfb74fac59e329b7697d5bd2b08",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next/script",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P1",
+      "fixture": "tests/next-surface/fixtures.json#p1-lazy-script",
+      "selectionRationale": "Bind the documented default component and props while excluding client-loader lifecycle helpers that are not application APIs.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "script.d.ts"
+      },
+      "exports": [
+        {
+          "name": "ScriptProps",
+          "kind": "type",
+          "stability": "stable",
+          "signatureHash": "sha256:958b86f5e84475b076cef6859f4c095abcec21a6fa6346a33e7c7abbe7bf3bd5",
+          "haxeTypePath": "nextjs.raw.components.ScriptProps",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/script.d.ts",
+              "syntaxKind": "InterfaceDeclaration",
+              "declaredName": "ScriptProps",
+              "declarationHash": "sha256:3f9a8a2c46a61809385f7555ee9693405c9fed57d02f39f8e8e4dcef8a4d9e78",
+              "internal": true
+            }
+          ]
+        },
+        {
+          "name": "default",
+          "kind": "component",
+          "stability": "stable",
+          "signatureHash": "sha256:e401742a61eb2d0e57f237ad80e17f23b8b425587de3c9290ac2f84dc6052a9f",
+          "haxeTypePath": "nextjs.raw.components.Script",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/script.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "Script",
+              "declarationHash": "sha256:b0667d0723efe1c761a61729bb1a12435115935ae6839303f775ddb2a0b5bfb4",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next/compat/router",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P2",
+      "fixture": "tests/next-surface/fixtures.json#p2-compat-router",
+      "selectionRationale": "Offer only the nullable migration hook for mixed Pages and App Router components; this is not an endorsement of the legacy router.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "compat/router.d.ts"
+      },
+      "exports": [
+        {
+          "name": "useRouter",
+          "kind": "function",
+          "stability": "migration",
+          "signatureHash": "sha256:519b2f447355ff7e78dabf19319ed1abf6d03aa1c7da58b28bd02d92aea19af7",
+          "haxeTypePath": "nextjs.raw.compat.Router",
+          "haxeMember": "useRouter",
+          "exposure": "raw-only",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/compat/router.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "useRouter",
+              "declarationHash": "sha256:7db419a08f285942fe13e8e67eed0f1b51332968f2c102172d6cefd329f32078",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next/og",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P2",
+      "fixture": "tests/next-surface/fixtures.json#p2-og",
+      "selectionRationale": "Keep image generation as a separately reviewable breadth feature rather than silently promoting its server re-export to P0.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "og.d.ts"
+      },
+      "exports": [
+        {
+          "name": "ImageResponse",
+          "kind": "class",
+          "stability": "stable",
+          "signatureHash": "sha256:b40463eeda20d216f5544fdafc116bfb4bc0812849df2bfd421f326e49e851eb",
+          "haxeTypePath": "nextjs.raw.og.ImageResponse",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/server/og/image-response.d.ts",
+              "syntaxKind": "ClassDeclaration",
+              "declaredName": "ImageResponse",
+              "declarationHash": "sha256:93d0c9fd5c21cc94bfaa1f4fef09e978951fb24ce67e2c99cd1e7bc09a8d26cc",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "next/web-vitals",
+      "source": {
+        "kind": "module"
+      },
+      "priority": "P2",
+      "fixture": "tests/next-surface/fixtures.json#p2-web-vitals",
+      "selectionRationale": "Expose the single documented reporting hook while its bundled metric declaration remains internal support rather than a NextJsHx promise.",
+      "entrypointDeclaration": {
+        "package": "next",
+        "path": "web-vitals.d.ts"
+      },
+      "exports": [
+        {
+          "name": "useReportWebVitals",
+          "kind": "function",
+          "stability": "stable",
+          "signatureHash": "sha256:5ed450bbf1f11062cf231bd19a52b3ed099e2d80f298965eff9558ff861432d1",
+          "haxeTypePath": "nextjs.raw.WebVitals",
+          "haxeMember": "useReportWebVitals",
+          "exposure": "raw-and-semantic",
+          "declarations": [
+            {
+              "package": "next",
+              "path": "dist/client/web-vitals.d.ts",
+              "syntaxKind": "FunctionDeclaration",
+              "declaredName": "useReportWebVitals",
+              "declarationHash": "sha256:517e408ab7eb2a9b0ccdd74232a9a5cc2b16f1c3e11e3756afc66ea591468641",
+              "internal": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "internalSupportingDeclarations": [
+    {
+      "package": "next",
+      "path": "dist/build/segment-config/middleware/middleware-config.d.ts",
+      "syntaxKind": "TypeAliasDeclaration",
+      "declaredName": "MiddlewareConfigInput",
+      "declarationHash": "sha256:772034f3ff4688c19905b040b0b24619cc31d3ecddd723ab8574f09a34cc64a8",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/server",
+          "export": "MiddlewareConfig"
+        },
+        {
+          "module": "next/server",
+          "export": "ProxyConfig"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/compat/router.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "useRouter",
+      "declarationHash": "sha256:7db419a08f285942fe13e8e67eed0f1b51332968f2c102172d6cefd329f32078",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/compat/router",
+          "export": "useRouter"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/components/forbidden.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "forbidden",
+      "declarationHash": "sha256:a9e6cd4edad4b82659a2d7a782f5bae1995106740824e1ff5eae56d5eb4dd5e8",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/navigation",
+          "export": "forbidden"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/components/navigation.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "useParams",
+      "declarationHash": "sha256:fb4f204f4630396cc5fab9eb1a372a1b84111226da5192b1921481f617017778",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/navigation",
+          "export": "useParams"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/components/navigation.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "usePathname",
+      "declarationHash": "sha256:e7e5591cbdeb37f47335922f70ecfc9db17e8f97dcc5e584f0d03236fb0b8017",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/navigation",
+          "export": "usePathname"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/components/navigation.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "useRouter",
+      "declarationHash": "sha256:1aabd5ee3a7fe79a260a66aaeae4715202867bbbac6958de2a5338f9b86a0f17",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/navigation",
+          "export": "useRouter"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/components/navigation.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "useSearchParams",
+      "declarationHash": "sha256:3a5718b90b86d9fe973b1955bd03b6358c6f92194b206e1e2b08817ad29bc3b6",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/navigation",
+          "export": "useSearchParams"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/components/navigation.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "useSelectedLayoutSegment",
+      "declarationHash": "sha256:4f8cf28b80f52e7cf2946b412bf34b9095c1804681387503c25e7b1dbe00b1f3",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/navigation",
+          "export": "useSelectedLayoutSegment"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/components/navigation.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "useSelectedLayoutSegments",
+      "declarationHash": "sha256:0bb5f7039beec91c66f2e421d20e73c9cc137a0efffc723a8dbb6436196798ac",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/navigation",
+          "export": "useSelectedLayoutSegments"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/components/navigation.react-server.d.ts",
+      "syntaxKind": "VariableDeclaration",
+      "declaredName": "RedirectType",
+      "declarationHash": "sha256:2b238771a4e81426e2c046efd7fb855345593c37be83ba973d74533f2050e4d6",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/navigation",
+          "export": "RedirectType"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/components/not-found.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "notFound",
+      "declarationHash": "sha256:319ebe20351174c6433d685017109e8080d893b451f0b7c484c88e8589cc4837",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/navigation",
+          "export": "notFound"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/components/readonly-url-search-params.d.ts",
+      "syntaxKind": "ClassDeclaration",
+      "declaredName": "ReadonlyURLSearchParams",
+      "declarationHash": "sha256:1f5d7d0c55b2ffc7682b4d59da7611e3e5b8e90fd69c5693b14521a796ea2618",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/navigation",
+          "export": "ReadonlyURLSearchParams"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/components/redirect.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "permanentRedirect",
+      "declarationHash": "sha256:d44bc6fb525ba68c7a42f0c11efbd7939d98c94f3e122cbfb6e1160f4bf7afc6",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/navigation",
+          "export": "permanentRedirect"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/components/redirect.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "redirect",
+      "declarationHash": "sha256:b8f5b130b9063ec5ab65bc6aec299ff3e4a323281f50aab8c101756513d11bba",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/navigation",
+          "export": "redirect"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/components/unauthorized.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "unauthorized",
+      "declarationHash": "sha256:f3a962b9e44beb68119c73b479b792b4493193f1ee3b465b1933626b864e5bf2",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/navigation",
+          "export": "unauthorized"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/form-shared.d.ts",
+      "syntaxKind": "TypeAliasDeclaration",
+      "declaredName": "FormProps",
+      "declarationHash": "sha256:f70fe42fea83fb648ade164c4c3345de098f7d59c25af4b84af060c531b0d957",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/form",
+          "export": "FormProps"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/form.d.ts",
+      "syntaxKind": "VariableDeclaration",
+      "declaredName": "Form",
+      "declarationHash": "sha256:fbff65617fa8e196f7d7e6fee99f854f01052b6bae34c2fc643c89ef4e45a7f8",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/form",
+          "export": "default"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/image-component.d.ts",
+      "syntaxKind": "VariableDeclaration",
+      "declaredName": "Image",
+      "declarationHash": "sha256:f95ecdbb0b047025d20afcbfdd2e73c8e0ae19a5f70ad63ef9c06f28afb7e6b0",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/image",
+          "export": "default"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/link.d.ts",
+      "syntaxKind": "InterfaceDeclaration",
+      "declaredName": "LinkProps",
+      "declarationHash": "sha256:026f1434636f14d63585b702752074ac7d1b6b75f6b42b0676be813bd9f48871",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/link",
+          "export": "LinkProps"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/link.d.ts",
+      "syntaxKind": "VariableDeclaration",
+      "declaredName": "Link",
+      "declarationHash": "sha256:ef3175fdfefdf80cbb4a7eba3fe321ae0419262305ec2c2ebeded3e7c5ec4f9d",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/link",
+          "export": "default"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/link.d.ts",
+      "syntaxKind": "VariableDeclaration",
+      "declaredName": "useLinkStatus",
+      "declarationHash": "sha256:a25cf0eac4ab87c87a85ccebfcbf1d5f6d1a94b15fadfc61943904bcb377b0e9",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/link",
+          "export": "useLinkStatus"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/script.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "Script",
+      "declarationHash": "sha256:b0667d0723efe1c761a61729bb1a12435115935ae6839303f775ddb2a0b5bfb4",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/script",
+          "export": "default"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/script.d.ts",
+      "syntaxKind": "InterfaceDeclaration",
+      "declaredName": "ScriptProps",
+      "declarationHash": "sha256:3f9a8a2c46a61809385f7555ee9693405c9fed57d02f39f8e8e4dcef8a4d9e78",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/script",
+          "export": "ScriptProps"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/client/web-vitals.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "useReportWebVitals",
+      "declarationHash": "sha256:517e408ab7eb2a9b0ccdd74232a9a5cc2b16f1c3e11e3756afc66ea591468641",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/web-vitals",
+          "export": "useReportWebVitals"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/compiled/@edge-runtime/primitives/url.d.ts",
+      "syntaxKind": "ClassDeclaration",
+      "declaredName": "_URLPattern",
+      "declarationHash": "sha256:7f170c8578ccf6d677054c283fe11f208a97dedcc93d8f7706db29fdb4905a32",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/server",
+          "export": "URLPattern"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/compiled/@next/font/dist/google/index.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "Inter",
+      "declarationHash": "sha256:30351d98d77cda73481d4ae36e6d9fa54ceef78d6914bcdff78702251f1532e1",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/font/google",
+          "export": "Inter"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/compiled/@next/font/dist/google/index.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "Roboto",
+      "declarationHash": "sha256:f6b4432e453f6fc8a312686915eff3756ce4bae0980c752cd1b8b22d3f355b4f",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/font/google",
+          "export": "Roboto"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/compiled/@next/font/dist/local/index.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "localFont",
+      "declarationHash": "sha256:737388447590c49ed8fcd37d1d6121b656918cfb74fac59e329b7697d5bd2b08",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/font/local",
+          "export": "default"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/lib/metadata/types/metadata-interface.d.ts",
+      "syntaxKind": "InterfaceDeclaration",
+      "declaredName": "Metadata",
+      "declarationHash": "sha256:79a10deb8c5d7f711e579fbb2b85caa02f234dbdd41143daaa5bba84749b732c",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next",
+          "export": "Metadata"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/lib/metadata/types/metadata-interface.d.ts",
+      "syntaxKind": "InterfaceDeclaration",
+      "declaredName": "Viewport",
+      "declarationHash": "sha256:f345e83854d519bb4164f36802ce12dad1e5f06337c1ad24fa57032d7b72cc18",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next",
+          "export": "Viewport"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/lib/metadata/types/metadata-interface.d.ts",
+      "syntaxKind": "TypeAliasDeclaration",
+      "declaredName": "ResolvingMetadata",
+      "declarationHash": "sha256:08fd91c3826fab44da1fc568e1c2f40567abfa6c5f1ac422332cd3b2b0081164",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next",
+          "export": "ResolvingMetadata"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/lib/metadata/types/metadata-interface.d.ts",
+      "syntaxKind": "TypeAliasDeclaration",
+      "declaredName": "ResolvingViewport",
+      "declarationHash": "sha256:e21d4db2fad578a33a07071e51b3a24f22dcf9166e2eb5f26d47819f26fe3113",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next",
+          "export": "ResolvingViewport"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/after/after.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "after",
+      "declarationHash": "sha256:00395c21b55808a2421d31204cd0da67ec669f4c3135aa75626c7558bf733dc8",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/server",
+          "export": "after"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/config-shared.d.ts",
+      "syntaxKind": "InterfaceDeclaration",
+      "declaredName": "NextConfig",
+      "declarationHash": "sha256:f3f6dfce98f395e1ca89f39ff80fce0e372c385e6a7f64e4f3577193da34c385",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next",
+          "export": "NextConfig"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/og/image-response.d.ts",
+      "syntaxKind": "ClassDeclaration",
+      "declaredName": "ImageResponse",
+      "declarationHash": "sha256:93d0c9fd5c21cc94bfaa1f4fef09e978951fb24ce67e2c99cd1e7bc09a8d26cc",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/og",
+          "export": "ImageResponse"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/request/connection.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "connection",
+      "declarationHash": "sha256:0ef69633803697d78ad770676628d3312f708db4b05795fdd6a0eaeb9cc2b6c7",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/server",
+          "export": "connection"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/request/cookies.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "cookies",
+      "declarationHash": "sha256:64f31af9bb4fd3d4e19767f655110ef419f8e424bee6d2922f5e169d9ca9cb14",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/headers",
+          "export": "cookies"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/request/draft-mode.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "draftMode",
+      "declarationHash": "sha256:f44a497ab795e2deda0c025c0f3fb6ae665b057634a7de65d6517bc905df8167",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/headers",
+          "export": "draftMode"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/request/headers.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "headers",
+      "declarationHash": "sha256:12cf53b56a903502433f5ecd8f0883c76255ef1e67b5297907c9c3a61f10aeb1",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/headers",
+          "export": "headers"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/use-cache/cache-tag.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "cacheTag",
+      "declarationHash": "sha256:0295ac281480b2781261dd1f7dc860176b94be4ea1f679ed2b1a2ca72e61a7e7",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/cache",
+          "export": "cacheTag"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/web/spec-extension/fetch-event.d.ts",
+      "syntaxKind": "ClassDeclaration",
+      "declaredName": "NextFetchEvent",
+      "declarationHash": "sha256:f0d146830a17b04d24d1cf5788cfc05953200fcb511f2028067efcba755b6591",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/server",
+          "export": "NextFetchEvent"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/web/spec-extension/request.d.ts",
+      "syntaxKind": "ClassDeclaration",
+      "declaredName": "NextRequest",
+      "declarationHash": "sha256:7f6461894e955d1383fb70a5dc15d0a6291b8df6811f64b657e6a1c30ce519df",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/server",
+          "export": "NextRequest"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/web/spec-extension/response.d.ts",
+      "syntaxKind": "ClassDeclaration",
+      "declaredName": "NextResponse",
+      "declarationHash": "sha256:dfe6acfe7ffc8747b2760919d36246b6853ad3022c68ded6b73da194b9cfde3f",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/server",
+          "export": "NextResponse"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/web/spec-extension/revalidate.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "refresh",
+      "declarationHash": "sha256:0ac5209ebe50a02e42ba57ab03114b4552bd4b1c7a8c3fb7f00b9378ffe02b6a",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/cache",
+          "export": "refresh"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/web/spec-extension/revalidate.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "revalidatePath",
+      "declarationHash": "sha256:c125701d87accc36edad4d406137df7a54eb74d7397ad84e5a183870f44cd77e",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/cache",
+          "export": "revalidatePath"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/web/spec-extension/revalidate.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "revalidateTag",
+      "declarationHash": "sha256:3f91fe4c869e25338f453a7927b2dfc5e02f3a36b283530e568d1d50d8f65f77",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/cache",
+          "export": "revalidateTag"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/web/spec-extension/revalidate.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "updateTag",
+      "declarationHash": "sha256:14127dce83aa85322f66a1f2e49c99a50ee0f9ddeacadc65d7c0f5b89c22ab73",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/cache",
+          "export": "updateTag"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/web/spec-extension/unstable-cache.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "unstable_cache",
+      "declarationHash": "sha256:87bb1f7a8158a7882f445ccaa3d9cd4802eb5f1bc3d742abd035e1c933ddc380",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/cache",
+          "export": "unstable_cache"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/web/spec-extension/unstable-no-store.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "unstable_noStore",
+      "declarationHash": "sha256:08e2aa4061d62c7fcf297428122b9fbefe4c7e7c7dc9d51adb9608ed72b75763",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/cache",
+          "export": "unstable_noStore"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/web/spec-extension/user-agent.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "userAgent",
+      "declarationHash": "sha256:4b5b719b825fc93176c99b9e9ed9773ccc02bed114a667147526dc866a4c3084",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/server",
+          "export": "userAgent"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/web/spec-extension/user-agent.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "userAgentFromString",
+      "declarationHash": "sha256:dfdc5a103e523cff65d99b08648374ad1eda559985772c1b80ebdd148b73deb2",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/server",
+          "export": "userAgentFromString"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/web/types.d.ts",
+      "syntaxKind": "TypeAliasDeclaration",
+      "declaredName": "NextMiddleware",
+      "declarationHash": "sha256:deb9fe1adec01433ab9d5db3894b55c6a972aa3784b8ebbcb56cfbc2aa952013",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/server",
+          "export": "NextMiddleware"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/server/web/types.d.ts",
+      "syntaxKind": "TypeAliasDeclaration",
+      "declaredName": "NextProxy",
+      "declarationHash": "sha256:0cd2256b50c855089a2c08d00e1d583deddedacc197eae2654acc6077596eb6f",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/server",
+          "export": "NextProxy"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/shared/lib/dynamic.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "dynamic",
+      "declarationHash": "sha256:c26853060bf5dfe59bb6d84aa008ed09bc744e1c4ae7439753b16b415a1cf173",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/dynamic",
+          "export": "default"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/shared/lib/dynamic.d.ts",
+      "syntaxKind": "TypeAliasDeclaration",
+      "declaredName": "DynamicOptions",
+      "declarationHash": "sha256:13022c2f96046ba8e49669e4dc060d8cfbf45ef9e6bb6041ff6e8fa23ad890f0",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/dynamic",
+          "export": "DynamicOptions"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/shared/lib/dynamic.d.ts",
+      "syntaxKind": "TypeAliasDeclaration",
+      "declaredName": "Loader",
+      "declarationHash": "sha256:747954e60940b59e7d1bdcf271cde0f0964e7719b591889aa5e932b9ecb1241d",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/dynamic",
+          "export": "Loader"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/shared/lib/get-img-props.d.ts",
+      "syntaxKind": "InterfaceDeclaration",
+      "declaredName": "StaticImageData",
+      "declarationHash": "sha256:47e8b5d4232661145c0c3b9463c0021f9e015d44aa6214832e28347887709e24",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/image",
+          "export": "StaticImageData"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/shared/lib/get-img-props.d.ts",
+      "syntaxKind": "TypeAliasDeclaration",
+      "declaredName": "ImageProps",
+      "declarationHash": "sha256:700dfe389cad7be115e5b0ebe36aea84516b3df97fe61e1ea03d8665fbc8aaf6",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/image",
+          "export": "ImageProps"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/shared/lib/image-config.d.ts",
+      "syntaxKind": "TypeAliasDeclaration",
+      "declaredName": "ImageLoaderProps",
+      "declarationHash": "sha256:3f5a2ec19dc5142f686d5534497d9dfd0f1cd61b0d80310b3e82020010da6f08",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/image",
+          "export": "ImageLoaderProps"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/shared/lib/image-external.d.ts",
+      "syntaxKind": "FunctionDeclaration",
+      "declaredName": "getImageProps",
+      "declarationHash": "sha256:34f951da984b681cf300a3e20e5e867b1941a74e2bb99fe651a1ab5aca68a069",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/image",
+          "export": "getImageProps"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/types.d.ts",
+      "syntaxKind": "TypeAliasDeclaration",
+      "declaredName": "Route",
+      "declarationHash": "sha256:bf8f3ca75af0f68a1d09a102de6d4bd332f38e1c2b9615a80d9875addfaf85d7",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/types",
+          "export": "Route"
+        }
+      ]
+    },
+    {
+      "package": "next",
+      "path": "dist/types.d.ts",
+      "syntaxKind": "TypeAliasDeclaration",
+      "declaredName": "ServerRuntime",
+      "declarationHash": "sha256:633975daae91cad5b437bd33c871393702e199946fbf9ceb8c6669f280fd85bf",
+      "compatibilityPromise": false,
+      "runtimeImportAllowed": false,
+      "supports": [
+        {
+          "module": "next/types",
+          "export": "ServerRuntime"
+        }
+      ]
+    }
+  ],
+  "excludedEntrypoints": [
+    {
+      "module": "next/experimental/*",
+      "priority": "P3",
+      "stability": "experimental",
+      "reason": "Experimental entrypoints require a separate opt-in, version-pinned review and cannot enter the stable allowlist by discovery."
+    },
+    {
+      "module": "next/router",
+      "priority": "P3",
+      "stability": "legacy",
+      "reason": "The Pages Router singleton is not App Router core; native code remains the explicit compatibility escape hatch."
+    }
+  ],
+  "surfaceHash": "sha256:2789fe465e2502593c4e1e2b8827ce1a1a718d9cfe8fb09e8c405b70629e233c"
+}

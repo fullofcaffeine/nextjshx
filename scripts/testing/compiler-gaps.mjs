@@ -77,10 +77,12 @@ function verifyCurrentOutput() {
     ["TypeScript", tsDirective],
     ["classic JavaScript", jsDirective],
   ]) {
-    assert(!source.includes('"generic-mode";'), `${profile} unexpectedly gained a directive`);
+    const directive = source.indexOf('"generic-mode";');
     const dependencyImport = source.indexOf('import {Dependency} from "./Dependency.js"');
     const declaration = source.indexOf("DirectiveBoundary");
+    assert(directive >= 0, `${profile} lost the generic module directive`);
     assert(dependencyImport >= 0, `${profile} lost the reduced import edge`);
+    assert(directive < dependencyImport, `${profile} placed the directive after an import`);
     assert(dependencyImport < declaration, `${profile} import ordering drifted`);
   }
 
@@ -131,7 +133,7 @@ try {
   run(process.execPath, [TSC, "--project", "tests/compiler-gaps/tsconfig.typescript.json"]);
   run(process.execPath, [TSC, "--project", "tests/compiler-gaps/tsconfig.classic.json"]);
   console.log(
-    "[compiler-gaps] OK: 2 missing shapes and 1 existing DCE policy verified in both output profiles",
+    "[compiler-gaps] OK: 1 resolved capability, 1 deferred shape, and 1 DCE policy verified in both output profiles",
   );
 } catch (error) {
   console.error(`[compiler-gaps] ERROR: ${error.message}`);

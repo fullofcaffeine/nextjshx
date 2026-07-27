@@ -1,0 +1,8 @@
+-lib genes-ts
+-cp src
+-cp tests/next-components/src
+-main next_components.NegativeLinkProps
+-js tests/next-components/.tmp/negative-link.tsx
+-D genes.ts
+-D genes.ts.no_extension
+-dce full

@@ -1,0 +1,418 @@
+{
+  "$schema": "https://nextjshx.dev/schemas/adapter-plan.schema.json",
+  "schemaVersion": 1,
+  "toolchain": {
+    "nextjshx": "0.0.0-development",
+    "haxe": "4.3.7",
+    "genesTs": "1.38.2+f0ffa29e6d49fe81541977c6a3aae6b80000cec6",
+    "next": "16.2.12"
+  },
+  "intents": [
+    {
+      "kind": "page",
+      "source": {
+        "typeName": "page_layouts.positive.GroupedPage",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/GroupedPage.hx",
+          "startLine": 9,
+          "startCharacter": 1,
+          "endLine": 13,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/GroupedPage.hx",
+          "startLine": 10,
+          "startCharacter": 2,
+          "endLine": 12,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/GroupedPage.hx",
+          "startLine": 8,
+          "startCharacter": 1,
+          "endLine": 8,
+          "endCharacter": 12
+        }
+      },
+      "segmentPath": "(marketing)/offers/[id]",
+      "targetPath": "(marketing)/offers/[id]/page.tsx",
+      "implementation": {
+        "modulePath": "../../../../../.tmp/src-gen/page_layouts/positive/GroupedPage",
+        "symbol": "GroupedPage"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../../.tmp/src-gen/page_layouts/positive/GroupedPage",
+          "symbol": "GroupedPage",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "JSX",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: PageProps<\"/offers/[id]\">) => JSX.Element"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "page",
+      "source": {
+        "typeName": "page_layouts.positive.ParallelPage",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/ParallelPage.hx",
+          "startLine": 9,
+          "startCharacter": 1,
+          "endLine": 13,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/ParallelPage.hx",
+          "startLine": 10,
+          "startCharacter": 2,
+          "endLine": 12,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/ParallelPage.hx",
+          "startLine": 8,
+          "startCharacter": 1,
+          "endLine": 8,
+          "endCharacter": 12
+        }
+      },
+      "segmentPath": "@analytics",
+      "targetPath": "@analytics/page.tsx",
+      "implementation": {
+        "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ParallelPage",
+        "symbol": "ParallelPage"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ParallelPage",
+          "symbol": "ParallelPage",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "JSX",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: PageProps<\"/\">) => JSX.Element"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "page",
+      "source": {
+        "typeName": "page_layouts.positive.InterceptedPage",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/InterceptedPage.hx",
+          "startLine": 9,
+          "startCharacter": 1,
+          "endLine": 13,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/InterceptedPage.hx",
+          "startLine": 10,
+          "startCharacter": 2,
+          "endLine": 12,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/InterceptedPage.hx",
+          "startLine": 8,
+          "startCharacter": 1,
+          "endLine": 8,
+          "endCharacter": 12
+        }
+      },
+      "segmentPath": "feed/@modal/(..)photo/[id]",
+      "targetPath": "feed/@modal/(..)photo/[id]/page.tsx",
+      "implementation": {
+        "modulePath": "../../../../../../.tmp/src-gen/page_layouts/positive/InterceptedPage",
+        "symbol": "InterceptedPage"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../../../.tmp/src-gen/page_layouts/positive/InterceptedPage",
+          "symbol": "InterceptedPage",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "JSX",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: PageProps<\"/photo/[id]\">) => JSX.Element"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "layout",
+      "source": {
+        "typeName": "page_layouts.positive.RootLayout",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/RootLayout.hx",
+          "startLine": 16,
+          "startCharacter": 1,
+          "endLine": 20,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/RootLayout.hx",
+          "startLine": 17,
+          "startCharacter": 2,
+          "endLine": 19,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/RootLayout.hx",
+          "startLine": 15,
+          "startCharacter": 1,
+          "endLine": 15,
+          "endCharacter": 14
+        }
+      },
+      "segmentPath": "",
+      "targetPath": "layout.tsx",
+      "implementation": {
+        "modulePath": "../../.tmp/src-gen/page_layouts/positive/RootLayout",
+        "symbol": "RootLayout"
+      },
+      "imports": [
+        {
+          "modulePath": "../../.tmp/src-gen/page_layouts/positive/RootLayout",
+          "symbol": "RootLayout",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "JSX",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: LayoutProps<\"/\">) => JSX.Element"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "page",
+      "source": {
+        "typeName": "page_layouts.positive.RootPage",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/RootPage.hx",
+          "startLine": 9,
+          "startCharacter": 1,
+          "endLine": 13,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/RootPage.hx",
+          "startLine": 10,
+          "startCharacter": 2,
+          "endLine": 12,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/RootPage.hx",
+          "startLine": 8,
+          "startCharacter": 1,
+          "endLine": 8,
+          "endCharacter": 12
+        }
+      },
+      "segmentPath": "",
+      "targetPath": "page.tsx",
+      "implementation": {
+        "modulePath": "../../.tmp/src-gen/page_layouts/positive/RootPage",
+        "symbol": "RootPage"
+      },
+      "imports": [
+        {
+          "modulePath": "../../.tmp/src-gen/page_layouts/positive/RootPage",
+          "symbol": "RootPage",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "JSX",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: PageProps<\"/\">) => JSX.Element"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "layout",
+      "source": {
+        "typeName": "page_layouts.positive.NestedLayout",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/NestedLayout.hx",
+          "startLine": 9,
+          "startCharacter": 1,
+          "endLine": 13,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/NestedLayout.hx",
+          "startLine": 10,
+          "startCharacter": 2,
+          "endLine": 12,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/NestedLayout.hx",
+          "startLine": 8,
+          "startCharacter": 1,
+          "endLine": 8,
+          "endCharacter": 14
+        }
+      },
+      "segmentPath": "todos/[id]",
+      "targetPath": "todos/[id]/layout.tsx",
+      "implementation": {
+        "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/NestedLayout",
+        "symbol": "NestedLayout"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/NestedLayout",
+          "symbol": "NestedLayout",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "JSX",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: LayoutProps<\"/todos/[id]\">) => Promise<JSX.Element>"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "page",
+      "source": {
+        "typeName": "page_layouts.positive.DynamicPage",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/DynamicPage.hx",
+          "startLine": 14,
+          "startCharacter": 1,
+          "endLine": 18,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/DynamicPage.hx",
+          "startLine": 15,
+          "startCharacter": 2,
+          "endLine": 17,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/DynamicPage.hx",
+          "startLine": 12,
+          "startCharacter": 1,
+          "endLine": 12,
+          "endCharacter": 12
+        }
+      },
+      "segmentPath": "todos/[id]",
+      "targetPath": "todos/[id]/page.tsx",
+      "implementation": {
+        "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/DynamicPage",
+        "symbol": "DynamicPage"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/DynamicPage",
+          "symbol": "DynamicPage",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "JSX",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: PageProps<\"/todos/[id]\">) => Promise<JSX.Element>"
+        }
+      ],
+      "config": []
+    }
+  ]
+}

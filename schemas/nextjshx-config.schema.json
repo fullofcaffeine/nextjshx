@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nextjshx.dev/schemas/config-v1.json",
+  "title": "NextJsHx project configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "haxe",
+    "next",
+    "output"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://nextjshx.dev/schemas/config-v1.json"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "appRoot": {
+      "$ref": "#/$defs/projectPath"
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxDirectDependencies": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxObservedClientBytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "haxe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hxml",
+        "generatedRoot",
+        "defines"
+      ],
+      "properties": {
+        "hxml": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/projectPath"
+            },
+            {
+              "type": "string",
+              "pattern": "\\.hxml$"
+            }
+          ]
+        },
+        "generatedRoot": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "defines": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              {
+                "type": "string",
+              "pattern": "^(?!nextjshx\\.(?:adapter-plan-output|boundary-plan-output)(?:=|$))[A-Za-z0-9_.-]+(?:=[^\\s\\u0000-\\u001f\\u007f]+)?$"
+              }
+            ]
+          }
+        },
+        "extraInputs": {
+          "type": "array",
+          "default": [],
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/projectPath"
+          }
+        }
+      }
+    },
+    "next": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package",
+        "typedRoutes"
+      ],
+      "properties": {
+        "package": {
+          "type": "string",
+          "pattern": "^(?:@[a-z0-9][a-z0-9._~-]*/)?[a-z0-9][a-z0-9._~-]*$"
+        },
+        "upstreamDir": {
+          "$ref": "#/$defs/externalRelativePath"
+        },
+        "typedRoutes": {
+          "type": "boolean"
+        },
+        "cacheComponents": {
+          "type": "boolean",
+          "default": false
+        },
+        "experimentalCacheDirectives": {
+          "type": "array",
+          "default": [],
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "private",
+              "remote"
+            ]
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "cacheComponents": {
+                "const": false
+              }
+            },
+            "required": [
+              "cacheComponents"
+            ]
+          },
+          "then": {
+            "properties": {
+              "experimentalCacheDirectives": {
+                "type": "array",
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "not": {
+              "required": [
+                "cacheComponents"
+              ]
+            }
+          },
+          "then": {
+            "properties": {
+              "experimentalCacheDirectives": {
+                "type": "array",
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest",
+        "format"
+      ],
+      "properties": {
+        "manifest": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/projectPath"
+            },
+            {
+              "type": "string",
+              "pattern": "^\\.nextjshx/(?!(?:transaction\\.json$|transactions/|plans/)).+\\.json$"
+            }
+          ]
+        },
+        "format": {
+          "const": "project"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//).+$"
+    },
+    "externalRelativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.(?:/|$))(?!.*//).+$"
+    }
+  }
+}

@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nextjshx.dev/schemas/package-integrations-v1.json",
+  "title": "NextJsHx reviewed npm package integrations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "integrations"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://nextjshx.dev/schemas/package-integrations-v1.json"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "integrations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/integration"
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//).+$"
+    },
+    "packageName": {
+      "type": "string",
+      "pattern": "^(?:@[a-z0-9][a-z0-9._~-]*/)?[a-z0-9][a-z0-9._~-]*$"
+    },
+    "moduleSpecifier": {
+      "type": "string",
+      "pattern": "^(?:@[a-z0-9][a-z0-9._~-]*/)?[a-z0-9][a-z0-9._~/-]*$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sortedStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "module": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "specifier",
+        "declaration",
+        "declarationSha256",
+        "requiredExports"
+      ],
+      "properties": {
+        "specifier": {
+          "$ref": "#/$defs/moduleSpecifier"
+        },
+        "declaration": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "declarationSha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "requiredExports": {
+          "$ref": "#/$defs/sortedStrings"
+        }
+      }
+    },
+    "integration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "package",
+        "version",
+        "license",
+        "integrity",
+        "repository",
+        "categories",
+        "strategies",
+        "declaredBy",
+        "modules",
+        "haxeSources",
+        "nativeSources",
+        "evidence"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "package": {
+          "$ref": "#/$defs/packageName"
+        },
+        "version": {
+          "$ref": "#/$defs/version"
+        },
+        "license": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "integrity": {
+          "type": "string",
+          "pattern": "^sha512-[A-Za-z0-9+/]+=*$"
+        },
+        "repository": {
+          "type": "string",
+          "pattern": "^https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+        },
+        "categories": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "build-plugin",
+              "content",
+              "framework-plugin",
+              "generic-hook",
+              "headless-behavior",
+              "mdx",
+              "polymorphic-component",
+              "react",
+              "rehype-plugin",
+              "remark-plugin",
+              "visual-component"
+            ]
+          }
+        },
+        "strategies": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "generated-adapter",
+              "haxe-facade",
+              "native-source",
+              "raw-extern",
+              "semantic-facade"
+            ]
+          }
+        },
+        "declaredBy": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/projectPath"
+              },
+              {
+                "type": "string",
+                "pattern": "package\\.json$"
+              }
+            ]
+          }
+        },
+        "modules": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/module"
+          }
+        },
+        "haxeSources": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/projectPath"
+              },
+              {
+                "type": "string",
+                "pattern": "\\.hx$"
+              }
+            ]
+          }
+        },
+        "nativeSources": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "allOf": [
+              {
+                "$ref": "#/$defs/projectPath"
+              },
+              {
+                "type": "string",
+                "pattern": "\\.(?:ts|tsx|js|jsx|mjs|cjs)$"
+              }
+            ]
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/projectPath"
+          }
+        }
+      }
+    }
+  }
+}

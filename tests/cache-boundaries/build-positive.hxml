@@ -1,0 +1,13 @@
+-lib genes-ts
+-cp tests/cache-boundaries/next-app/haxe
+-cp src
+--main CacheBoundariesMain
+-js tests/cache-boundaries/.tmp/typescript/index.tsx
+
+--macro cache_boundaries.AdapterPlan.install('tests/cache-boundaries/.tmp/plan.json')
+--macro include('cache_boundaries.app')
+--macro include('cache_boundaries.cache')
+--macro include('cache_boundaries.routes')
+-D nextjshx.app-root=tests/cache-boundaries/next-app/app
+-D nextjshx.generated-root=tests/cache-boundaries/.tmp/typescript
+-dce full

@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nextjshx.dev/schemas/boundary-plan-v1.json",
+  "title": "NextJsHx Haxe-visible boundary evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "boundaries"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://nextjshx.dev/schemas/boundary-plan-v1.json"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "boundaries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/boundary"
+      }
+    }
+  },
+  "$defs": {
+    "position": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "file",
+        "startLine",
+        "startCharacter",
+        "endLine",
+        "endCharacter"
+      ],
+      "properties": {
+        "file": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "startLine": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "startCharacter": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "endLine": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "endCharacter": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "dependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "moduleName",
+        "classification",
+        "position"
+      ],
+      "properties": {
+        "moduleName": {
+          "$ref": "#/$defs/haxeModule"
+        },
+        "classification": {
+          "$ref": "#/$defs/classification"
+        },
+        "position": {
+          "$ref": "#/$defs/position"
+        }
+      }
+    },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "moduleName",
+        "ownerName",
+        "signal",
+        "position",
+        "references",
+        "dependencies"
+      ],
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/classification"
+        },
+        "moduleName": {
+          "$ref": "#/$defs/haxeModule"
+        },
+        "ownerName": {
+          "$ref": "#/$defs/haxeModule"
+        },
+        "signal": {
+          "type": "string",
+          "pattern": "^:next\\.[A-Za-z][A-Za-z0-9]*$"
+        },
+        "position": {
+          "$ref": "#/$defs/position"
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dependency"
+          }
+        }
+      }
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "targetOwner",
+        "targetField",
+        "targetPath",
+        "position"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "client-component",
+            "server-function"
+          ]
+        },
+        "targetOwner": {
+          "$ref": "#/$defs/haxeModule"
+        },
+        "targetField": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "targetPath": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "position": {
+          "$ref": "#/$defs/position"
+        }
+      }
+    },
+    "classification": {
+      "enum": [
+        "server-default",
+        "client",
+        "Server Function",
+        "shared cache",
+        "private cache",
+        "remote cache",
+        "shared-pure",
+        "server-only",
+        "client-only",
+        "unclassified"
+      ]
+    },
+    "haxeModule": {
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//).+$"
+    }
+  }
+}

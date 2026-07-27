@@ -1,0 +1,62 @@
+export const metadata = {
+  title: "The soil keeps a second weather | Field Atlas",
+  description:
+    "Dispatch 04 follows the moisture signal beneath a recovering canopy.",
+};
+
+<div className="dispatch-kicker">
+  <span>DISPATCH / 04</span>
+  <span>47° 18′ 22″ N</span>
+  <span>14 MIN READ</span>
+</div>
+
+# The soil keeps a second weather.
+
+<p className="dispatch-deck">{"Three plots, twelve rain events, and one quiet signal below the returning canopy."}</p>
+
+## The instrument is not the observation
+
+The probe gives us a number. The field gives that number a place: shade depth,
+root density, yesterday’s wind, and the hard edge where the service road still
+holds heat.
+
+| Plot | Canopy | Moisture index | Return |
+| --- | ---: | ---: | --- |
+| North bench | 72% | 68 | 06:40 |
+| Alder seam | 81% | 74 | 07:15 |
+| Road edge | 43% | 61 | 08:05 |
+
+<SignalPlot
+  label="Moisture signal by observation plot"
+  values={[68, 74, 61]}
+/>
+
+## A useful difference
+
+The useful change is not the largest value. It is the **difference that
+survives a return visit**. GFM tables keep the ledger compact; the chart above
+is an ordinary Haxe Client Component registered through Next’s required
+`mdx-components.tsx` convention.
+
+```haxe
+@:next.mdxComponents
+class AtlasMdxComponents {
+  public static function components() {
+    return {
+      SignalPlot: SignalPlot.client()
+    };
+  }
+}
+```
+
+### Protocol for the next pass
+
+- Repeat within thirty minutes of the original observation.
+- Record canopy cover before reading the probe.
+- Photograph the litter layer, not only the instrument.
+- Escalate a change only after the second return.
+
+> A field note earns its place when another person can return and recover the
+> same question.
+
+<p className="dispatch-end">{"END / DISPATCH 04 / RETURN SCHEDULED 02 AUG"}</p>

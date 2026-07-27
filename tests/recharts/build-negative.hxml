@@ -1,0 +1,8 @@
+-lib genes-ts
+-cp src
+-cp tests/recharts/src
+-js tests/recharts/.tmp/rejected.tsx
+-D genes.ts
+-D genes.ts.no_extension
+-D genes.ts.jsx_import_source=react
+-dce full

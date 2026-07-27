@@ -128,8 +128,8 @@ function assertSemanticContract(matrix) {
   if (node.engine !== `>=${node.minimumVersion}`) {
     throw new MatrixFailure("Node engine and minimumVersion disagree");
   }
-  if (!node.ciVersions.includes(node.baselineVersion)) {
-    throw new MatrixFailure("Node CI versions must include baselineVersion");
+  if (!node.ciVersions.includes(node.minimumVersion)) {
+    throw new MatrixFailure("Node CI versions must include minimumVersion");
   }
   if (!node.ciVersions.includes(node.currentLts.version)) {
     throw new MatrixFailure("Node CI versions must include currentLts.version");
@@ -190,6 +190,8 @@ function assertSemanticContract(matrix) {
   if (stableLane.status === "verified") {
     const requiredEvidence = [
       "npm run test:fixture:next-stable",
+      "npm run test:fixture:next-stable:turbopack",
+      "npm run test:fixture:next-stable:webpack",
       "npm run test:fixture:next-stable:smoke"
     ];
     for (const command of requiredEvidence) {
@@ -200,6 +202,20 @@ function assertSemanticContract(matrix) {
         throw new MatrixFailure(`verified stable-package evidence remains planned: ${command}`);
       }
     }
+    const expectedBundlers = ["turbopack", "webpack"];
+    if (
+      stableLane.versions.bundlers.length !== expectedBundlers.length ||
+      expectedBundlers.some((bundler) => !stableLane.versions.bundlers.includes(bundler))
+    ) {
+      throw new MatrixFailure(
+        "verified stable-package lane must cover turbopack and webpack"
+      );
+    }
+  }
+  if (upstreamLane.versions.bundlers.length !== 0) {
+    throw new MatrixFailure(
+      "source-upstream is declaration evidence and must not claim a production bundler"
+    );
   }
 
   const genesIdentity = matrix.sourceOracles.genesTs.identity;
@@ -216,6 +232,16 @@ function assertSemanticContract(matrix) {
     nextIdentity.typescriptVersion !== typescript.version
   ) {
     throw new MatrixFailure("Next upstream oracle identity disagrees with the matrix");
+  }
+  const followUpKeys = new Set();
+  for (const followUp of next.upstream.followUps) {
+    const key = `${followUp.code}\0${followUp.module}\0${followUp.export}`;
+    if (followUpKeys.has(key)) {
+      throw new MatrixFailure(
+        `Next upstream follow-up mapping is duplicated for ${followUp.module}.${followUp.export} ${followUp.code}`
+      );
+    }
+    followUpKeys.add(key);
   }
 
   for (const [name, oracle] of Object.entries(matrix.sourceOracles)) {
@@ -257,17 +283,17 @@ function renderCompatibilityDoc(matrix) {
     "",
     "## Evidence lanes",
     "",
-    "| Lane | Required | Status | Next.js | Node.js | Implemented evidence | Owning bead |",
-    "| --- | --- | --- | --- | --- | --- | --- |"
+    "| Lane | Required | Status | Next.js | Node.js | Bundlers | Implemented evidence | Owning bead |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- |"
   ];
   for (const lane of matrix.lanes) {
     lines.push(
-      `| ${lane.id} | ${lane.required ? "yes" : "no"} | ${lane.status} | ${lane.versions.next} | ${lane.versions.node.join(", ")} | ${lane.commands.implemented.map((command) => `\`${command}\``).join(", ")} | \`${lane.completionIssue}\` |`
+      `| ${lane.id} | ${lane.required ? "yes" : "no"} | ${lane.status} | ${lane.versions.next} | ${lane.versions.node.join(", ")} | ${lane.versions.bundlers.length === 0 ? "declarations only" : lane.versions.bundlers.join(", ")} | ${lane.commands.implemented.map((command) => `\`${command}\``).join(", ")} | \`${lane.completionIssue}\` |`
     );
   }
   lines.push(
     "",
-    "A `declared` lane has reproducible identities and contract checks but no framework support claim. An `observed` source lane has a matching local oracle identity but remains non-blocking. A lane becomes `verified` only after its real Next build and smoke evidence pass.",
+    "A `declared` lane has reproducible identities and contract checks but no framework support claim. An `observed` upstream lane has either a matching read-only source oracle or an exact published canary package identity and remains non-blocking declaration evidence. A lane becomes `verified` only after its real Next build and smoke evidence pass.",
     "",
     "Planned fixture commands:",
     ""
@@ -299,9 +325,21 @@ function renderCompatibilityDoc(matrix) {
     "npm run support:discover",
     "npm run support:require-genes",
     "npm run support:require-upstream",
+    "npm run drift:next:stable",
+    "npm run drift:next:upstream",
     "```",
     "",
-    "The baseline check is deterministic and requires no sibling checkout. Discovery reports missing checkouts as actionable, non-fatal diagnostics. The two `require` commands opt into fail-closed source-oracle lanes. Explicit environment overrides take precedence over default candidates.",
+    "The baseline and stable-drift checks are deterministic and require no sibling checkout. Discovery reports missing checkouts as actionable, non-fatal diagnostics. The two `require` commands opt into fail-closed source-oracle lanes. Explicit environment overrides take precedence over default candidates. `drift:next:upstream` uses the exact clean source checkout by default; CI may provide an exact published canary package root with `NEXTJSHX_NEXT_PACKAGE_DIR`. Candidate reports never rewrite the checked stable baseline.",
+    "",
+    "Pinned upstream drift follow-ups:",
+    ""
+  );
+  for (const followUp of next.upstream.followUps) {
+    lines.push(
+      `- \`${followUp.code}\` for \`${followUp.module}.${followUp.export}\` → \`${followUp.issue}\``
+    );
+  }
+  lines.push(
     "",
     "## Runtime and bundler scope",
     "",
@@ -508,7 +546,24 @@ function discover(matrix, { requireGenes, requireUpstream, json }) {
         message: `${name} preferred checkout ${oracle.candidates[0]} is absent; using recognized fallback ${resolved.displayPath}.`
       });
     }
-    const identity = inspect(resolved, oracle);
+    let identity;
+    try {
+      identity = inspect(resolved, oracle);
+    } catch (error) {
+      if (required) {
+        throw error;
+      }
+      diagnostics.push({
+        level: "info",
+        message: `${name} checkout was ignored because it does not match the configured oracle: ${error.message}`
+      });
+      results[name] = {
+        available: false,
+        required,
+        reason: "identity-mismatch"
+      };
+      continue;
+    }
     results[name] = {
       available: true,
       required,

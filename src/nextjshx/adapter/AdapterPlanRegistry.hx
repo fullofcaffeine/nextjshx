@@ -8,6 +8,7 @@ import haxe.macro.Expr.Position;
 import haxe.macro.PositionTools;
 import nextjshx.adapter.AdapterConfig.AdapterConfigValue;
 import nextjshx.adapter.AdapterExport.AdapterExportKind;
+import nextjshx.boundary.EnvironmentBoundaryMacro;
 import sys.FileSystem;
 import sys.io.File;
 
@@ -55,6 +56,8 @@ private typedef RegisteredIntent = {
  */
 class AdapterPlanRegistry {
 	#if macro
+	public static inline final OUTPUT_DEFINE:String = "nextjshx.adapter-plan-output";
+
 	static var installed:Bool = false;
 	static var registrations:Array<AdapterIntentRegistration> = [];
 	static var generation:Int = 0;
@@ -82,10 +85,17 @@ class AdapterPlanRegistry {
 		return switch name {
 			case "page": AdapterKind.Page;
 			case "layout": AdapterKind.Layout;
+			case "loading": AdapterKind.Loading;
+			case "error": AdapterKind.Error;
+			case "not-found": AdapterKind.NotFound;
+			case "default": AdapterKind.DefaultFallback;
 			case "route-handler": AdapterKind.RouteHandler;
 			case "client-component": AdapterKind.ClientComponent;
+			case "react-hook": AdapterKind.ReactHook;
 			case "server-function": AdapterKind.ServerFunction;
+			case "cache-function": AdapterKind.CacheFunction;
 			case "proxy": AdapterKind.Proxy;
+			case "mdx-components": AdapterKind.MdxComponents;
 			case _:
 				fail("NXHX-PLAN-KIND-0001", 'Unsupported adapter kind "$name".', position);
 				AdapterKind.Page;
@@ -260,7 +270,7 @@ class AdapterPlanRegistry {
 		FileSystem.createDirectory(directory);
 	}
 
-	static function finalizePlan(outputPath:String, toolchain:AdapterToolchain):Void {
+	static function preparePlan(toolchain:AdapterToolchain):String {
 		final values = [for (registration in registrations) canonicalIntent(registration)];
 		values.sort((left, right) -> {
 			final target = compareString(left.intent.targetPath, right.intent.targetPath);
@@ -283,17 +293,24 @@ class AdapterPlanRegistry {
 			}
 		}
 		final plan = new AdapterPlan(toolchain, [for (value in values) value.intent]);
+		return AdapterPlanJson.encode(plan);
+	}
+
+	static function writePlan(outputPath:String, encoded:String):Void {
 		final absoluteOutput = Path.join([projectRoot, outputPath]);
 		ensureDirectory(Path.directory(absoluteOutput));
-		File.saveContent(absoluteOutput, AdapterPlanJson.encode(plan));
+		File.saveContent(absoluteOutput, encoded);
 	}
 
 	/** Installs one deterministic registry and JSON emission pass. */
 	public static function install(outputPath:String, nextjshxVersion:String, haxeVersion:String, genesTsVersion:String, nextVersion:String):Void {
+		EnvironmentBoundaryMacro.install();
 		projectRoot = FileSystem.fullPath(Sys.getCwd());
-		final portableOutput = validateRelativePath(outputPath, "Adapter plan output", false, Context.currentPos());
+		final configuredOutput = Context.definedValue(OUTPUT_DEFINE);
+		final selectedOutput = configuredOutput == null ? outputPath : configuredOutput;
+		final portableOutput = validateRelativePath(selectedOutput, "Adapter plan output", false, Context.currentPos());
 		if (!portableOutput.endsWith(".json")) {
-			fail("NXHX-PLAN-PATH-0001", 'Adapter plan output "$outputPath" must use a .json extension.', Context.currentPos());
+			fail("NXHX-PLAN-PATH-0001", 'Adapter plan output "$selectedOutput" must use a .json extension.', Context.currentPos());
 		}
 		final toolchain = new AdapterToolchain(requireText(nextjshxVersion, "NextJsHx version", Context.currentPos()),
 			requireText(haxeVersion, "Haxe version", Context.currentPos()), requireText(genesTsVersion, "genes-ts version", Context.currentPos()),
@@ -302,11 +319,15 @@ class AdapterPlanRegistry {
 		installed = true;
 		generation++;
 		final currentGeneration = generation;
-		var finalized = false;
+		var prepared:Null<String> = null;
 		Context.onAfterTyping(_ -> {
-			if (!finalized && currentGeneration == generation) {
-				finalized = true;
-				finalizePlan(portableOutput, toolchain);
+			if (prepared == null && currentGeneration == generation) {
+				prepared = preparePlan(toolchain);
+			}
+		});
+		Context.onAfterGenerate(() -> {
+			if (prepared != null && currentGeneration == generation) {
+				writePlan(portableOutput, prepared);
 			}
 		});
 	}

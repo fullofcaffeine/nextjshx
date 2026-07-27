@@ -24,7 +24,7 @@ if [[ -d "$ROOT_DIR/.beads" ]] && command -v bd >/dev/null 2>&1; then
 fi
 
 STAGED_FILES="$(git diff --cached --name-only --diff-filter=ACMR || true)"
-GOVERNANCE_PATTERN='^(\.beads/(hooks/(pre-commit|pre-push)|(issues|interactions)\.jsonl)|\.github/(dependabot\.yml|workflows/)|\.gitignore|\.gitleaks\.toml|AGENTS\.md|CONTRIBUTING\.md|README\.md|SECURITY\.md|docs/(architecture\.md|adr/|compatibility\.md)|package(-lock)?\.json|schemas/|support_matrix\.json|scripts/(beads/|ci/|compat/|hooks/|lint/|security/))'
+GOVERNANCE_PATTERN='^(\.beads/(hooks/(pre-commit|pre-push)|(issues|interactions)\.jsonl)|\.github/(dependabot\.yml|workflows/)|\.gitignore|\.gitleaks\.toml|AGENTS\.md|CONTRIBUTING\.md|README\.md|SECURITY\.md|config/|docs/(architecture\.md|adr/|adapter-plan\.md|binding-policy\.md|cache-components\.md|client-components\.md|codecs\.md|compatibility\.md|configuration\.md|environment-boundaries\.md|metadata-and-segment-config\.md|pages-and-layouts\.md|proxy\.md|react-hooks\.md|route-handlers\.md|route-hrefs\.md|route-queries\.md|server-functions\.md|showcases\.md|special-files\.md|testing-strategy\.md)|examples/(todoapp-next|showcase-(ui|landing|blog|commerce))/|package(-lock)?\.json|playwright\.config\.mjs|schemas/|support_matrix\.json|surface/|tests/(cache-boundaries/|client-components/|codecs/|e2e/|environment-boundaries/|fixtures/next-stable/|next-surface/fixtures\.json|next-core-navigation/|next-components/|next-server/|metadata-segment/|page-layouts/|proxy/|route-handlers/|route-hrefs/|server-functions/|showcase-ui/|special-files/|snapshots/((client-component-plan-v1|metadata-segment-plan-v1|next-binding-overrides-v1|page-layout-plan-v1|proxy-plan-v1|route-handler-plan-v1|special-file-plan-v1)\.json|next-stable-haxe-(page|product|layout|loading|error|not-found|proxy)\.tsx))|scripts/(beads/|bindings/|ci/|compat/|examples/(todoapp-next|showcases)\.mjs|fixtures/next-stable\.mjs|hooks/|lint/|security/|testing/(cache-boundaries|client-components|codecs|environment-boundaries|next-(surface|bindings|core-navigation|components|server)|metadata-segment|page-layouts|proxy|route-handlers|route-hrefs|server-functions|showcase-ui|special-files)\.mjs))'
 
 while IFS= read -r staged_file; do
   if [[ -n "$staged_file" ]] && printf '%s\n' "$staged_file" | grep -Eq "$GOVERNANCE_PATTERN"; then
@@ -78,19 +78,45 @@ while IFS= read -r json_file; do
   fi
 done < <(
   printf '%s\n' "$STAGED_FILES" |
-    grep -E '^(\.beads/(issues|interactions)\.jsonl|\.haxerc|package(-lock)?\.json|nextjshx-beads-seed\.json|support_matrix\.json|schemas/.*\.json)$' || true
+    grep -E '^(\.beads/(issues|interactions)\.jsonl|\.haxerc|config/.*\.json|examples/(todoapp-next|showcase-(ui|landing|blog|commerce))/(nextjshx\.config|package|tsconfig|components)\.json|package(-lock)?\.json|nextjshx-beads-seed\.json|support_matrix\.json|surface/.*\.json|tests/(cache-boundaries/.*|codecs/.*|environment-boundaries/.*|next-surface/.*|next-core-navigation/.*|next-components/.*|next-server/.*|proxy/tsconfig|route-hrefs/.*|server-functions/.*|showcase-ui/.*|snapshots/(metadata-segment-plan-v1|next-binding-overrides-v1|proxy-plan-v1|special-file-plan-v1))\.json|schemas/.*\.json)$' || true
 )
-
-echo "[pre-commit] Validating the compatibility matrix and generated documentation..."
-node "$ROOT_DIR/scripts/compat/support-matrix.mjs" check
-
-echo "[pre-commit] Validating architecture decisions and indexes..."
-python3 "$ROOT_DIR/scripts/ci/check_architecture_docs.py"
 
 echo "[pre-commit] Running staged secret scan..."
 bash "$ROOT_DIR/scripts/security/run-gitleaks.sh" --staged
 
-echo "[pre-commit] Validating security pins, hooks, workflow, and ignores..."
-python3 "$ROOT_DIR/scripts/ci/check_security_tooling.py"
+if printf '%s\n' "$STAGED_FILES" | grep -Eq '^(support_matrix\.json|docs/compatibility\.md|package(-lock)?\.json|scripts/compat/|schemas/support-matrix\.schema\.json)'; then
+  echo "[pre-commit] Validating the compatibility matrix and generated documentation..."
+  node "$ROOT_DIR/scripts/compat/support-matrix.mjs" check
+fi
+
+if printf '%s\n' "$STAGED_FILES" | grep -Eq '^(config/next-public-entrypoints\.json|surface/next-public-surface\.json|tests/next-surface/|scripts/bindings/next-surface\.mjs|schemas/next-public-(entrypoints|surface)\.schema\.json)'; then
+  echo "[pre-commit] Validating the pinned Next.js public surface..."
+  node "$ROOT_DIR/scripts/bindings/next-surface.mjs" check
+fi
+
+if printf '%s\n' "$STAGED_FILES" | grep -Eq '^(config/next-binding-|surface/next-binding-|src/nextjs/raw/|tests/next-(bindings|surface)/|scripts/bindings/sync-next-bindings\.mjs|schemas/next-binding-)'; then
+  echo "[pre-commit] Validating reviewed bindings and generated Haxe..."
+  node "$ROOT_DIR/scripts/bindings/sync-next-bindings.mjs" check
+fi
+
+if printf '%s\n' "$STAGED_FILES" | grep -Eq '^(examples/todoapp-next/|scripts/examples/todoapp-next\.mjs)'; then
+  echo "[pre-commit] Validating the production todo-app source contract..."
+  node "$ROOT_DIR/scripts/examples/todoapp-next.mjs" source
+fi
+
+if printf '%s\n' "$STAGED_FILES" | grep -Eq '^(examples/showcase-(ui|landing|blog|commerce)/|scripts/examples/showcases\.mjs)'; then
+  echo "[pre-commit] Validating maintained showcase source contracts..."
+  node "$ROOT_DIR/scripts/examples/showcases.mjs" source
+fi
+
+if printf '%s\n' "$STAGED_FILES" | grep -Eq '^(docs/architecture\.md|docs/adr/|scripts/ci/check_architecture_docs\.py)'; then
+  echo "[pre-commit] Validating architecture decisions and indexes..."
+  python3 "$ROOT_DIR/scripts/ci/check_architecture_docs.py"
+fi
+
+if printf '%s\n' "$STAGED_FILES" | grep -Eq '^(\.beads/hooks/|\.github/|\.gitignore|\.gitleaks\.toml|AGENTS\.md|CONTRIBUTING\.md|README\.md|SECURITY\.md|package(-lock)?\.json|scripts/(beads/|ci/|hooks/|lint/|security/))'; then
+  echo "[pre-commit] Validating security pins, hooks, workflow, and ignores..."
+  python3 "$ROOT_DIR/scripts/ci/check_security_tooling.py"
+fi
 
 echo "[pre-commit] OK"

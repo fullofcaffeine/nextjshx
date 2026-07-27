@@ -1,0 +1,14 @@
+{
+  "name": "nextjshx-server-function-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "npm@10.8.2",
+  "dependencies": {
+    "next": "16.2.12",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "typescript": "6.0.2"
+  }
+}

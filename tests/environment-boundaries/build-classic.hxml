@@ -1,0 +1,10 @@
+-lib genes-ts
+-cp src
+-cp tests/environment-boundaries/src
+-main environment_boundaries.Main
+-js tests/environment-boundaries/.tmp/classic/index.js
+-D dts
+-D js-es=6
+-dce full
+--macro environment_boundaries.BoundaryFixture.install()
+--macro include('environment_boundaries.positive')

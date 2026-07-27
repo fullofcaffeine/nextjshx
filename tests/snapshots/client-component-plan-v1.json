@@ -1,0 +1,568 @@
+{
+  "$schema": "https://nextjshx.dev/schemas/adapter-plan.schema.json",
+  "schemaVersion": 1,
+  "toolchain": {
+    "nextjshx": "0.0.0-development",
+    "haxe": "4.3.7",
+    "genesTs": "1.38.2+f0ffa29e6d49fe81541977c6a3aae6b80000cec6",
+    "next": "16.2.12"
+  },
+  "intents": [
+    {
+      "kind": "server-function",
+      "source": {
+        "typeName": "client_components.actions.FlightActions",
+        "fieldName": "ping",
+        "typePosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/actions/FlightActions.hx",
+          "startLine": 5,
+          "startCharacter": 1,
+          "endLine": 11,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/actions/FlightActions.hx",
+          "startLine": 8,
+          "startCharacter": 2,
+          "endLine": 10,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/actions/FlightActions.hx",
+          "startLine": 4,
+          "startCharacter": 1,
+          "endLine": 4,
+          "endCharacter": 23
+        }
+      },
+      "segmentPath": "_nextjshx/actions",
+      "targetPath": "_nextjshx/actions/flight.ts",
+      "implementation": {
+        "modulePath": "../../../../.tmp/typescript/client_components/actions/FlightActions",
+        "symbol": "FlightActions"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../.tmp/typescript/client_components/actions/FlightActions",
+          "symbol": "FlightActions",
+          "alias": null,
+          "typeOnly": false
+        }
+      ],
+      "directives": ["use server"],
+      "exports": [
+        {
+          "kind": "named",
+          "name": "ping",
+          "sourceField": "ping",
+          "signature": "(...args: Parameters<typeof FlightActions.ping>) => Promise<Awaited<ReturnType<typeof FlightActions.ping>>>"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "client-component",
+      "source": {
+        "typeName": "client_components.client.FlightBoundary",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/FlightBoundary.hx",
+          "startLine": 44,
+          "startCharacter": 1,
+          "endLine": 66,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/FlightBoundary.hx",
+          "startLine": 45,
+          "startCharacter": 2,
+          "endLine": 65,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/FlightBoundary.hx",
+          "startLine": 43,
+          "startCharacter": 1,
+          "endLine": 43,
+          "endCharacter": 23
+        }
+      },
+      "segmentPath": "_nextjshx/client/15df5be7865a",
+      "targetPath": "_nextjshx/client/15df5be7865a/FlightBoundary.tsx",
+      "implementation": {
+        "modulePath": "../../../../../.tmp/typescript/client_components/client/FlightBoundary",
+        "symbol": "FlightBoundary"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../../.tmp/typescript/client_components/client/FlightBoundary",
+          "symbol": "FlightBoundary",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "ComponentType",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": ["use client"],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "ComponentType<Parameters<typeof FlightBoundary.render>[0]>"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "client-component",
+      "source": {
+        "typeName": "client_components.client.InteractiveCounter",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/InteractiveCounter.hx",
+          "startLine": 25,
+          "startCharacter": 1,
+          "endLine": 48,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/InteractiveCounter.hx",
+          "startLine": 26,
+          "startCharacter": 2,
+          "endLine": 47,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/InteractiveCounter.hx",
+          "startLine": 24,
+          "startCharacter": 1,
+          "endLine": 24,
+          "endCharacter": 23
+        }
+      },
+      "segmentPath": "_nextjshx/client/608bef9587b3",
+      "targetPath": "_nextjshx/client/608bef9587b3/InteractiveCounter.tsx",
+      "implementation": {
+        "modulePath": "../../../../../.tmp/typescript/client_components/client/InteractiveCounter",
+        "symbol": "InteractiveCounter"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../../.tmp/typescript/client_components/client/InteractiveCounter",
+          "symbol": "InteractiveCounter",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "ComponentType",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": ["use client"],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "ComponentType<Parameters<typeof InteractiveCounter.render>[0]>"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "client-component",
+      "source": {
+        "typeName": "client_components.client.QueryPanel",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/QueryPanel.hx",
+          "startLine": 10,
+          "startCharacter": 1,
+          "endLine": 35,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/QueryPanel.hx",
+          "startLine": 11,
+          "startCharacter": 2,
+          "endLine": 34,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/QueryPanel.hx",
+          "startLine": 9,
+          "startCharacter": 1,
+          "endLine": 9,
+          "endCharacter": 23
+        }
+      },
+      "segmentPath": "_nextjshx/client/81f1eb774589",
+      "targetPath": "_nextjshx/client/81f1eb774589/QueryPanel.tsx",
+      "implementation": {
+        "modulePath": "../../../../../.tmp/typescript/client_components/client/QueryPanel",
+        "symbol": "QueryPanel"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../../.tmp/typescript/client_components/client/QueryPanel",
+          "symbol": "QueryPanel",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "ComponentType",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": ["use client"],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "ComponentType<Parameters<typeof QueryPanel.render>[0]>"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "client-component",
+      "source": {
+        "typeName": "client_components.client.RejectedFlightBoundary",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/RejectedFlightBoundary.hx",
+          "startLine": 14,
+          "startCharacter": 1,
+          "endLine": 19,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/RejectedFlightBoundary.hx",
+          "startLine": 15,
+          "startCharacter": 2,
+          "endLine": 18,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/RejectedFlightBoundary.hx",
+          "startLine": 13,
+          "startCharacter": 1,
+          "endLine": 13,
+          "endCharacter": 23
+        }
+      },
+      "segmentPath": "_nextjshx/client/a9abe9029f6d",
+      "targetPath": "_nextjshx/client/a9abe9029f6d/RejectedFlightBoundary.tsx",
+      "implementation": {
+        "modulePath": "../../../../../.tmp/typescript/client_components/client/RejectedFlightBoundary",
+        "symbol": "RejectedFlightBoundary"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../../.tmp/typescript/client_components/client/RejectedFlightBoundary",
+          "symbol": "RejectedFlightBoundary",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "ComponentType",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": ["use client"],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "ComponentType<Parameters<typeof RejectedFlightBoundary.render>[0]>"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "client-component",
+      "source": {
+        "typeName": "client_components.client.SecondaryBoundary.NestedToggle",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/SecondaryBoundary.hx",
+          "startLine": 16,
+          "startCharacter": 1,
+          "endLine": 26,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/SecondaryBoundary.hx",
+          "startLine": 17,
+          "startCharacter": 2,
+          "endLine": 25,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/SecondaryBoundary.hx",
+          "startLine": 15,
+          "startCharacter": 1,
+          "endLine": 15,
+          "endCharacter": 23
+        }
+      },
+      "segmentPath": "_nextjshx/client/c63756482b38",
+      "targetPath": "_nextjshx/client/c63756482b38/NestedToggle.tsx",
+      "implementation": {
+        "modulePath": "../../../../../.tmp/typescript/client_components/client/SecondaryBoundary",
+        "symbol": "NestedToggle"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../../.tmp/typescript/client_components/client/SecondaryBoundary",
+          "symbol": "NestedToggle",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "ComponentType",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": ["use client"],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "ComponentType<Parameters<typeof NestedToggle.render>[0]>"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "react-hook",
+      "source": {
+        "typeName": "client_components.client.SemanticHooks",
+        "fieldName": "useSemanticCounter",
+        "typePosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/SemanticHooks.hx",
+          "startLine": 33,
+          "startCharacter": 1,
+          "endLine": 72,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/SemanticHooks.hx",
+          "startLine": 36,
+          "startCharacter": 2,
+          "endLine": 48,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/SemanticHooks.hx",
+          "startLine": 35,
+          "startCharacter": 2,
+          "endLine": 35,
+          "endCharacter": 19
+        }
+      },
+      "segmentPath": "_nextjshx/hook/4d8dcc73935a",
+      "targetPath": "_nextjshx/hook/4d8dcc73935a/useSemanticCounter.ts",
+      "implementation": {
+        "modulePath": "../../../../../.tmp/typescript/client_components/client/SemanticHooks",
+        "symbol": "SemanticHooks"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../../.tmp/typescript/client_components/client/SemanticHooks",
+          "symbol": "SemanticHooks",
+          "alias": null,
+          "typeOnly": false
+        }
+      ],
+      "directives": ["use client"],
+      "exports": [
+        {
+          "kind": "named",
+          "name": "useSemanticCounter",
+          "sourceField": "useSemanticCounter",
+          "signature": "typeof SemanticHooks.useSemanticCounter"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "react-hook",
+      "source": {
+        "typeName": "client_components.client.GenericHooks",
+        "fieldName": "useSelection",
+        "typePosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/GenericHooks.hx",
+          "startLine": 13,
+          "startCharacter": 1,
+          "endLine": 24,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/GenericHooks.hx",
+          "startLine": 16,
+          "startCharacter": 2,
+          "endLine": 23,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/GenericHooks.hx",
+          "startLine": 15,
+          "startCharacter": 2,
+          "endLine": 15,
+          "endCharacter": 19
+        }
+      },
+      "segmentPath": "_nextjshx/hook/a04911485bc8",
+      "targetPath": "_nextjshx/hook/a04911485bc8/useSelection.ts",
+      "implementation": {
+        "modulePath": "../../../../../.tmp/typescript/client_components/client/GenericHooks",
+        "symbol": "GenericHooks"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../../.tmp/typescript/client_components/client/GenericHooks",
+          "symbol": "GenericHooks",
+          "alias": null,
+          "typeOnly": false
+        }
+      ],
+      "directives": ["use client"],
+      "exports": [
+        {
+          "kind": "named",
+          "name": "useSelection",
+          "sourceField": "useSelection",
+          "signature": "typeof GenericHooks.useSelection"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "react-hook",
+      "source": {
+        "typeName": "client_components.client.QueryHooks",
+        "fieldName": "useTodoQuery",
+        "typePosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/QueryHooks.hx",
+          "startLine": 46,
+          "startCharacter": 1,
+          "endLine": 71,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/QueryHooks.hx",
+          "startLine": 49,
+          "startCharacter": 2,
+          "endLine": 70,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/client/QueryHooks.hx",
+          "startLine": 48,
+          "startCharacter": 2,
+          "endLine": 48,
+          "endCharacter": 19
+        }
+      },
+      "segmentPath": "_nextjshx/hook/c82d49c13609",
+      "targetPath": "_nextjshx/hook/c82d49c13609/useTodoQuery.ts",
+      "implementation": {
+        "modulePath": "../../../../../.tmp/typescript/client_components/client/QueryHooks",
+        "symbol": "QueryHooks"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../../../.tmp/typescript/client_components/client/QueryHooks",
+          "symbol": "QueryHooks",
+          "alias": null,
+          "typeOnly": false
+        }
+      ],
+      "directives": ["use client"],
+      "exports": [
+        {
+          "kind": "named",
+          "name": "useTodoQuery",
+          "sourceField": "useTodoQuery",
+          "signature": "typeof QueryHooks.useTodoQuery"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "page",
+      "source": {
+        "typeName": "client_components.app.HomePage",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/app/HomePage.hx",
+          "startLine": 44,
+          "startCharacter": 1,
+          "endLine": 114,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/app/HomePage.hx",
+          "startLine": 46,
+          "startCharacter": 2,
+          "endLine": 113,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/client-components/next-app/haxe/client_components/app/HomePage.hx",
+          "startLine": 43,
+          "startCharacter": 1,
+          "endLine": 43,
+          "endCharacter": 12
+        }
+      },
+      "segmentPath": "",
+      "targetPath": "page.tsx",
+      "implementation": {
+        "modulePath": "../../.tmp/typescript/client_components/app/HomePage",
+        "symbol": "HomePage"
+      },
+      "imports": [
+        {
+          "modulePath": "../../.tmp/typescript/client_components/app/HomePage",
+          "symbol": "HomePage",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "JSX",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: PageProps<\"/\">) => Promise<JSX.Element>"
+        }
+      ],
+      "config": []
+    }
+  ]
+}

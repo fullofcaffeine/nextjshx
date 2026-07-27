@@ -1,0 +1,12 @@
+-lib genes-ts
+-cp src
+-cp tests/route-handlers/src
+-main route_handlers.NoRuntime
+-js tests/route-handlers/.tmp/application.js
+--no-output
+-D genes.ts
+-D genes.ts.no_extension
+-D nextjshx.app-root=tests/route-handlers/next-app/app
+-D nextjshx.generated-root=tests/route-handlers/.tmp/src-gen
+--macro route_handlers.RouteHandlerFixture.install('tests/route-handlers/.tmp/plan.json')
+--macro include('route_handlers.positive')

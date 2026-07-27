@@ -1,0 +1,6 @@
+-lib genes-ts
+-cp src
+-cp tests/next-binding-pipeline/src
+-main next_binding_pipeline.NegativeServerRuntime
+-js tests/next-binding-pipeline/.tmp/negative.js
+--no-output

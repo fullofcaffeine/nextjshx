@@ -1,0 +1,10 @@
+-lib genes-ts
+-cp src
+-cp tests/client-components/react-lint-negative
+-main ReactLintNegativeMain
+-js tests/client-components/.tmp/react-lint-negative.tsx
+-D genes.ts
+-D genes.ts.no_extension
+--macro nextjshx.client.ReactDiagnosticsMacro.install()
+--macro include('client_components_react_lint_negative')
+-dce full

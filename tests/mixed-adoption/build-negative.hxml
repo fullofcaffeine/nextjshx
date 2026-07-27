@@ -1,0 +1,12 @@
+-lib genes-ts
+-cp src
+-cp tests/mixed-adoption/negative
+-main mixed_adoption_negative.NoRuntime
+-js tests/mixed-adoption/.tmp/rejected.tsx
+--no-output
+-D genes.ts
+-D genes.ts.no_extension
+-D nextjshx.app-root=examples/mixed-adoption/app
+-D nextjshx.generated-root=examples/mixed-adoption/src-gen
+--macro mixed_adoption_negative.Fixture.install()
+--macro mixed_adoption_negative.Fixture.reject()

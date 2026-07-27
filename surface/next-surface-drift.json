@@ -1,0 +1,32 @@
+{
+  "$schema": "../schemas/next-surface-drift.schema.json",
+  "protocol": "nextjshx.next-surface-drift",
+  "version": 1,
+  "generatedBy": {
+    "script": "scripts/bindings/sync-next-bindings.mjs"
+  },
+  "baseline": {
+    "path": "surface/next-binding-ir.json",
+    "irHash": "sha256:70bbfaa6d7635aa09d43a3be7d8cb5ce7d45880cedcecc6456abd40a7fdafc4e",
+    "nextVersion": "16.2.12"
+  },
+  "candidate": {
+    "path": "surface/next-binding-ir.json",
+    "irHash": "sha256:70bbfaa6d7635aa09d43a3be7d8cb5ce7d45880cedcecc6456abd40a7fdafc4e",
+    "nextVersion": "16.2.12"
+  },
+  "counts": {
+    "compatible": 0,
+    "additive": 0,
+    "behavioralReviewRequired": 0,
+    "breaking": 0,
+    "unsupportedConstruct": 0
+  },
+  "changes": [],
+  "decision": {
+    "status": "clean",
+    "exitCode": 0,
+    "action": "No declaration, package, safety, documentation, ownership, or generated-output drift was detected."
+  },
+  "reportHash": "sha256:0d14d55e6971ca675315734c2c933ec703c0086bdd93e685456e1cf5c5fa4be8"
+}

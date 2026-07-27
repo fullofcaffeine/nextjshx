@@ -1,0 +1,84 @@
+{
+  "$schema": "https://nextjshx.dev/schemas/adapter-plan.schema.json",
+  "schemaVersion": 1,
+  "toolchain": {
+    "nextjshx": "0.0.0-development",
+    "haxe": "4.3.7",
+    "genesTs": "1.38.2+f0ffa29e6d49fe81541977c6a3aae6b80000cec6",
+    "next": "16.2.12"
+  },
+  "intents": [
+    {
+      "kind": "proxy",
+      "source": {
+        "typeName": "proxy_fixture.positive.RequestProxy",
+        "fieldName": "proxy",
+        "typePosition": {
+          "file": "tests/proxy/src/proxy_fixture/positive/RequestProxy.hx",
+          "startLine": 10,
+          "startCharacter": 1,
+          "endLine": 15,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/proxy/src/proxy_fixture/positive/RequestProxy.hx",
+          "startLine": 11,
+          "startCharacter": 2,
+          "endLine": 14,
+          "endCharacter": 3
+        },
+        "metadataPosition": {
+          "file": "tests/proxy/src/proxy_fixture/positive/RequestProxy.hx",
+          "startLine": 8,
+          "startCharacter": 1,
+          "endLine": 8,
+          "endCharacter": 13
+        }
+      },
+      "segmentPath": "",
+      "targetPath": "proxy.ts",
+      "implementation": {
+        "modulePath": "../.tmp/src-gen/proxy_fixture/positive/RequestProxy",
+        "symbol": "RequestProxy"
+      },
+      "imports": [
+        {
+          "modulePath": "../.tmp/src-gen/proxy_fixture/positive/RequestProxy",
+          "symbol": "RequestProxy",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "next/server",
+          "symbol": "NextProxy",
+          "alias": "NextJsHxProxy",
+          "typeOnly": true
+        },
+        {
+          "modulePath": "next/server",
+          "symbol": "ProxyConfig",
+          "alias": "NextJsHxProxyConfig",
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "named",
+          "name": "proxy",
+          "sourceField": "proxy",
+          "signature": "NextJsHxProxy"
+        }
+      ],
+      "config": [
+        {
+          "name": "matcher",
+          "value": {
+            "kind": "string-array",
+            "value": ["/haxe", "/products/:path*"]
+          }
+        }
+      ]
+    }
+  ]
+}

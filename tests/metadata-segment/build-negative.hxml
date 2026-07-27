@@ -1,0 +1,12 @@
+-lib genes-ts
+-cp src
+-cp tests/metadata-segment/src
+-main metadata_segment.NegativeRuntime
+-js tests/metadata-segment/.tmp/rejected.js
+--no-output
+-D genes.ts
+-D genes.ts.no_extension
+-D nextjshx.app-root=tests/metadata-segment/next-app/app
+-D nextjshx.generated-root=tests/metadata-segment/.tmp/src-gen
+--macro metadata_segment.MetadataSegmentFixture.install('tests/metadata-segment/.tmp/rejected.json')
+--macro metadata_segment.MetadataSegmentFixture.reject()

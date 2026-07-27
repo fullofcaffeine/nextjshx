@@ -1,0 +1,16 @@
+-lib genes-ts
+-cp haxe
+-cp ../showcase-ui/haxe
+-cp ../../src
+--main TodoAppMain
+
+# The CLI supplies every reviewed define from nextjshx.config.json.
+-js src-gen/index.tsx
+
+--macro todoapp.AdapterPlan.install()
+--macro include('todoapp.app')
+--macro include('todoapp.actions')
+--macro include('todoapp.client')
+--macro include('todoapp.cache')
+--macro include('todoapp.routes')
+-dce full

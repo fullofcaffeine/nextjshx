@@ -1,0 +1,15 @@
+-lib genes-ts
+-cp haxe
+-cp ../../../src
+--main FixtureMain
+
+# The CLI supplies every reviewed define from nextjshx.config.json. Keeping
+# them out of this file makes the declarative build input the single authority.
+-js src-gen/index.tsx
+
+--macro next_stable.AdapterPlan.install()
+--macro include('app')
+--macro include('route_handler_fixture')
+--macro include('request_proxy_fixture')
+--macro include('special_file_fixture')
+-dce full

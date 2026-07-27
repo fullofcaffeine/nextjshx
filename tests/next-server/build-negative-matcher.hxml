@@ -1,0 +1,8 @@
+-lib genes-ts
+-cp src
+-cp tests/next-server/src
+-main next_server.NegativeMatcher
+-js tests/next-server/.tmp/negative-matcher.ts
+-D genes.ts
+-D genes.ts.no_extension
+-dce full

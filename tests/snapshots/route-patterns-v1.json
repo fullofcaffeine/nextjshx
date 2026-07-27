@@ -1,20 +1,153 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "routes": [
     {
       "filesystemPath": "",
       "publicPath": "/",
+      "topology": "canonical",
+      "parallelSlots": [],
+      "interception": null,
       "segments": [],
+      "publicSegments": [],
       "parameters": []
+    },
+    {
+      "filesystemPath": "(marketing)/about",
+      "publicPath": "/about",
+      "topology": "canonical",
+      "parallelSlots": [],
+      "interception": null,
+      "segments": [
+        {
+          "source": "(marketing)",
+          "publicSource": null,
+          "kind": "group",
+          "segmentIndex": 1,
+          "interception": null
+        },
+        {
+          "source": "about",
+          "publicSource": "about",
+          "kind": "static",
+          "segmentIndex": 2,
+          "interception": null
+        }
+      ],
+      "publicSegments": [
+        {
+          "source": "about",
+          "publicSource": "about",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": null
+        }
+      ],
+      "parameters": []
+    },
+    {
+      "filesystemPath": "@analytics",
+      "publicPath": "/",
+      "topology": "parallel-view",
+      "parallelSlots": [
+        "analytics"
+      ],
+      "interception": null,
+      "segments": [
+        {
+          "source": "@analytics",
+          "publicSource": null,
+          "kind": "parallel-slot",
+          "segmentIndex": 1,
+          "interception": null
+        }
+      ],
+      "publicSegments": [],
+      "parameters": []
+    },
+    {
+      "filesystemPath": "@modal/(.)photo/[id]",
+      "publicPath": "/photo/[id]",
+      "topology": "intercepted-view",
+      "parallelSlots": [
+        "modal"
+      ],
+      "interception": {
+        "interceptedPath": "/photo/[id]",
+        "segmentIndex": 2,
+        "marker": "(.)",
+        "interceptingPath": "/"
+      },
+      "segments": [
+        {
+          "source": "@modal",
+          "publicSource": null,
+          "kind": "parallel-slot",
+          "segmentIndex": 1,
+          "interception": null
+        },
+        {
+          "source": "(.)photo",
+          "publicSource": "photo",
+          "kind": "static",
+          "segmentIndex": 2,
+          "interception": "(.)"
+        },
+        {
+          "source": "[id]",
+          "publicSource": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 3,
+          "interception": null
+        }
+      ],
+      "publicSegments": [
+        {
+          "source": "(.)photo",
+          "publicSource": "photo",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": "(.)"
+        },
+        {
+          "source": "[id]",
+          "publicSource": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 2,
+          "interception": null
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "kind": "single",
+          "segmentIndex": 2,
+          "haxeType": "String",
+          "codecType": null
+        }
+      ]
     },
     {
       "filesystemPath": "about",
       "publicPath": "/about",
+      "topology": "canonical",
+      "parallelSlots": [],
+      "interception": null,
       "segments": [
         {
           "source": "about",
+          "publicSource": "about",
           "kind": "static",
-          "segmentIndex": 1
+          "segmentIndex": 1,
+          "interception": null
+        }
+      ],
+      "publicSegments": [
+        {
+          "source": "about",
+          "publicSource": "about",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": null
         }
       ],
       "parameters": []
@@ -22,16 +155,39 @@
     {
       "filesystemPath": "archive/[[...slug]]",
       "publicPath": "/archive/[[...slug]]",
+      "topology": "canonical",
+      "parallelSlots": [],
+      "interception": null,
       "segments": [
         {
           "source": "archive",
+          "publicSource": "archive",
           "kind": "static",
-          "segmentIndex": 1
+          "segmentIndex": 1,
+          "interception": null
         },
         {
           "source": "[[...slug]]",
+          "publicSource": "[[...slug]]",
           "kind": "optional-catch-all",
-          "segmentIndex": 2
+          "segmentIndex": 2,
+          "interception": null
+        }
+      ],
+      "publicSegments": [
+        {
+          "source": "archive",
+          "publicSource": "archive",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": null
+        },
+        {
+          "source": "[[...slug]]",
+          "publicSource": "[[...slug]]",
+          "kind": "optional-catch-all",
+          "segmentIndex": 2,
+          "interception": null
         }
       ],
       "parameters": [
@@ -47,16 +203,39 @@
     {
       "filesystemPath": "docs/[...slug]",
       "publicPath": "/docs/[...slug]",
+      "topology": "canonical",
+      "parallelSlots": [],
+      "interception": null,
       "segments": [
         {
           "source": "docs",
+          "publicSource": "docs",
           "kind": "static",
-          "segmentIndex": 1
+          "segmentIndex": 1,
+          "interception": null
         },
         {
           "source": "[...slug]",
+          "publicSource": "[...slug]",
           "kind": "catch-all",
-          "segmentIndex": 2
+          "segmentIndex": 2,
+          "interception": null
+        }
+      ],
+      "publicSegments": [
+        {
+          "source": "docs",
+          "publicSource": "docs",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": null
+        },
+        {
+          "source": "[...slug]",
+          "publicSource": "[...slug]",
+          "kind": "catch-all",
+          "segmentIndex": 2,
+          "interception": null
         }
       ],
       "parameters": [
@@ -70,18 +249,186 @@
       ]
     },
     {
-      "filesystemPath": "orders/[id]",
-      "publicPath": "/orders/[id]",
+      "filesystemPath": "feed/@modal/(..)photo/[id]",
+      "publicPath": "/photo/[id]",
+      "topology": "intercepted-view",
+      "parallelSlots": [
+        "modal"
+      ],
+      "interception": {
+        "interceptedPath": "/photo/[id]",
+        "segmentIndex": 3,
+        "marker": "(..)",
+        "interceptingPath": "/feed"
+      },
       "segments": [
         {
-          "source": "orders",
+          "source": "feed",
+          "publicSource": "feed",
           "kind": "static",
-          "segmentIndex": 1
+          "segmentIndex": 1,
+          "interception": null
+        },
+        {
+          "source": "@modal",
+          "publicSource": null,
+          "kind": "parallel-slot",
+          "segmentIndex": 2,
+          "interception": null
+        },
+        {
+          "source": "(..)photo",
+          "publicSource": "photo",
+          "kind": "static",
+          "segmentIndex": 3,
+          "interception": "(..)"
         },
         {
           "source": "[id]",
+          "publicSource": "[id]",
           "kind": "dynamic",
-          "segmentIndex": 2
+          "segmentIndex": 4,
+          "interception": null
+        }
+      ],
+      "publicSegments": [
+        {
+          "source": "(..)photo",
+          "publicSource": "photo",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": "(..)"
+        },
+        {
+          "source": "[id]",
+          "publicSource": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 2,
+          "interception": null
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "kind": "single",
+          "segmentIndex": 2,
+          "haxeType": "String",
+          "codecType": null
+        }
+      ]
+    },
+    {
+      "filesystemPath": "gallery/@modal/(.)photo/[id]",
+      "publicPath": "/gallery/photo/[id]",
+      "topology": "intercepted-view",
+      "parallelSlots": [
+        "modal"
+      ],
+      "interception": {
+        "interceptedPath": "/gallery/photo/[id]",
+        "segmentIndex": 3,
+        "marker": "(.)",
+        "interceptingPath": "/gallery"
+      },
+      "segments": [
+        {
+          "source": "gallery",
+          "publicSource": "gallery",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": null
+        },
+        {
+          "source": "@modal",
+          "publicSource": null,
+          "kind": "parallel-slot",
+          "segmentIndex": 2,
+          "interception": null
+        },
+        {
+          "source": "(.)photo",
+          "publicSource": "photo",
+          "kind": "static",
+          "segmentIndex": 3,
+          "interception": "(.)"
+        },
+        {
+          "source": "[id]",
+          "publicSource": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 4,
+          "interception": null
+        }
+      ],
+      "publicSegments": [
+        {
+          "source": "gallery",
+          "publicSource": "gallery",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": null
+        },
+        {
+          "source": "(.)photo",
+          "publicSource": "photo",
+          "kind": "static",
+          "segmentIndex": 2,
+          "interception": "(.)"
+        },
+        {
+          "source": "[id]",
+          "publicSource": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 3,
+          "interception": null
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "kind": "single",
+          "segmentIndex": 3,
+          "haxeType": "String",
+          "codecType": null
+        }
+      ]
+    },
+    {
+      "filesystemPath": "orders/[id]",
+      "publicPath": "/orders/[id]",
+      "topology": "canonical",
+      "parallelSlots": [],
+      "interception": null,
+      "segments": [
+        {
+          "source": "orders",
+          "publicSource": "orders",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": null
+        },
+        {
+          "source": "[id]",
+          "publicSource": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 2,
+          "interception": null
+        }
+      ],
+      "publicSegments": [
+        {
+          "source": "orders",
+          "publicSource": "orders",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": null
+        },
+        {
+          "source": "[id]",
+          "publicSource": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 2,
+          "interception": null
         }
       ],
       "parameters": [
@@ -95,28 +442,145 @@
       ]
     },
     {
+      "filesystemPath": "shop/category/@modal/(..)(..)product/[id]",
+      "publicPath": "/product/[id]",
+      "topology": "intercepted-view",
+      "parallelSlots": [
+        "modal"
+      ],
+      "interception": {
+        "interceptedPath": "/product/[id]",
+        "segmentIndex": 4,
+        "marker": "(..)(..)",
+        "interceptingPath": "/shop/category"
+      },
+      "segments": [
+        {
+          "source": "shop",
+          "publicSource": "shop",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": null
+        },
+        {
+          "source": "category",
+          "publicSource": "category",
+          "kind": "static",
+          "segmentIndex": 2,
+          "interception": null
+        },
+        {
+          "source": "@modal",
+          "publicSource": null,
+          "kind": "parallel-slot",
+          "segmentIndex": 3,
+          "interception": null
+        },
+        {
+          "source": "(..)(..)product",
+          "publicSource": "product",
+          "kind": "static",
+          "segmentIndex": 4,
+          "interception": "(..)(..)"
+        },
+        {
+          "source": "[id]",
+          "publicSource": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 5,
+          "interception": null
+        }
+      ],
+      "publicSegments": [
+        {
+          "source": "(..)(..)product",
+          "publicSource": "product",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": "(..)(..)"
+        },
+        {
+          "source": "[id]",
+          "publicSource": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 2,
+          "interception": null
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "kind": "single",
+          "segmentIndex": 2,
+          "haxeType": "String",
+          "codecType": null
+        }
+      ]
+    },
+    {
       "filesystemPath": "teams/[teamId]/members/[memberId]",
       "publicPath": "/teams/[teamId]/members/[memberId]",
+      "topology": "canonical",
+      "parallelSlots": [],
+      "interception": null,
       "segments": [
         {
           "source": "teams",
+          "publicSource": "teams",
           "kind": "static",
-          "segmentIndex": 1
+          "segmentIndex": 1,
+          "interception": null
         },
         {
           "source": "[teamId]",
+          "publicSource": "[teamId]",
           "kind": "dynamic",
-          "segmentIndex": 2
+          "segmentIndex": 2,
+          "interception": null
         },
         {
           "source": "members",
+          "publicSource": "members",
           "kind": "static",
-          "segmentIndex": 3
+          "segmentIndex": 3,
+          "interception": null
         },
         {
           "source": "[memberId]",
+          "publicSource": "[memberId]",
           "kind": "dynamic",
-          "segmentIndex": 4
+          "segmentIndex": 4,
+          "interception": null
+        }
+      ],
+      "publicSegments": [
+        {
+          "source": "teams",
+          "publicSource": "teams",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": null
+        },
+        {
+          "source": "[teamId]",
+          "publicSource": "[teamId]",
+          "kind": "dynamic",
+          "segmentIndex": 2,
+          "interception": null
+        },
+        {
+          "source": "members",
+          "publicSource": "members",
+          "kind": "static",
+          "segmentIndex": 3,
+          "interception": null
+        },
+        {
+          "source": "[memberId]",
+          "publicSource": "[memberId]",
+          "kind": "dynamic",
+          "segmentIndex": 4,
+          "interception": null
         }
       ],
       "parameters": [
@@ -139,16 +603,177 @@
     {
       "filesystemPath": "todos/[id]",
       "publicPath": "/todos/[id]",
+      "topology": "canonical",
+      "parallelSlots": [],
+      "interception": null,
       "segments": [
         {
           "source": "todos",
+          "publicSource": "todos",
           "kind": "static",
-          "segmentIndex": 1
+          "segmentIndex": 1,
+          "interception": null
         },
         {
           "source": "[id]",
+          "publicSource": "[id]",
           "kind": "dynamic",
-          "segmentIndex": 2
+          "segmentIndex": 2,
+          "interception": null
+        }
+      ],
+      "publicSegments": [
+        {
+          "source": "todos",
+          "publicSource": "todos",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": null
+        },
+        {
+          "source": "[id]",
+          "publicSource": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 2,
+          "interception": null
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "kind": "single",
+          "segmentIndex": 2,
+          "haxeType": "String",
+          "codecType": null
+        }
+      ]
+    },
+    {
+      "filesystemPath": "workspace/(admin)/teams/[id]",
+      "publicPath": "/workspace/teams/[id]",
+      "topology": "canonical",
+      "parallelSlots": [],
+      "interception": null,
+      "segments": [
+        {
+          "source": "workspace",
+          "publicSource": "workspace",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": null
+        },
+        {
+          "source": "(admin)",
+          "publicSource": null,
+          "kind": "group",
+          "segmentIndex": 2,
+          "interception": null
+        },
+        {
+          "source": "teams",
+          "publicSource": "teams",
+          "kind": "static",
+          "segmentIndex": 3,
+          "interception": null
+        },
+        {
+          "source": "[id]",
+          "publicSource": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 4,
+          "interception": null
+        }
+      ],
+      "publicSegments": [
+        {
+          "source": "workspace",
+          "publicSource": "workspace",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": null
+        },
+        {
+          "source": "teams",
+          "publicSource": "teams",
+          "kind": "static",
+          "segmentIndex": 2,
+          "interception": null
+        },
+        {
+          "source": "[id]",
+          "publicSource": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 3,
+          "interception": null
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "kind": "single",
+          "segmentIndex": 3,
+          "haxeType": "String",
+          "codecType": null
+        }
+      ]
+    },
+    {
+      "filesystemPath": "workspace/@modal/(...)account/[id]",
+      "publicPath": "/account/[id]",
+      "topology": "intercepted-view",
+      "parallelSlots": [
+        "modal"
+      ],
+      "interception": {
+        "interceptedPath": "/account/[id]",
+        "segmentIndex": 3,
+        "marker": "(...)",
+        "interceptingPath": "/workspace"
+      },
+      "segments": [
+        {
+          "source": "workspace",
+          "publicSource": "workspace",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": null
+        },
+        {
+          "source": "@modal",
+          "publicSource": null,
+          "kind": "parallel-slot",
+          "segmentIndex": 2,
+          "interception": null
+        },
+        {
+          "source": "(...)account",
+          "publicSource": "account",
+          "kind": "static",
+          "segmentIndex": 3,
+          "interception": "(...)"
+        },
+        {
+          "source": "[id]",
+          "publicSource": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 4,
+          "interception": null
+        }
+      ],
+      "publicSegments": [
+        {
+          "source": "(...)account",
+          "publicSource": "account",
+          "kind": "static",
+          "segmentIndex": 1,
+          "interception": "(...)"
+        },
+        {
+          "source": "[id]",
+          "publicSource": "[id]",
+          "kind": "dynamic",
+          "segmentIndex": 2,
+          "interception": null
         }
       ],
       "parameters": [

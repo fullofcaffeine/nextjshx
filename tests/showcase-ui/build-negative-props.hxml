@@ -1,0 +1,10 @@
+-lib genes-ts
+-cp src
+-cp examples/showcase-ui/haxe
+-cp tests/showcase-ui/src
+-main showcase_ui.NegativeButtonSize
+-js tests/showcase-ui/.tmp/negative-props.tsx
+-D genes.ts
+-D genes.ts.no_extension
+-D genes.ts.jsx_import_source=react
+-dce full

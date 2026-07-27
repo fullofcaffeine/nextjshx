@@ -1,0 +1,4 @@
+id	completed	priority	title	note
+shape-first-release	false	P0	Shape the first release	Lock the smallest public contract before adding more surface area.
+prove-production-build	true	P1	Prove the production build	Keep Next typegen and the framework build as independent verifiers.
+write-adoption-guide	false	P2	Write the adoption guide	Show where Haxe improves authoring while native Next behavior stays visible.

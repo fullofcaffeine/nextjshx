@@ -1,0 +1,13 @@
+{
+  "name": "@nextjshx/client-fixture-hook",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "peerDependencies": {
+    "nuqs": "2.9.1",
+    "react": "19.2.7"
+  }
+}

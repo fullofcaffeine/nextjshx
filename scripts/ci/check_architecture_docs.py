@@ -16,6 +16,9 @@ README = ROOT / "README.md"
 CONTRIBUTING = ROOT / "CONTRIBUTING.md"
 ADAPTER_ADR = ADR_ROOT / "0001-adapter-first-app-router-integration.md"
 AUTHORING_ADR = ADR_ROOT / "0002-public-namespace-and-app-router-authoring.md"
+BOUNDARY_ADR = ADR_ROOT / "0003-boundary-classification-and-import-graph-enforcement.md"
+COMPONENT_ADR = ADR_ROOT / "0004-haxe-native-react-component-authoring.md"
+SECURITY_ADR = ADR_ROOT / "0005-server-function-security-ergonomics.md"
 ADR_NAME = re.compile(r"^(?P<number>[0-9]{4})-[a-z0-9]+(?:-[a-z0-9]+)*\.md$")
 DATE = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
 
@@ -141,6 +144,9 @@ def validate_authoring_decision() -> None:
             "### Per-type App Router declarations",
             '@:next.page("todos/[id]")',
             '@:next.layout("")',
+            '@:next.loading("todos")',
+            '@:next.error("todos")',
+            '@:next.notFound("todos")',
             '@:next.route("api/todos/[id]")',
             '@:next.clientComponent("todos/_components/TodoToggle")',
             '@:next.serverFunctions("todos/actions")',
@@ -148,11 +154,103 @@ def validate_authoring_decision() -> None:
             "ServerFunction.ref(TodoActions.createTodo)",
             "### Faithful raw escape hatch",
             "### No manually maintained route registry",
+            "### Loading, error, and not-found amendment",
             "### Explicitly deferred syntax",
             "### Raw externs only",
             "### Semantic wrappers only",
             "### Central manually maintained route registry",
             "nxhx-f34.1.4",
+        ),
+    )
+
+
+def validate_boundary_decision() -> None:
+    source = read_text(BOUNDARY_ADR)
+    require_fragments(
+        source,
+        BOUNDARY_ADR,
+        (
+            "### Classification model",
+            "Server default",
+            "Client boundary",
+            "Server Function module",
+            "Shared pure",
+            "Explicit server-only",
+            "Explicit client-only",
+            "Cache boundary",
+            "### One Haxe module, one boundary",
+            "### Import and reference policy",
+            "ClientComponent.ref(TodoToggle)",
+            "ServerFunction.ref(TodoActions.toggle)",
+            "### Directive and side-effect ownership",
+            '@:genes.moduleDirective("literal")',
+            'Imports.sideEffect("server-only")',
+            "### DCE and external adapter callers",
+            "### Enforcement ownership",
+            "### Cache interaction",
+            "### Environment and security boundary",
+            "### Rely only on Next build diagnostics",
+            "### Enforce the complete graph exclusively in Haxe",
+            "### Add a custom client/server runtime or RPC envelope",
+            "nxhx-f34.5.1",
+        ),
+    )
+
+
+def validate_component_decision() -> None:
+    source = read_text(COMPONENT_ADR)
+    require_fragments(
+        source,
+        COMPONENT_ADR,
+        (
+            "### Component categories follow usage, not inheritance",
+            "### Compared authoring and emission shapes",
+            "### Server Components remain the zero-ceremony default",
+            "### Client entry declarations infer their adapter",
+            "TideDial.client()",
+            "using nextjs.client.ClientComponent;",
+            "_nextjshx/client/6846cd673a8e/TideDial.tsx",
+            "### Children and named slots are ReactNode composition",
+            "### Async Server Components use native Promise and Suspense semantics",
+            "### Third-party client libraries use a narrow Haxe-owned leaf",
+            "### Native TypeScript interop remains bidirectional",
+            "### Compatibility and migration",
+            "### Enforcement and evidence split",
+            "### Add nominal ServerComponent and ClientComponent base classes",
+            "### Emit the client boundary directly from genes-ts",
+            "### Generate a custom component, serialization, or HMR runtime",
+            "nxhx-f34.5.8.1",
+        ),
+    )
+
+
+def validate_security_decision() -> None:
+    source = read_text(SECURITY_ADR)
+    require_fragments(
+        source,
+        SECURITY_ADR,
+        (
+            "### Native Next and React protections remain in force",
+            "serverActions.allowedOrigins",
+            "serverActions.bodySizeLimit",
+            "Direct POST reachability",
+            "### Mechanically provable and application-owned facts",
+            "### Use an explicitly guarded semantic path",
+            "GuardedAction.run(spec)",
+            "### The witness is scoped and cannot be self-asserted",
+            "Authorized<Operation, Actor, Target, Input>",
+            "### Authentication is request-local and server-derived",
+            "useActionState",
+            "### Resolution is authenticated and target-specific",
+            "### Projection is mandatory but does not certify secrecy",
+            "### Example one: create inside an authorized workspace",
+            "### Example two: toggle the exact current todo",
+            "### Static analysis is deliberately bounded",
+            "### Evidence required by the implementation",
+            "### Add authority-sounding action metadata",
+            "### Statically recognize authentication and authorization calls",
+            "### Reimplement Server Functions behind a custom RPC or policy runtime",
+            "nxhx-f34.5.8.4",
         ),
     )
 
@@ -178,6 +276,11 @@ def main() -> int:
             raise ArchitectureFailure(
                 "CONTRIBUTING.md does not link docs/architecture.md"
             )
+        if (
+            "(docs/adr/0003-boundary-classification-and-import-graph-enforcement.md)"
+            not in readme
+        ):
+            raise ArchitectureFailure("README.md does not link boundary ADR 0003")
 
         files = adr_files()
         if not files:
@@ -187,6 +290,9 @@ def main() -> int:
         )
         validate_adapter_decision()
         validate_authoring_decision()
+        validate_boundary_decision()
+        validate_component_decision()
+        validate_security_decision()
         noun = "ADR" if len(files) == 1 else "ADRs"
         print(
             f"architecture-docs: OK: {len(files)} {noun} checked, "
