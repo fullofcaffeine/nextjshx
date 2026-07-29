@@ -1,11 +1,12 @@
 package client_components_negative;
 
-import nextjs.client.React;
+import genes.react.React.useMemo;
+import genes.react.React.deps;
 
 @:keep
 class WrongMemoSnapshotType {
 	@:next.hook
 	public static function useLabel(value:Int):String {
-		return React.useMemo((current:String) -> current, React.deps(value));
+		return useMemo((current:String) -> current, deps(value));
 	}
 }

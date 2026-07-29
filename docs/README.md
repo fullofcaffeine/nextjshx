@@ -21,7 +21,8 @@ layer. Choose the shortest path below for the work you are doing.
 - [Pages and layouts](pages-and-layouts.md)
 - [Typed route hrefs](route-hrefs.md) and
   [typed query strings](route-queries.md)
-- [Client Components](client-components.md) and
+- [Client Components](client-components.md),
+  [React Flight values](react-flight.md), and
   [React Hooks](react-hooks.md)
 - [Server Functions](server-functions.md)
 - [Route Handlers](route-handlers.md)

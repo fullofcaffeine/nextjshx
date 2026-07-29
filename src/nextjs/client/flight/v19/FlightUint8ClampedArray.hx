@@ -1,4 +1,6 @@
 package nextjs.client.flight.v19;
 
-/** Exact React 19 Flight capability for a native `Uint8ClampedArray`. */
-typedef FlightUint8ClampedArray = js.lib.Uint8ClampedArray;
+/** NextJsHx alias for Genes' native React 19 `Uint8ClampedArray` capability. */
+@:genes.compilerInternal
+@:genes.semanticOnly
+typedef FlightUint8ClampedArray = genes.react.flight.v19.FlightUint8ClampedArray;

@@ -47,6 +47,7 @@ private typedef ReturnFlow = {
 class ReactDiagnosticsMacro {
 	#if macro
 	static inline final HOOK_METADATA = ":next.hook";
+	static inline final GENES_HOOK_METADATA = ":genes.reactHook";
 	static inline final REACT_USE_METADATA = ":next.reactUse";
 	static final NO_RETURN:ReturnFlow = {mayReturn: false, alwaysReturns: false};
 	static var installed:Bool = false;
@@ -61,12 +62,19 @@ class ReactDiagnosticsMacro {
 	}
 
 	static function fieldLabel(owner:ClassType, field:ClassField):String {
+		if (owner.module == "genes.react.ReactHookBindings" && owner.name == "ReactHookBindings") {
+			return switch field.name {
+				case "useStateValue" | "useStateContextual": "genes.react.React.useState";
+				case "useStateLazy": "genes.react.React.useStateLazy";
+				case "useMemo": "genes.react.React.useMemo";
+				case "useCallback": "genes.react.React.useCallback";
+				case "useOptimistic": "genes.react.React.useOptimistic";
+				case _: '${fullTypeName(owner)}.${field.name}';
+			};
+		}
 		if (owner.module == "nextjshx.client.ReactHookBindings" && owner.name == "ReactHookBindings") {
 			return switch field.name {
 				case "use": "nextjs.client.React.use";
-				case "useStateValue": "nextjs.client.React.useState";
-				case "useStateLazy": "nextjs.client.React.useStateLazy";
-				case "useMemo": "nextjs.client.React.useMemo";
 				case _: '${fullTypeName(owner)}.${field.name}';
 			};
 		}
@@ -173,7 +181,7 @@ class ReactDiagnosticsMacro {
 					null;
 				} else if (resolved.field.meta.has(REACT_USE_METADATA)) {
 					ReactUse(resolved.owner, resolved.field);
-				} else if (resolved.field.meta.has(HOOK_METADATA)) {
+				} else if (resolved.field.meta.has(HOOK_METADATA) || resolved.field.meta.has(GENES_HOOK_METADATA)) {
 					ReviewedHook(resolved.owner, resolved.field);
 				} else if (resolved.owner.module == "Math" && resolved.field.name == "random") {
 					KnownImpure("Math.random");

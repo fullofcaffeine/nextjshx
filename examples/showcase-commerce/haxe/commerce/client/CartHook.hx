@@ -1,7 +1,9 @@
 package commerce.client;
 
 import commerce.domain.Product.ProductSlug;
-import nextjs.client.React;
+import genes.react.React.useState;
+import genes.react.React.useMemo;
+import genes.react.React.deps;
 
 enum abstract CatalogFilter(String) to String {
 	final All = "all";
@@ -56,11 +58,12 @@ private typedef CartQuantity = {
  * dictionary. That keeps slug and quantity operations Haxe-checked while the
  * small showcase catalogue makes the linear lookup cost immaterial.
  *
- * The Hook has no class identity. This temporary static shell exists because
- * the current analyzer-function bridge accepts a public static field, then
- * emits it as a native module-level Hook. The reusable module-Hook contract is
- * being moved into `genes.react`; this class should disappear when the pinned
- * compiler surface supports the direct module form.
+ * The Hook has no application-level class identity. This static shell remains
+ * only because the NextJsHx `@:next.hook`/`@:next.exportHook` owner contract
+ * currently requires one public static field. Generic state, dependency
+ * snapshots, Hook typing, and analyzer-visible module-function lowering are
+ * already provided by `genes.react`; removing the remaining Next owner shell
+ * is tracked as a separate API migration.
  */
 class CartHook {
 	/**
@@ -74,11 +77,11 @@ class CartHook {
 	public static function useShopCart(products:Array<CartProduct>):CartModel {
 		// Semantic state names intent: `.set(value)` replaces while
 		// `.update(previous -> next)` performs a functional update.
-		final filter = React.useState(CatalogFilter.All);
-		final quantities = React.useState(new Array<CartQuantity>());
-		// `React.deps(...)` is compile-time packaging. It emits the direct,
+		final filter = useState(CatalogFilter.All);
+		final quantities = useState(new Array<CartQuantity>());
+		// `deps(...)` is compile-time packaging. It emits the direct,
 		// lint-visible dependency array rather than a runtime helper call.
-		final lines = React.useMemo((products, currentQuantities) -> buildLines(products, currentQuantities), React.deps(products, quantities.value));
+		final lines = useMemo((products, currentQuantities) -> buildLines(products, currentQuantities), deps(products, quantities.value));
 		var count = 0;
 		var totalCents = 0;
 		for (line in lines) {

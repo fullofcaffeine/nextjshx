@@ -2,7 +2,7 @@ package client_components_negative;
 
 import genes.react.Element;
 import client_components_negative.HookBindings.NegativeCachedResource;
-import nextjs.client.React;
+import nextjs.client.React.use;
 
 typedef ReactUseTryProps = {
 	final label:String;
@@ -12,7 +12,7 @@ typedef ReactUseTryProps = {
 class ReactUseTry {
 	public static function render(props:ReactUseTryProps):Element {
 		try {
-			final label = React.use(NegativeCachedResource.label());
+			final label = use(NegativeCachedResource.label());
 			return <p>{label}</p>;
 		} catch (_:haxe.Exception) {
 			return <p>{props.label}</p>;

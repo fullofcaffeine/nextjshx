@@ -2,7 +2,7 @@ package client_components.client;
 
 import client_components.shared.FlightResourcePayload;
 import genes.react.Element;
-import nextjs.client.React;
+import nextjs.client.React.use;
 import nextjs.client.flight.v19.FlightPromise;
 
 typedef RejectedFlightBoundaryProps = {
@@ -13,7 +13,7 @@ typedef RejectedFlightBoundaryProps = {
 @:next.clientComponent
 class RejectedFlightBoundary {
 	public static function render(props:RejectedFlightBoundaryProps):Element {
-		final resource = React.use(props.resource);
+		final resource = use(props.resource);
 		return <p id="unexpected-flight-resolution">{resource.message}</p>;
 	}
 }

@@ -3,7 +3,9 @@ package nextjs.client.flight.v19;
 /**
  * React 19 Flight set whose elements are checked recursively.
  *
- * The typedef deliberately keeps the native JavaScript `Set` identity and
- * adds no conversion, helper, or runtime allocation.
+ * Genes owns the reusable React value contract; this alias preserves the
+ * established NextJsHx name without a conversion or runtime allocation.
  */
-typedef FlightSet<T> = js.lib.Set<T>;
+@:genes.compilerInternal
+@:genes.semanticOnly
+typedef FlightSet<T> = genes.react.flight.v19.FlightSet<T>;

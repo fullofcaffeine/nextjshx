@@ -1,13 +1,14 @@
 package client_components_negative;
 
-import nextjs.client.React;
+import genes.react.React.useMemo;
+import genes.react.React.deps;
 
 @:keep
 class RestMemoSnapshot {
 	@:next.hook
 	public static function useValue(value:Int):Int {
-		return React.useMemo(function(...current:Int):Int {
+		return useMemo(function(...current:Int):Int {
 			return value;
-		}, React.deps(value));
+		}, deps(value));
 	}
 }

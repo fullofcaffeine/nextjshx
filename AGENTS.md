@@ -289,6 +289,24 @@ bd prime                # Refresh Beads context
   required JS/TS, React, compiler, or tooling contract is genuinely missing.
   Framework pressure may discover the gap, but the upstream API, diagnostics,
   and tests must remain usable without Next.js vocabulary.
+- Build host development loops from framework-neutral `@genes-ts/tooling`
+  primitives when those capabilities have been released; until then, record
+  the missing generic contract and upstream it instead of treating a
+  NextJsHx-local lifecycle helper as the reusable architecture. HXML input
+  inventory, reconciled filesystem watching, burst coalescing and serialized
+  newest-state rebuilds, owned project-local Haxe `--wait` servers, structured
+  compiler lifecycle events, and durable generated-artifact publication belong
+  in genes tooling when their contracts contain no framework concepts.
+  NextJsHx owns the familiar application commands (`dev`, `typecheck`, and
+  production `build`) plus the Next dev process, Next type generation and
+  validation, last-good admission, ownership policy, and `NXHX-*` diagnostics.
+  Reuse one compatible compiler server across source-only edits, restart it
+  only when compiler/HXML/classpath/define/profile identity changes, never
+  overlap compiles or publish stale output, and retain a bounded direct-compile
+  fallback. Treat edit-loop speed as a tested contract: record cold and warm
+  compile time, edit-to-ready p50/p95, burst and edit-during-compile behavior,
+  generated-file churn, server recovery, and comparison with an equivalent
+  modern JavaScript/TypeScript host workflow before making performance claims.
 - Do not use `Dynamic`, `Any`, `untyped`, `cast`, `Reflect`, broad `unknown`,
   unchecked TypeScript assertions, or reflection as substitutes for a typed
   design in repository-owned Haxe or generated public APIs. Leverage Haxe's

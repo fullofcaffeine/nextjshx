@@ -23,7 +23,7 @@ export class HaxePage {
 		let __nextQuery0Optional1: boolean | undefined = __nextQuery0Value_preview;
 		const __nextQuery0Absent1: boolean = (__nextQuery0Optional1) === undefined;
 		if (!__nextQuery0Absent1) {
-			__nextQuery0Params.append("preview", (__nextQuery0Optional1) ? "true" : "false");
+			__nextQuery0Params.append("preview", (((__nextQuery0Optional1)! as boolean)) ? "true" : "false");
 		};
 		let _g: number = 0;
 		const _g1: string[] = __nextQuery0Value_tags;

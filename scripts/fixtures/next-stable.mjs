@@ -81,7 +81,7 @@ const PROXY_ADAPTER_SNAPSHOT = path.join(
 const CLI_BIN = path.join(ROOT, "tools/cli/.tmp/src/cli.js");
 const NEXT_BIN = path.join(ROOT, "node_modules/next/dist/bin/next");
 const TSC_BIN = path.join(ROOT, "node_modules/typescript/bin/tsc6");
-const GENES_COMMIT = "f0ffa29e6d49fe81541977c6a3aae6b80000cec6";
+const GENES_COMMIT = "1ead794285d4f43cbbc96078d4eac4a4d8bf6cce";
 const TYPESCRIPT_VERSION = "6.0.2";
 const PLAYWRIGHT_VERSION = "1.61.1";
 const EXPECTED_VERSIONS = new Map([
@@ -421,12 +421,12 @@ async function verifyGeneratedOutput() {
   );
   assert(
     productPage.includes(
-      "static generateMetadata(props: PageMetadataProps<ProductParams, Readonly<Record<string, string | string[] | undefined>>>, parent: Promise<Awaited<import('next').ResolvingMetadata>>): Promise<import('next').Metadata>",
+      "static generateMetadata(props: PageMetadataProps<ProductParams, Readonly<Record<string, string | string[] | undefined>>>, parent: globalThis.Promise<Awaited<import('next').ResolvingMetadata>>): globalThis.Promise<import('next').Metadata>",
     ),
     "ProductPage lost its exact generated-metadata signature",
   );
   assert(
-    productPage.includes("static generateStaticParams(): Promise<ProductParams[]>"),
+    productPage.includes("static generateStaticParams(): globalThis.Promise<ProductParams[]>"),
     "ProductPage lost its typed static-params function",
   );
   assert(
@@ -448,8 +448,8 @@ async function verifyGeneratedOutput() {
   assert(!haxePage.includes("ProductPage.hrefWithQuery"), "HaxePage retained the inline page companion call");
   assert(!/from ["'].+ProductPage["']/.test(haxePage), "typed query construction imported the product page implementation");
   assert(
-    pageMetadataProps.includes("params: Promise<Params>") &&
-      pageMetadataProps.includes("searchParams: Promise<Query>"),
+    pageMetadataProps.includes("params: globalThis.Promise<Params>") &&
+      pageMetadataProps.includes("searchParams: globalThis.Promise<Query>"),
     "PageMetadataProps lost its Promise-shaped page-only inputs",
   );
   for (const [name, source] of [

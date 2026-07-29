@@ -1,6 +1,6 @@
 package client_components_negative;
 
-import nextjs.client.React;
+import genes.react.React.useState;
 
 typedef CallableStateFormatter = String->String;
 
@@ -8,6 +8,6 @@ typedef CallableStateFormatter = String->String;
 class CallableState {
 	@:next.hook
 	public static function useFormatter(initial:CallableStateFormatter):Void {
-		React.useState(initial);
+		useState(initial);
 	}
 }

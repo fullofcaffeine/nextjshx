@@ -18,7 +18,7 @@ that may be less convenient or less safe than the semantic API.
 
 | Need | Use | Example |
 | --- | --- | --- |
-| Author a route, page, layout, Hook, cache boundary, or Server Function | semantic `nextjs.*` | `@:next.page`, `RouteHref`, `React.useState`, `ResponseJson` |
+| Author a route, page, layout, Hook, cache boundary, or Server Function | semantic `nextjs.*` plus framework-neutral `genes.react.*` | `@:next.page`, `RouteHref`, `genes.react.React.useState`, `ResponseJson` |
 | Call a reviewed Next export directly | `nextjs.raw.*` | `Navigation.useRouter()`, `Headers.cookies()` |
 | Render a Next component in HXX | semantic component identity with raw props | `<NextLink href={ProductsPage.href()}>` |
 | Consume native TypeScript/JavaScript | a precise extern in the raw or integration namespace | native `useCounter` consumed by Haxe |

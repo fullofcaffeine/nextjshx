@@ -2,6 +2,7 @@
 
 - Status: Accepted
 - Date: 2026-07-19
+- Amended: 2026-07-27 — generic React authoring moved to `genes.react`
 - Decision owners: project owner and NextJsHx maintainers
 - Related Beads: `nxhx-f34.5.8.9`, `nxhx-ble.3.4`
 - Related ADRs: 0001, 0003, 0004
@@ -29,8 +30,10 @@ details made a mechanical extern insufficient:
 
 The authoring layer should preserve React names and runtime behavior while
 using Haxe to make these intents explicit. It must not allocate a state wrapper,
-introduce a parallel Hook runtime, infer dependencies unsoundly, or teach
-genes-ts about React.
+introduce a parallel Hook runtime, or infer dependencies unsoundly. Because
+these contracts apply equally to Gutenberg and other React hosts, their
+framework-neutral implementation belongs in `genes.react`; NextJsHx owns only
+Next-specific composition and graph policy.
 
 ### Compiler experiments
 
@@ -62,10 +65,13 @@ boundary:
   that exact value before registration or initialization. This preserves the
   Haxe API while making the generated body visible to official React lint.
 
-No React-specific genes-ts behavior is required for the selected design. The
-compiler contributions remain framework-neutral: generic call-site type
-preservation and opt-in analyzer-visible module-function lowering. React names
-and automatic marker insertion are owned entirely by NextJsHx.
+The first implementation kept the semantic macros in NextJsHx. Downstream
+consumption later proved that state, optimistic state, dependency snapshots,
+Hook typing, and analyzer-visible React functions have no Next.js dependency.
+Those capabilities now live in the generic `genes.react` layer. NextJsHx still
+derives its Next-owned Hook and Client Component markers, checks App Router
+client/server graph policy, and provides cached-resource `use` plus Transition
+composition.
 
 ## Decision
 
@@ -73,31 +79,35 @@ and automatic marker insertion are owned entirely by NextJsHx.
 
 The two public layers have deliberately different jobs:
 
-| Concern | `nextjs.raw.react` | `nextjs.client` |
+| Concern | `nextjs.raw.react` | `genes.react` semantic layer |
 | --- | --- | --- |
 | state action | `EitherType<S, S -> S>` | hidden behind `set` and `update` |
 | state result | exact mutable `Tuple2` projection | allocation-free `State<S>` abstract |
-| eager initial state | faithful `S | (() -> S)` ambiguity | `React.useState(value)` rejects possibly callable values |
-| lazy/function state | same raw channel | `React.useStateLazy(() -> value)` |
+| eager initial state | faithful `S | (() -> S)` ambiguity | `useState(value)` rejects possibly callable values |
+| lazy/function state | same raw channel | `useStateLazy(() -> value)` |
 | replacement | raw dispatcher union | `state.set(value)` |
 | transition | raw dispatcher union | `state.update(previous -> next)` |
-| memo dependencies | `DependencyList<D>` | direct `React.deps(...)`, with inferred calculation parameters for computed snapshots |
+| memo dependencies | `DependencyList<D>` | direct `deps(...)`, with inferred calculation parameters for computed snapshots |
 | dependency inference | none | none |
 | optimistic state | exact React tuple and dispatcher | allocation-free `Optimistic<State, Action>` with `value` and `apply` |
-| imperative Action context | raw `startTransition` | direct semantic `React.startTransition` |
+| imperative Action context | raw `startTransition` | NextJsHx semantic `nextjs.client.React.startTransition` |
 
 Representative semantic Haxe is:
 
 ```haxe
-final count = React.useState(0);
+import genes.react.React.deps;
+import genes.react.React.useMemo;
+import genes.react.React.useState;
+
+final count = useState(0);
 
 count.value;
 count.set(3);
 count.update(previous -> previous + 1);
 
-final doubled = React.useMemo(
+final doubled = useMemo(
 	(current) -> current * 2,
-	React.deps(count.value)
+	deps(count.value)
 );
 ```
 
@@ -123,14 +133,14 @@ contains a callable union arm, is an unconstrained type parameter, or cannot be
 classified safely:
 
 ```haxe
-// NXHX-REACT-STATE-0001
-final handler = React.useState(initialHandler);
+// GTS-REACT-STATE-001
+final handler = useState(initialHandler);
 ```
 
 The explicit safe form is:
 
 ```haxe
-final handler = React.useStateLazy(() -> initialHandler);
+final handler = useStateLazy(() -> initialHandler);
 handler.set(nextHandler);
 handler.update(previous -> decorate(previous));
 ```
@@ -142,23 +152,24 @@ helper before the updater closure is created, preserving eager, exactly-once
 evaluation:
 
 ```ts
-StateRuntime.replaceCallable(handler[1], makeNextHandler());
+replaceCallableState(handler[1], makeNextHandler());
 ```
 
-The scalar path does not pay for that helper or closure.
+The concrete helper is private Genes output; the scalar path does not pay for
+that helper or closure.
 
 ### Keep dependency authorship explicit and closed
 
-`React.deps(...)` is compile-time packaging, not a runtime function. It is
-valid only as the direct second argument of semantic `React.useMemo`. The macro
+`deps(...)` is compile-time packaging, not a runtime function. It is valid only
+as the direct second argument of semantic `useMemo`. The Genes macro
 types every expression, builds a closed element union, preserves authored
 order and duplicates, and emits only the literal array.
 
 ```haxe
-final lines = React.useMemo(
+final lines = useMemo(
 	(products, currentQuantities) ->
 		buildLines(products, currentQuantities),
-	React.deps(products, quantities.value)
+	deps(products, quantities.value)
 );
 ```
 
@@ -177,19 +188,19 @@ required, and official React exhaustive-dependencies analysis runs over the
 actual generated module-function body. `useMemo` continues to return plain
 `T`; it is an optimization, not stable storage or a correctness capability.
 
-Storing `React.deps(...)`, supplying a runtime array to semantic `useMemo`, or
+Storing `deps(...)`, supplying a runtime array to semantic `useMemo`, or
 using unresolved/broad dependency values fails with
-`NXHX-REACT-DEPS-0001`. Deliberately dynamic raw interop uses
+`GTS-REACT-DEPS-001`. Deliberately dynamic raw interop uses
 `nextjs.raw.react.React.useMemo` with a precisely typed `DependencyList<D>`.
 Computed dependencies without named calculation parameters and unsafe
-parameter arity, type, or shape fail with `NXHX-REACT-DEPS-0002`.
+parameter arity, type, or shape fail with `GTS-REACT-DEPS-002`.
 
 ### Keep optimistic projection typed and React-owned
 
 The semantic optimistic surface follows the same tuple-erasure rule as state:
 
 ```haxe
-final row = React.useOptimistic(initial, reduceRow);
+final row = useOptimistic(initial, reduceRow);
 
 row.value;
 React.startTransition(() -> row.apply(RowAction.Toggle));

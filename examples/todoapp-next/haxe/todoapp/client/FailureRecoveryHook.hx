@@ -1,7 +1,7 @@
 package todoapp.client;
 
 import js.lib.Error;
-import nextjs.client.React;
+import genes.react.React.useState;
 
 typedef FailureRecoveryModel = {
 	final trigger:Void->Void;
@@ -23,7 +23,7 @@ class FailureRecoveryHook {
 	 */
 	@:next.hook
 	public static function useFailureRecovery():FailureRecoveryModel {
-		final shouldFail = React.useState(false);
+		final shouldFail = useState(false);
 		if (shouldFail.value) {
 			throw new Error("FIELD_LEDGER_RECOVERABLE_RENDER");
 		}

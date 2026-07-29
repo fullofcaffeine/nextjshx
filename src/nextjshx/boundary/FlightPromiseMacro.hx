@@ -4,6 +4,7 @@ package nextjshx.boundary;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
+import nextjshx.boundary.ReactSerializableMacro.validate;
 
 using haxe.macro.TypeTools;
 using Lambda;
@@ -53,7 +54,7 @@ class FlightPromiseMacro {
 			case type:
 				return fail('FlightResource.promise(...) requires js.lib.Promise<T>; found ${type.toString()}.', value.pos);
 		};
-		ReactSerializableMacro.validate(resolved, "resolved", value.pos);
+		validate(resolved, "resolved", value.pos);
 		final resultType = resolved.toComplexType();
 		if (resultType == null) {
 			return fail("FlightResource.promise(...) could not preserve the resolved value's exact Haxe type.", value.pos);

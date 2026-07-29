@@ -346,13 +346,14 @@ export default nextConfig;
   assertNoHaxeEscape("haxe/todoapp/client/MutationHook.hx", mutationHook);
   assert(mutationHook.includes("RawReact.useActionState"), "todo mutation hook lost its React 19 action state");
   assert(mutationHook.includes("RawReact.useSyncExternalStore"), "todo mutation hook lost browser online/offline subscription");
-  assert(mutationHook.includes("React.startTransition"), "imperative todo mutations lost their React Action transition");
+  assert(mutationHook.includes("startTransition("), "imperative todo mutations lost their React Action transition");
   assert(mutationHook.includes("active.current"), "todo mutation hook lost its synchronous duplicate-submit guard");
   assert(mutationHook.includes('submission.set("mutationId"'), "todo mutation hook lost its replay identity");
   assert(mutationHook.includes("lastSubmission.current"), "todo mutation hook lost its retryable closed FormData snapshot");
   assert(
-    mutationHook.includes("catch (_:haxe.Exception)"),
-    "todo transport failures must be redacted without exposing exception details",
+    mutationHook.includes("Promise.resolve(true).then(_ready -> action(previous, formData))") &&
+      mutationHook.includes("_error -> {"),
+    "todo transport failures must share a redacted Promise rejection path",
   );
   assert(!mutationHook.includes("NEXTJSHX_TODO_MUTATION_"), "test fault controls leaked into the production mutation hook");
   assert(mutationHook.includes("router.refresh()"), "successful todo mutations lost their server-view refresh");
@@ -365,7 +366,7 @@ export default nextConfig;
     "utf8",
   );
   assertNoHaxeEscape("haxe/todoapp/client/FailureRecoveryHook.hx", failureHook);
-  assert(failureHook.includes("React.useState(false)"), "todo failure drill lost its Haxe semantic state");
+  assert(failureHook.includes("useState(false)"), "todo failure drill lost its Haxe semantic state");
   assert(
     failureHook.includes("FIELD_LEDGER_RECOVERABLE_RENDER"),
     "todo failure drill lost its stable expected-error marker",
@@ -821,7 +822,10 @@ async function verifyGeneratedOutput() {
 
   const detail = await fs.readFile(path.join(GENERATED, "todoapp/app/TodoDetailPage.tsx"), "utf8");
   assert(detail.includes('from "next/navigation"'), "todo detail lost Next-owned notFound control flow");
-  assert(detail.includes("Promise<import('next').Metadata>"), "todo detail lost generated metadata typing");
+  assert(
+    detail.includes("globalThis.Promise<import('next').Metadata>"),
+    "todo detail lost generated metadata typing",
+  );
   assert(
     detail.includes("app/_nextjshx/client/af0bcfc585a9/FailureRecoveryProbe"),
     "todo detail lost its generated recovery-probe boundary",

@@ -1,28 +1,34 @@
 # Haxe-native React Hooks and bidirectional interop
 
-NextJsHx provides two React Hook surfaces:
+NextJsHx composes two React Hook layers:
 
 - `nextjs.raw.react.*` mirrors supported React contracts for exact interop; and
-- `nextjs.client.*` names application intent, improves inference, and rejects
-  React function-state ambiguities before TypeScript is generated.
+- the framework-neutral `genes.react.*` semantic surface names application
+  intent, improves inference, and rejects React function-state ambiguities
+  before TypeScript is generated.
 
-Both call the ordinary React runtime. There is no NextJsHx Hook scheduler,
-state container, memo cache, or wrapper object. ADR 0006 records the design and
-rejected alternatives.
+NextJsHx adds only Next-specific Client Component, React Server Component,
+cached-resource, and placement policy around those layers. Both call the
+ordinary React runtime. There is no NextJsHx Hook scheduler, state container,
+memo cache, or wrapper object. ADR 0006 records the design and rejected
+alternatives.
 
 ## Semantic state: the normal Haxe API
 
-Use `nextjs.client.React` in Haxe-authored Client Components and custom Hooks:
+Import semantic Hooks from `genes.react.React` in Haxe-authored Client
+Components and custom Hooks:
 
 ```haxe
-import nextjs.client.React;
+import genes.react.React.deps;
+import genes.react.React.useMemo;
+import genes.react.React.useState;
 
 @:next.hook
 function useCounter(initial:Int):CounterModel {
-	final count = React.useState(initial);
-	final doubled = React.useMemo(
+	final count = useState(initial);
+	final doubled = useMemo(
 		(current) -> current * 2,
-		React.deps(count.value)
+		deps(count.value)
 	);
 
 	return {
@@ -34,7 +40,9 @@ function useCounter(initial:Int):CounterModel {
 }
 ```
 
-`State<S>` has three deliberately distinct operations:
+`genes.react.State<S>` has three deliberately distinct operations. The
+`nextjs.client.State<S>` name remains a source-compatible typedef, not a
+separate implementation:
 
 | Haxe | Intent | React operation |
 | --- | --- | --- |
@@ -57,7 +65,7 @@ The semantic abstract does not generate `new State`, a `State_Impl_` object,
 runtime getters, or bound methods.
 
 Haxe enum abstracts retain their closed emitted union. For example,
-`React.useState(CatalogFilter.All)` emits the ordinary handwritten TypeScript
+`useState(CatalogFilter.All)` emits the ordinary handwritten TypeScript
 form `useState<"all" | "systems" | "tools">("all")`; without that type
 argument React would widen the literal to `string` and discard the domain
 contract. The semantic macro preserves the Haxe-checked enum type through a
@@ -67,10 +75,13 @@ the shorter inferred call.
 
 ## Reducer-driven optimistic state
 
-Use `React.useOptimistic` when a Server Action should update the interface
+Use `genes.react.React.useOptimistic` when a Server Action should update the interface
 immediately and then reconcile with server-owned props:
 
 ```haxe
+import genes.react.React.useOptimistic;
+import nextjs.client.React.startTransition;
+
 private typedef OptimisticRow = {
 	final completed:Bool;
 	final visible:Bool;
@@ -85,17 +96,19 @@ final initial:OptimisticRow = {
 	completed: props.completed,
 	visible: true
 };
-final row = React.useOptimistic(initial, (current, action) -> switch action {
+final row = useOptimistic(initial, (current, action) -> switch action {
 	case Toggle: {completed: !current.completed, visible: current.visible};
 	case Remove: {completed: current.completed, visible: false};
 });
 
 row.value;
-React.startTransition(() -> row.apply(RowAction.Toggle));
+startTransition(() -> row.apply(RowAction.Toggle));
 ```
 
-`Optimistic<State, Action>` deliberately exposes only the projected value and
-one closed reducer action. It erases to the tuple React already returns:
+`genes.react.Optimistic<State, Action>` deliberately exposes only the
+projected value and one closed reducer action. The
+`nextjs.client.Optimistic<State, Action>` name is a compatibility typedef over
+that generic implementation. Both erase to the tuple React already returns:
 
 ```ts
 const row = useOptimistic(initial, (current, action) => {
@@ -115,7 +128,7 @@ enough information to reproduce the optimistic projection.
 
 React requires optimistic dispatch to occur inside an Action. A form `action`
 already supplies that context. For an imperative event or integration callback,
-wrap `apply` with semantic `React.startTransition`; it inlines to the ordinary
+wrap `apply` with semantic `nextjs.client.React.startTransition`; it inlines to the ordinary
 named React import and call. Calling `apply` during render or from an arbitrary
 callback without an Action/Transition is not supported.
 
@@ -143,24 +156,26 @@ The semantic API makes the intent explicit:
 ```haxe
 typedef Handler = String->Void;
 
-final handler = React.useStateLazy(() -> initialHandler);
+import genes.react.React.useStateLazy;
+
+final handler = useStateLazy(() -> initialHandler);
 
 handler.set(nextHandler);
 handler.update(previous -> decorate(previous));
 ```
 
-`React.useState(initialHandler)` fails at the Haxe argument with
-`NXHX-REACT-STATE-0001`. The same conservative failure applies to a union with
+`useState(initialHandler)` fails at the Haxe argument with
+`GTS-REACT-STATE-001`. The same conservative failure applies to a union with
 a callable arm and to an unresolved generic value. This costs an explicit
 `useStateLazy` in uncertain code and prevents React from silently applying the
 wrong runtime interpretation.
 
-For `handler.set(makeNextHandler())`, NextJsHx must both store the function and
-preserve ordinary eager argument evaluation. The generated call is equivalent
-to:
+For `handler.set(makeNextHandler())`, Genes must both store the function and
+preserve ordinary eager argument evaluation. The generated implementation uses
+the framework-neutral equivalent of:
 
 ```ts
-StateRuntime.replaceCallable(handler[1], makeNextHandler());
+replaceCallableState(handler[1], makeNextHandler());
 ```
 
 JavaScript evaluates `makeNextHandler()` once before entering the typed helper;
@@ -172,17 +187,18 @@ initializer more than once to expose impurities.
 
 ## Explicit memo dependencies
 
-Semantic `useMemo` requires a direct `React.deps(...)` expression:
+Semantic `useMemo` requires a direct `deps(...)` expression imported from
+`genes.react.React`:
 
 ```haxe
-final lines = React.useMemo(
+final lines = useMemo(
 	(products, currentQuantities) ->
 		buildLines(products, currentQuantities),
-	React.deps(products, quantities.value)
+	deps(products, quantities.value)
 );
 ```
 
-The calculation may name one parameter for every dependency. NextJsHx turns
+The calculation may name one parameter for every dependency. Genes turns
 parameters backed by computed expressions into render-local scalar snapshots;
 a parameter whose name already matches a plain local dependency reuses that
 binding. Haxe infers each parameter from its corresponding dependency and
@@ -198,8 +214,8 @@ closed union element type for Haxe checking. It emits no `deps` function,
 wrapper, or IIFE:
 
 ```ts
-let currentQuantities: CartQuantity[] = quantities[0];
-let lines: CartLine[] = useMemo(function () {
+const currentQuantities: CartQuantity[] = quantities[0];
+const lines: CartLine[] = useMemo(function () {
   return CartHook.buildLines(products, currentQuantities);
 }, [products, currentQuantities]);
 ```
@@ -208,9 +224,9 @@ Use the familiar zero-argument calculation when every dependency already emits
 as a lint-visible local or member chain:
 
 ```haxe
-React.useMemo(
+useMemo(
 	() -> props.label.toUpperCase(),
-	React.deps(props.label)
+	deps(props.label)
 );
 ```
 
@@ -218,37 +234,50 @@ Use dependency parameters for tuple projections, array indexing, calls,
 operators, and other computed expressions:
 
 ```haxe
-React.useMemo(
+useMemo(
 	(current, selected) -> summarize(current, selected),
-	React.deps(state.value, items[index])
+	deps(state.value, items[index])
 );
 ```
 
 These dependency lists are supported:
 
 ```haxe
-React.deps();
-React.deps(product);
-React.deps(products, quantities.value);
-React.deps(first, second, label, enabled);
+deps();
+deps(product);
+deps(products, quantities.value);
+deps(first, second, label, enabled);
 ```
 
-`React.deps(...)` is invalid when stored in a variable or called by itself.
+`deps(...)` is invalid when stored in a variable or called by itself.
 Passing a runtime dependency list to semantic `useMemo` also fails with
-`NXHX-REACT-DEPS-0001`. Exact raw interop can instead declare a closed
+`GTS-REACT-DEPS-001`. Exact raw interop can instead declare a closed
 `nextjs.raw.react.DependencyList<D>` and call raw `React.useMemo`.
 
-`NXHX-REACT-DEPS-0002` rejects a computed dependency paired with a
+`GTS-REACT-DEPS-002` rejects a computed dependency paired with a
 zero-argument calculation, a dependency-parameter arity/type mismatch, or a
 parameter shape that cannot become one scalar snapshot without changing
 semantics. The diagnostic points at the Haxe call and shows the
 named-snapshot form; TypeScript does not repair the relationship later.
 
-NextJsHx does not infer missing dependencies. Doing so soundly would require
-reproducing React lint's closure, alias, member-access, and generated-JavaScript
-analysis. Authors must supply every reactive capture. `useMemo` remains only a
-performance optimization; its result type is plain `T`, and application
-correctness must not depend on cache persistence.
+Neither Genes nor NextJsHx silently infers missing dependencies. Doing so
+soundly would require reconciling Haxe closure, alias, and member-access
+analysis with the JavaScript that React's analyzers actually inspect, and an
+incorrect inferred array would change runtime memoization or effect behavior.
+Authors must therefore continue to supply every reactive capture explicitly.
+
+A framework-neutral Genes experiment may audit the typed Haxe closure against
+`deps(...)`, report missing or unnecessary entries at Haxe source positions,
+and offer a machine-readable suggestion or editor fix. That is useful earlier
+feedback, but the initial feature must be opt-in and diagnostic-only; the
+authored dependency list remains runtime authority, and the official
+`exhaustive-deps` rule over generated analyzer-visible output remains an
+independent oracle. Automatic dependency generation should be considered only
+later for a closed subset whose Haxe and emitted-JavaScript captures are proven
+equivalent.
+
+`useMemo` remains only a performance optimization; its result type is plain
+`T`, and application correctness must not depend on cache persistence.
 
 ## Faithful raw state and tuple projection
 
@@ -313,7 +342,7 @@ class CatalogHooks {
 	@:next.hook
 	@:next.exportHook
 	public static function useSelection<T>(items:Array<T>):Selection<T> {
-		final index = React.useState(0);
+		final index = useState(0);
 		return {
 			items: items,
 			index: index.value,
@@ -419,9 +448,9 @@ typed Haxe APIs.
 
 | Diagnostic | Meaning | Recovery |
 | --- | --- | --- |
-| `NXHX-REACT-STATE-0001` | an eager semantic state value may be callable | use `useStateLazy(() -> value)` |
-| `NXHX-REACT-DEPS-0001` | semantic dependencies are non-inline, standalone, broad, or unresolved | pass direct `React.deps(...)`, or deliberately use the raw API |
-| `NXHX-REACT-DEPS-0002` | a computed dependency lacks its named calculation parameter, or its parameter arity/type/shape is unsafe to relocate | use ordinary required parameters on an anonymous function or arrow calculation, one per dependency in authored order |
+| `GTS-REACT-STATE-001` | an eager semantic state value may be callable | use `useStateLazy(() -> value)` |
+| `GTS-REACT-DEPS-001` | semantic dependencies are non-inline, standalone, broad, or unresolved | pass direct `deps(...)` imported from `genes.react.React`, or deliberately use the raw API |
+| `GTS-REACT-DEPS-002` | a computed dependency lacks its named calculation parameter, or its parameter arity/type/shape is unsafe to relocate | use ordinary required parameters on an anonymous function or arrow calculation, one per dependency in authored order |
 | `NXHX-REACT-EXPORT-0002` | an export marker is malformed or not attached to one public static reviewed Haxe Hook | correct the Hook marker, name, owner, and implementation |
 | `NXHX-REACT-HOOK-0001/0002` | a reviewed Hook is outside a React function or in invalid local control flow | move it to the unconditional top level of a Client Component or custom Hook |
 | `NXHX-REACT-NAME-0006` | an ordinary use-prefixed helper is called from analyzer-visible React code | rename the helper without `use`, or make it a genuine reviewed Hook |

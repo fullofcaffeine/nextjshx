@@ -2,7 +2,7 @@ package clientification.client;
 
 import clientification.shared.FeatureCatalogue;
 import genes.react.Element;
-import nextjs.client.React;
+import genes.react.React.useState;
 
 typedef HighDashboardProps = {
 	final label:String;
@@ -15,7 +15,7 @@ typedef HighDashboardProps = {
 @:next.clientComponent
 class HighDashboard {
 	public static function render(props:HighDashboardProps):Element {
-		final count = React.useState(0);
+		final count = useState(0);
 		return <main>
 			{FeatureCatalogue.render()}
 			<button type="button" onClick={() -> count.update(value -> value + 1)}>

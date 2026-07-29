@@ -1,6 +1,6 @@
 package landing.client;
 
-import nextjs.client.React;
+import genes.react.React.useState;
 
 enum abstract TideDirection(String) to String {
 	final Rising = "rising";
@@ -17,23 +17,24 @@ typedef TideReading = {
 /**
  * Temporary static shell for the tide dial's bounded client Hook.
  *
- * The Hook has no class identity and should ultimately be a module function.
- * The current NextJsHx analyzer-function bridge still requires a public static
- * field so it can lift the checked body into a native module-level Hook. The
- * reusable module-Hook capability is being generalized in `genes.react`; this
- * class should disappear when NextJsHx consumes that public surface.
+ * The Hook has no application-level class identity and should ultimately be a
+ * module function. The current NextJsHx `@:next.hook` owner contract still
+ * requires one public static field. Generic state, Hook typing, and
+ * analyzer-visible module-function lowering already come from `genes.react`;
+ * removing the remaining Next owner shell is tracked as a separate API
+ * migration.
  */
 class TideHook {
 	/**
 	 * `@:next.hook` gives this function a typed React Hook identity and
-	 * enforces top-level placement. `React.useState` returns the semantic
+	 * enforces top-level placement. `useState` returns the semantic
 	 * zero-wrapper `State<T>` view: `.value` reads, `.set` replaces, and
 	 * `.update` computes from the previous value.
 	 */
 	@:next.hook
 	public static function useTideReading(initialLevel:Int):TideReading {
-		final level = React.useState(initialLevel);
-		final direction = React.useState(TideDirection.Rising);
+		final level = useState(initialLevel);
+		final direction = useState(TideDirection.Rising);
 		return {
 			level: level.value,
 			direction: direction.value,

@@ -2,7 +2,7 @@ package todoapp.client;
 
 import genes.react.Element;
 import nextjs.components.NextForm;
-import nextjs.client.React;
+import genes.react.React.useOptimistic;
 import nextjs.codec.DecodeResult;
 import nextjs.raw.components.FormProps;
 import nextjs.server.ServerFunction;
@@ -59,7 +59,7 @@ class CreateTodoForm {
 			note: "",
 			priority: TodoPriority.Important
 		};
-		final draft = React.useOptimistic(initialDraft, (_current:OptimisticDraft, next:OptimisticDraft) -> next);
+		final draft = useOptimistic(initialDraft, (_current:OptimisticDraft, next:OptimisticDraft) -> next);
 		final mutation = MutationHook.useTodoMutation(ServerFunction.ref(TodoActions.create), TodoMutationOperation.Create, "Intake desk ready.",
 			formData -> switch draftMutationForm(formData) {
 				case Decoded(input):

@@ -15,7 +15,7 @@ import nextjshx.adapter.AdapterImport;
 import nextjshx.adapter.AdapterKind;
 import nextjshx.adapter.AdapterPlanRegistry;
 import nextjshx.boundary.EnvironmentBoundaryMacro;
-import nextjshx.boundary.ReactSerializableMacro;
+import nextjshx.boundary.ReactSerializableMacro.validate;
 
 using StringTools;
 using haxe.macro.TypeTools;
@@ -174,7 +174,7 @@ class ClientComponentMacro {
 			return fail("NXHX-CLIENT-RENDER-0003", 'Client Component props argument "${argument.name}" must be required and have no default value.', field.pos);
 		}
 		final props = requireType(argument.type, 'Client Component props argument "${argument.name}"', field.pos);
-		ReactSerializableMacro.validate(props, "props", field.pos);
+		validate(props, "props", field.pos);
 		final result = requireType(method.ret, "Client Component render return", field.pos);
 		if (!isElement(result)) {
 			return fail("NXHX-CLIENT-RETURN-0004",
@@ -191,7 +191,7 @@ class ClientComponentMacro {
 		}
 		return switch renders[0].type.follow() {
 			case TFun(arguments, result) if (arguments.length == 1 && isElement(result)):
-				ReactSerializableMacro.validate(arguments[0].t, "props", renders[0].pos);
+				validate(arguments[0].t, "props", renders[0].pos);
 				arguments[0].t;
 			case _:
 				fail("NXHX-CLIENT-REF-0006", '${fullTypeName(type)}.render is not a validated synchronous one-prop Client Component.', position);

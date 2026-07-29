@@ -1,6 +1,7 @@
 package todoapp.input;
 
 import genes.ts.Unknown;
+import genes.ts.Present;
 import nextjs.codec.Decode;
 import nextjs.codec.DecodeIssueCode;
 import nextjs.codec.DecodeResult;
@@ -117,7 +118,10 @@ function safeText(maximumLength:Int):TextDecoder<String> {
 
 function priorityText(value:String, path:String):DecodeResult<TodoPriority> {
 	final priority = TodoPriority.parse(value);
-	return priority == null ? Decode.reject(DecodeIssueCode.InvalidValue, path, "expected exactly P0, P1, or P2") : Decode.accept(priority);
+	if (priority == null) {
+		return Decode.reject(DecodeIssueCode.InvalidValue, path, "expected exactly P0, P1, or P2");
+	}
+	return Decode.accept(Present.require(priority));
 }
 
 function todoIdText(value:String, path:String):DecodeResult<TodoId> {

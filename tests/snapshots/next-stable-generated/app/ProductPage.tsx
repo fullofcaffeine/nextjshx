@@ -12,12 +12,12 @@ export type ProductParams = {
  * Haxe-owned dynamic page with generated metadata and a closed static route set.
  */
 export class ProductPage {
-	static generateMetadata(props: PageMetadataProps<ProductParams, Readonly<Record<string, string | string[] | undefined>>>, parent: Promise<Awaited<import('next').ResolvingMetadata>>): Promise<import('next').Metadata> {
+	static generateMetadata(props: PageMetadataProps<ProductParams, Readonly<Record<string, string | string[] | undefined>>>, parent: globalThis.Promise<Awaited<import('next').ResolvingMetadata>>): globalThis.Promise<import('next').Metadata> {
 		const value: import('next').Metadata = {"title": "Generated product metadata from Haxe", "description": "Next.js invoked a typed Haxe metadata function for a generated route."};
-		return Promise.resolve(value);
+		return globalThis.Promise.resolve(value);
 	}
-	static generateStaticParams(): Promise<ProductParams[]> {
-		return Promise.resolve([{"slug": "first"}, {"slug": "second"}]);
+	static generateStaticParams(): globalThis.Promise<ProductParams[]> {
+		return globalThis.Promise.resolve([{"slug": "first"}, {"slug": "second"}]);
 	}
 	static render(props: PageProps<ProductParams, Readonly<Record<string, string | string[] | undefined>>>): JSX.Element {
 		return <main id="haxe-product-page"><p>This product page and its static route list originated in typed Haxe.</p></main>;
@@ -39,7 +39,7 @@ export class ProductPage {
 		let __nextQuery0Optional1: boolean | undefined = __nextQuery0Value.preview;
 		const __nextQuery0Absent1: boolean = (__nextQuery0Optional1) === undefined;
 		if (!__nextQuery0Absent1) {
-			__nextQuery0Params.append("preview", (__nextQuery0Optional1) ? "true" : "false");
+			__nextQuery0Params.append("preview", (((__nextQuery0Optional1)! as boolean)) ? "true" : "false");
 		};
 		let _g: number = 0;
 		const _g1: string[] = __nextQuery0Value.tags;

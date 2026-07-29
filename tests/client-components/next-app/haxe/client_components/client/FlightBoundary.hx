@@ -2,7 +2,8 @@ package client_components.client;
 
 import client_components.shared.FlightResourcePayload;
 import genes.react.Element;
-import nextjs.client.React;
+import genes.react.React.useState;
+import nextjs.client.React.use;
 import nextjs.client.flight.v19.FlightArrayBuffer;
 import nextjs.client.flight.v19.FlightDate;
 import nextjs.client.flight.v19.FlightFloat32Array;
@@ -39,12 +40,20 @@ typedef FlightBoundaryProps = {
 	final ping:FlightServerFunction<String->js.lib.Promise<String>>;
 }
 
-/** Hydrated consumer for every precisely admitted React 19 Flight category. */
+/**
+ * Hydrated consumer for every precisely admitted React 19 Flight category.
+ *
+ * The versioned prop types are compile-time evidence: their runtime values
+ * remain native Date, Map, Set, buffer, typed-array, symbol, Promise, and
+ * Server Function values. This fixture deliberately renders or invokes each
+ * value so the browser proves React/Next transport behavior in addition to the
+ * earlier Haxe and generated-TypeScript checks.
+ */
 @:next.clientComponent
 class FlightBoundary {
 	public static function render(props:FlightBoundaryProps):Element {
-		final resource = React.use(props.resource);
-		final response = React.useState("not called");
+		final resource = use(props.resource);
+		final response = useState("not called");
 		final reading = props.readings.get("harbor").orNull();
 		final readingLabel = reading == null ? "missing" : '$reading';
 		final invoke = () -> {

@@ -4,8 +4,9 @@ package nextjs.client.flight.v19;
  * React 19 Flight value whose runtime representation is the native JavaScript
  * `Date` object.
  *
- * The versioned name is intentional: it records which React Flight contract
- * admitted the value while the typedef preserves the exact zero-wrapper
- * `Date` representation in generated TypeScript and JavaScript.
+ * The reusable zero-wrapper contract lives in Genes; this alias preserves the
+ * established NextJsHx source name for application compatibility.
  */
-typedef FlightDate = js.lib.Date;
+@:genes.compilerInternal
+@:genes.semanticOnly
+typedef FlightDate = genes.react.flight.v19.FlightDate;

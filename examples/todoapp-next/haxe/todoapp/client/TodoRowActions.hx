@@ -2,7 +2,7 @@ package todoapp.client;
 
 import genes.react.Element;
 import nextjs.components.NextForm;
-import nextjs.client.React;
+import genes.react.React.useOptimistic;
 import nextjs.raw.components.FormProps;
 import nextjs.server.ServerFunction;
 import showcase.ui.Button.ButtonProps;
@@ -43,7 +43,7 @@ class TodoRowActions {
 	 */
 	public static function render(props:TodoRowActionsProps):Element {
 		final initial:OptimisticRow = {completed: props.completed, visible: true};
-		final optimistic = React.useOptimistic(initial, reduceOptimisticRow);
+		final optimistic = useOptimistic(initial, reduceOptimisticRow);
 		final toggle = MutationHook.useTodoMutation(ServerFunction.ref(TodoActions.toggle), TodoMutationOperation.Toggle, "Status action ready.",
 			_formData -> optimistic.apply(RowOptimisticAction.Toggle));
 		final remove = MutationHook.useTodoMutation(ServerFunction.ref(TodoActions.remove), TodoMutationOperation.Remove, "Removal action ready.",

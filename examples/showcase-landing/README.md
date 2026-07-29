@@ -50,8 +50,10 @@ Client Component boundary emits an ordinary `"use client"` module.
 The Haxe Hook body makes those two state operations explicit:
 
 ```haxe
-final level = React.useState(initialLevel);
-final direction = React.useState(TideDirection.Rising);
+import genes.react.React.useState;
+
+final level = useState(initialLevel);
+final direction = useState(TideDirection.Rising);
 
 return {
 	level: level.value,
@@ -84,10 +86,11 @@ Pass supported Next flags after `--`, for example `-- --webpack -p 3100`.
 - Use `nextjs.*` for the ergonomic layer and `nextjs.raw.*` when exact host
   behavior is the goal.
 - Client state and browser events belong behind `@:next.clientComponent`.
-- `TideHook` currently has a documented static shell because the analyzer
-  bridge accepts a public static Hook field. The Hook itself has no class
-  identity; a reusable direct module-Hook surface belongs in genes-ts and will
-  remove that shell.
+- `TideHook` currently has a documented static shell because the NextJsHx
+  `@:next.hook` owner contract accepts a public static Hook field. The generic
+  Hook authoring, state, and analyzer-visible module-function machinery already
+  lives in `genes.react`; removing the remaining Next owner shell is tracked
+  separately.
 
 See the first-use comments in the Haxe sources and the
 [showcase guide](../../docs/showcases.md) for generated ownership and tests.

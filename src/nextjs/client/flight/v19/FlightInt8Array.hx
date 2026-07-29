@@ -1,4 +1,6 @@
 package nextjs.client.flight.v19;
 
-/** Exact React 19 Flight capability for a native `Int8Array`. */
-typedef FlightInt8Array = js.lib.Int8Array;
+/** NextJsHx alias for Genes' native React 19 `Int8Array` capability. */
+@:genes.compilerInternal
+@:genes.semanticOnly
+typedef FlightInt8Array = genes.react.flight.v19.FlightInt8Array;
