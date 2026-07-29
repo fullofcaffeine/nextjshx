@@ -10,7 +10,7 @@ release. From this repository, invoke it through the workspace script:
 
 ```sh
 npm run nextjshx -- --help
-npm run nextjshx -- init
+npm run nextjshx -- setup
 npm run nextjshx -- generate
 npm run nextjshx -- clean
 npm run nextjshx -- adopt src/app/catalog/page.tsx
@@ -31,24 +31,31 @@ application package, and requires its closed `nextjshx.config.json`. Pass
 discovered package root. Unknown commands, flags, duplicate flags, and flag
 values with no argument fail with `NXHX-CLI-USAGE-0001`.
 
-## `init`
+## `setup`
 
 ```sh
-nextjshx init [--json] [--typed-routes]
+nextjshx setup [--json] [--typed-routes]
 ```
 
-`init` prepares a discovered TypeScript App Router package for gradual Haxe
+`setup` prepares a discovered TypeScript App Router package for gradual Haxe
 adoption. It verifies the installed Next.js, TypeScript, Haxe, genes-ts, and
-NextJsHx Haxe-library capabilities, then creates only absent baseline files:
+NextJsHx Haxe-library capabilities, then creates or validates:
 
 - versioned `nextjshx.config.json`;
-- `nextjshx.hxml`, an empty Haxe main, and the adapter-plan installer;
+- a manifest-owned compiler session under `.nextjshx/toolchain/`;
 - a small typed Haxe home page only when no native root `page.js`, `.jsx`,
   `.ts`, or `.tsx` exists;
 - missing `.next/`, `.nextjshx/`, and `src-gen/` ignore entries; and
 - missing `dev`, `generate`, and `typecheck` package scripts.
 
-Every existing path is preserved. A byte-identical initializer file is reported
+Application config contains source roots, Next capabilities, and output policy;
+it cannot override compiler-owned genes defines, planner installation, output
+extensions, or pinned toolchain identities. The generated HXML, empty compiler
+entry point, and complete released planner installer are private implementation
+files. Commands regenerate them deterministically from config and verify their
+manifest before compiling. Do not check them in or edit them.
+
+Every existing application path is preserved. A byte-identical setup file is reported
 unchanged; different bytes, symbolic links, executable Next config, native
 routes, and existing package scripts are reported as preserved with the exact
 proposed alternative. The package lock is never written. The `dev` proposal is
@@ -57,15 +64,26 @@ the reviewed Next argument boundary.
 
 Package metadata is replaced only after its original digest is rechecked, and
 its mode is retained. Install the pinned NextJsHx Lix scope for the same
-reviewed release or source revision as the CLI before invoking `init`; the
+reviewed release or source revision as the CLI before invoking `setup`; the
 command fails before mutation when `-lib nextjshx` cannot be resolved.
 
-Initialization is monotonic and interruption-safe rather than a multi-file
-transaction: an operating-system failure can leave a safe subset of absent
-files created, but no pre-existing path is replaced. The package-script patch
-is published last. Rerunning the same command completes the baseline while
-reporting already-created identical files as unchanged. A completed repeated
-invocation is byte-stable.
+`init` remains a deprecated compatibility alias for `setup`. A conventional
+schema-v1 config can be migrated only when setup proves that its HXML contains
+the released libraries, classpaths, output, package includes, full DCE, and one
+released AdapterPlan installer. Custom defines, macros, or HXML behavior fail
+before setup writes. Authored legacy files are preserved for deliberate later
+cleanup; maintained schema-v2 applications do not need them.
+
+Setup snapshots every application file it may change and records the
+directories that were absent before it began. If a later setup stage fails, it
+restores exact prior bytes and modes, removes only setup-created files, and
+prunes only still-empty directories that setup created. A concurrent change
+during rollback is preserved and reported instead of overwritten.
+
+Compiler-toolchain publication is independently transactional: it stages a complete tree,
+verifies exact prior ownership, swaps atomically, and restores the exact
+previous tree if publication fails. An unowned, modified, missing, or symlinked
+entry blocks the complete update. Repeated setup is byte-stable.
 
 Typed routes are disabled by default. `--typed-routes` creates a minimal
 `next.config.mjs` only when no `next.config.js`, `.mjs`, `.ts`, or `.mts`
@@ -79,9 +97,9 @@ baseline and three missing scripts; the second invocation reports unchanged
 and produces no byte changes.
 
 Negative control: an existing native `src/app/page.tsx`, custom `dev` script,
-custom HXML, and executable `next.config.mjs` remain byte-for-byte intact. The
-result reports each collision and prints the proposed script or typed-routes
-change.
+unsupported custom legacy HXML, and executable `next.config.mjs` remain
+byte-for-byte intact. The result reports each collision or migration blocker
+and prints the safe next action.
 
 ## `profile`
 
@@ -528,7 +546,7 @@ boundary in the script itself:
 Then `npm run dev -- -p 3100` uses the reviewed platform default and forwards
 the appended port to Next without requiring a second separator from the
 developer. An explicit bundler remains available after that separator. The future
-`nextjshx init` workflow proposes this script only when it can preserve an
+`nextjshx setup` workflow proposes this script only when it can preserve an
 existing package script and show the change explicitly.
 
 ## Machine-readable output

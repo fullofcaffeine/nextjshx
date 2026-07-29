@@ -36,10 +36,15 @@ export interface ConfigMigrationReport {
 }
 
 export interface HaxeConfig {
-  readonly hxml: string;
+  /**
+   * Application-owned Haxe source roots. NextJsHx synthesizes the executable
+   * HXML, bootstrap main, macro installer, compiler defines, and output path.
+   */
+  readonly sourceRoots: readonly string[];
   readonly generatedRoot: string;
-  readonly defines: readonly string[];
   readonly extraInputs: readonly string[];
+  /** @deprecated Schema-v1 migration input only. */
+  readonly legacyHxml?: string;
 }
 
 export interface NextConfig {
@@ -66,8 +71,7 @@ export interface BoundaryReportConfig {
 export interface NextJsHxConfig {
   readonly $schema?: typeof CONFIG_SCHEMA_ID | typeof LEGACY_CONFIG_SCHEMA_ID;
   readonly schemaVersion:
-    | typeof CONFIG_SCHEMA_VERSION
-    | typeof LEGACY_CONFIG_SCHEMA_VERSION;
+    typeof CONFIG_SCHEMA_VERSION | typeof LEGACY_CONFIG_SCHEMA_VERSION;
   readonly appRoot?: string;
   readonly boundaries: BoundaryReportConfig;
   readonly haxe: HaxeConfig;
@@ -88,7 +92,8 @@ const ROOT_KEYS = [
   "schemaVersion",
 ];
 const BOUNDARY_KEYS = ["maxDirectDependencies", "maxObservedClientBytes"];
-const HAXE_KEYS = ["defines", "extraInputs", "generatedRoot", "hxml"];
+const HAXE_KEYS_V1 = ["defines", "extraInputs", "generatedRoot", "hxml"];
+const HAXE_KEYS_V2 = ["extraInputs", "generatedRoot", "sourceRoots"];
 const NEXT_KEYS = [
   "cacheComponents",
   "experimentalCacheDirectives",
@@ -131,7 +136,11 @@ function objectValue(value: unknown, subject: string): JsonObject {
   return value as JsonObject;
 }
 
-function assertClosedKeys(value: JsonObject, allowed: readonly string[], subject: string): void {
+function assertClosedKeys(
+  value: JsonObject,
+  allowed: readonly string[],
+  subject: string,
+): void {
   const allowedSet = new Set(allowed);
   const unknown = Object.keys(value)
     .filter((key) => !allowedSet.has(key))
@@ -147,7 +156,11 @@ function assertClosedKeys(value: JsonObject, allowed: readonly string[], subject
   }
 }
 
-function assertRequiredKeys(value: JsonObject, required: readonly string[], subject: string): void {
+function assertRequiredKeys(
+  value: JsonObject,
+  required: readonly string[],
+  subject: string,
+): void {
   const missing = required.filter((key) => !Object.hasOwn(value, key)).sort();
   if (missing.length > 0) {
     configFailure(
@@ -161,7 +174,11 @@ function assertRequiredKeys(value: JsonObject, required: readonly string[], subj
 }
 
 function stringValue(value: unknown, subject: string): string {
-  if (typeof value !== "string" || value.length === 0 || value.trim() !== value) {
+  if (
+    typeof value !== "string" ||
+    value.length === 0 ||
+    value.trim() !== value
+  ) {
     configFailure(
       "NXHX-CONFIG-VALUE-0007",
       `${subject} must be a non-empty string without surrounding whitespace.`,
@@ -249,32 +266,29 @@ function outputProfile(output: JsonObject): OutputProfile {
     ["public", "all", "none"] as const,
   );
   return Object.freeze({
-    language: literalValue(
-      output.language,
-      "$.output.language",
-      ["typescript", "javascript"] as const,
-    ),
-    intent: literalValue(
-      output.intent,
-      "$.output.intent",
-      ["reviewable", "optimized"] as const,
-    ),
+    language: literalValue(output.language, "$.output.language", [
+      "typescript",
+      "javascript",
+    ] as const),
+    intent: literalValue(output.intent, "$.output.intent", [
+      "reviewable",
+      "optimized",
+    ] as const),
     profileVersion: 1,
-    sourceMaps: literalValue(
-      output.sourceMaps,
-      "$.output.sourceMaps",
-      ["external", "inline", "none"] as const,
-    ),
+    sourceMaps: literalValue(output.sourceMaps, "$.output.sourceMaps", [
+      "external",
+      "inline",
+      "none",
+    ] as const),
     sourcesContent: booleanValue(
       output.sourcesContent,
       "$.output.sourcesContent",
     ),
     declarations,
-    jsxRuntime: literalValue(
-      output.jsxRuntime,
-      "$.output.jsxRuntime",
-      ["automatic", "classic"] as const,
-    ),
+    jsxRuntime: literalValue(output.jsxRuntime, "$.output.jsxRuntime", [
+      "automatic",
+      "classic",
+    ] as const),
   });
 }
 
@@ -322,7 +336,9 @@ function projectPath(value: unknown, subject: string): string {
     path.win32.isAbsolute(candidate) ||
     candidate.includes("\\") ||
     candidate.includes("\0") ||
-    segments.some((segment) => segment === "" || segment === "." || segment === "..")
+    segments.some(
+      (segment) => segment === "" || segment === "." || segment === "..",
+    )
   ) {
     configFailure(
       "NXHX-CONFIG-PATH-0008",
@@ -349,8 +365,8 @@ function externalRelativePath(value: unknown, subject: string): string {
       "NXHX-CONFIG-PATH-0008",
       `${subject} must be a portable relative path.`,
       subject,
-      "a slash-separated relative path; parent segments are allowed only for this read-only oracle",
-      "Configure a relative path such as ../next.js, or remove the optional upstreamDir key.",
+      "a slash-separated relative path; parent segments are allowed only for an explicitly checked read-only workspace input",
+      "Configure a relative path such as ../shared-haxe or ../next.js; the consumer will still enforce its workspace and capability boundary.",
     );
   }
   return candidate;
@@ -387,8 +403,7 @@ function definesValue(
     const define = stringValue(entry, `$.haxe.defines[${index}]`);
     if (
       !/^[A-Za-z0-9_.-]+(?:=[^\s\u0000-\u001f\u007f]+)?$/.test(define) ||
-      (!allowCompilerOwned &&
-        isCompilerOwnedDefine(defineName(define)))
+      (!allowCompilerOwned && isCompilerOwnedDefine(defineName(define)))
     ) {
       configFailure(
         "NXHX-CONFIG-VALUE-0007",
@@ -418,25 +433,21 @@ function defineName(define: string): string {
 
 function isCompilerOwnedDefine(name: string): boolean {
   return (
-    name === "dts" ||
-    name.startsWith("genes.") ||
-    name.startsWith("nextjshx.")
+    name === "dts" || name.startsWith("genes.") || name.startsWith("nextjshx.")
   );
 }
 
 function isSupportedLegacyCompilerDefine(define: string): boolean {
-  return (
-    [
-      "dts",
-      "genes.no_extension",
-      "genes.react.inline_markup",
-      "genes.react.jsx_runtime_module=react",
-      "genes.ts",
-      "genes.ts.jsx_classic",
-      "genes.ts.jsx_import_source=react",
-      "genes.ts.no_extension",
-    ].includes(define)
-  );
+  return [
+    "dts",
+    "genes.no_extension",
+    "genes.react.inline_markup",
+    "genes.react.jsx_runtime_module=react",
+    "genes.ts",
+    "genes.ts.jsx_classic",
+    "genes.ts.jsx_import_source=react",
+    "genes.ts.no_extension",
+  ].includes(define);
 }
 
 function legacyMigration(defines: readonly string[]): ConfigMigrationReport {
@@ -510,7 +521,9 @@ function extraInputsValue(value: unknown): readonly string[] {
   const inputs = value.map((entry, index) =>
     projectPath(entry, `$.haxe.extraInputs[${index}]`),
   );
-  if (new Set(inputs.map((entry) => entry.toLowerCase())).size !== inputs.length) {
+  if (
+    new Set(inputs.map((entry) => entry.toLowerCase())).size !== inputs.length
+  ) {
     configFailure(
       "NXHX-CONFIG-VALUE-0007",
       "$.haxe.extraInputs contains a filesystem-equivalent duplicate.",
@@ -520,6 +533,33 @@ function extraInputsValue(value: unknown): readonly string[] {
     );
   }
   return Object.freeze(inputs);
+}
+
+function sourceRootsValue(value: unknown): readonly string[] {
+  if (!Array.isArray(value) || value.length === 0) {
+    configFailure(
+      "NXHX-CONFIG-VALUE-0007",
+      "$.haxe.sourceRoots must be a non-empty array.",
+      "$.haxe.sourceRoots",
+      "one or more unique project-relative Haxe source directories",
+      'Use ["haxe"] for the conventional application source root.',
+    );
+  }
+  const roots = value.map((entry, index) =>
+    externalRelativePath(entry, `$.haxe.sourceRoots[${index}]`),
+  );
+  if (
+    new Set(roots.map((entry) => entry.toLowerCase())).size !== roots.length
+  ) {
+    configFailure(
+      "NXHX-CONFIG-VALUE-0007",
+      "$.haxe.sourceRoots contains a filesystem-equivalent duplicate.",
+      "$.haxe.sourceRoots",
+      "unique portable project-relative source roots",
+      "Remove the duplicate root so compiler input ownership is unambiguous.",
+    );
+  }
+  return Object.freeze(roots);
 }
 
 export function parseNextJsHxConfig(decoded: unknown): NextJsHxConfig {
@@ -555,16 +595,29 @@ export function parseNextJsHxConfig(decoded: unknown): NextJsHxConfig {
   }
 
   const haxe = objectValue(root.haxe, "$.haxe");
-  assertClosedKeys(haxe, HAXE_KEYS, "$.haxe");
-  assertRequiredKeys(haxe, ["defines", "generatedRoot", "hxml"], "$.haxe");
-  const hxml = projectPath(haxe.hxml, "$.haxe.hxml");
-  if (!hxml.endsWith(".hxml")) {
+  assertClosedKeys(
+    haxe,
+    schemaVersion === CONFIG_SCHEMA_VERSION ? HAXE_KEYS_V2 : HAXE_KEYS_V1,
+    "$.haxe",
+  );
+  assertRequiredKeys(
+    haxe,
+    schemaVersion === CONFIG_SCHEMA_VERSION
+      ? ["generatedRoot", "sourceRoots"]
+      : ["defines", "generatedRoot", "hxml"],
+    "$.haxe",
+  );
+  const legacyHxml =
+    schemaVersion === LEGACY_CONFIG_SCHEMA_VERSION
+      ? projectPath(haxe.hxml, "$.haxe.hxml")
+      : undefined;
+  if (legacyHxml !== undefined && !legacyHxml.endsWith(".hxml")) {
     configFailure(
       "NXHX-CONFIG-VALUE-0007",
       "$.haxe.hxml must name an .hxml file.",
       "$.haxe.hxml",
       "a project-relative path ending in .hxml",
-      "Point hxml at the Haxe build file used for NextJsHx generation.",
+      "Point hxml at the legacy Haxe build file so setup can prove and migrate its effective plan.",
     );
   }
 
@@ -638,10 +691,10 @@ export function parseNextJsHxConfig(decoded: unknown): NextJsHxConfig {
       "Enable cacheComponents deliberately or remove the experimental cache capabilities.",
     );
   }
-  const parsedDefines = definesValue(
-    haxe.defines,
-    schemaVersion === LEGACY_CONFIG_SCHEMA_VERSION,
-  );
+  const parsedDefines =
+    schemaVersion === LEGACY_CONFIG_SCHEMA_VERSION
+      ? definesValue(haxe.defines, true)
+      : Object.freeze([] as string[]);
   const migration =
     schemaVersion === LEGACY_CONFIG_SCHEMA_VERSION
       ? legacyMigration(parsedDefines)
@@ -674,15 +727,15 @@ export function parseNextJsHxConfig(decoded: unknown): NextJsHxConfig {
         : {}),
     }),
     haxe: Object.freeze({
-      hxml,
+      sourceRoots:
+        schemaVersion === CONFIG_SCHEMA_VERSION
+          ? sourceRootsValue(haxe.sourceRoots)
+          : Object.freeze(["haxe"]),
       generatedRoot: projectPath(haxe.generatedRoot, "$.haxe.generatedRoot"),
-      defines:
-        migration === undefined
-          ? parsedDefines
-          : migration.retainedApplicationDefines,
       extraInputs: Object.hasOwn(haxe, "extraInputs")
         ? extraInputsValue(haxe.extraInputs)
         : Object.freeze([] as string[]),
+      ...(legacyHxml === undefined ? {} : { legacyHxml }),
     }),
     next: Object.freeze({
       package: packageName(next.package, "$.next.package"),
@@ -700,9 +753,7 @@ export function parseNextJsHxConfig(decoded: unknown): NextJsHxConfig {
   });
 }
 
-export function effectiveOutputProfile(
-  config: NextJsHxConfig,
-): OutputProfile {
+export function effectiveOutputProfile(config: NextJsHxConfig): OutputProfile {
   return config.output.profile ?? DEFAULT_OUTPUT_PROFILE;
 }
 
@@ -748,7 +799,7 @@ export function effectiveHaxeDefines(
       ? ["dts"]
       : [];
   return Object.freeze([
-    ...config.haxe.defines,
+    ...(config.migration?.retainedApplicationDefines ?? []),
     ...compilerOwned,
     ...declarationDefines,
   ]);

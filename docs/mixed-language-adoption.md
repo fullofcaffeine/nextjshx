@@ -13,14 +13,14 @@ npm run test:example:mixed-adoption
 
 ## Scenario 1: preserve the existing application
 
-Run `nextjshx init` from the existing package. Init inspects the native
+Run `nextjshx setup` from the existing package. Setup inspects the native
 `app/layout.tsx`, `app/page.tsx`, Client Component, Hook, and module, but never
 claims them. Existing scripts and executable `next.config.mjs` are likewise
 preserved.
 
 The example hashes every reviewed native source, `app/environment.d.ts`,
 `.gitignore`, `next.config.mjs`, NextJsHx/Haxe configuration, `tsconfig.json`,
-and `package.json` before init and requires the same hashes afterward. A
+and `package.json` before setup and requires the same hashes afterward. A
 native `app/haxe-lab/page.tsx` collision separately proves that generation
 fails closed rather than replacing the file.
 

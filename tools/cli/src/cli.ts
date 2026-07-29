@@ -47,7 +47,8 @@ import {
 const USAGE = `NextJsHx ${NEXTJSHX_VERSION}
 
 Usage:
-  nextjshx init [--json] [--typed-routes]
+  nextjshx setup [--json] [--typed-routes]
+  nextjshx init [--json] [--typed-routes] # deprecated alias
   nextjshx generate [--json] [--no-check] [--config <path>]
   nextjshx clean [--json] [--config <path>]
   nextjshx adopt <path> [--json] [--config <path>]
@@ -65,7 +66,8 @@ Usage:
   nextjshx --version
 
 Commands:
-  init       Safely initialize absent Haxe files, config, ignores, and scripts.
+  setup      Configure application intent and synthesize the owned Haxe toolchain.
+  init       Deprecated alias for setup.
   generate   Compile Haxe and transactionally publish owned adapters.
   clean      Transactionally remove only the complete verified ownership set.
   adopt      Claim one byte-identical native adapter requested by the Haxe plan.
@@ -81,6 +83,7 @@ Commands:
 `;
 
 type CommandName =
+  | "setup"
   | "init"
   | "generate"
   | "clean"
@@ -156,6 +159,7 @@ function parseArguments(
   }
   const command = args[0];
   if (
+    command !== "setup" &&
     command !== "init" &&
     command !== "generate" &&
     command !== "clean" &&
@@ -228,18 +232,18 @@ function parseArguments(
         check = true;
         break;
       case "--typed-routes":
-        if (command !== "init" || typedRoutes) {
+        if ((command !== "setup" && command !== "init") || typedRoutes) {
           usageFailure(
-            "--typed-routes is accepted once and only by init.",
+            "--typed-routes is accepted once and only by setup.",
             argument,
           );
         }
         typedRoutes = true;
         break;
       case "--config": {
-        if (command === "init") {
+        if (command === "setup" || command === "init") {
           usageFailure(
-            "init discovers the target package and does not accept --config.",
+            "setup discovers the target package and does not accept --config.",
             argument,
           );
         }
@@ -383,7 +387,7 @@ function humanGenerate(result: GenerateCommandResult): string {
 
 function humanInit(result: InitCommandResult): string {
   const lines = [
-    `init: ${result.action}`,
+    `${result.command}: ${result.action}`,
     `project: ${result.projectRoot}`,
     `package manager: ${result.packageManager}`,
     `app root: ${result.appRoot}`,
@@ -713,9 +717,11 @@ export async function runCli(
       | DoctorCommandResult
       | DevCommandResult;
     switch (parsed.command) {
+      case "setup":
       case "init":
         result = runInitCommand({
           start: base.start,
+          command: parsed.command,
           typedRoutes: parsed.typedRoutes,
           ...(runtime === undefined ? {} : { runtime }),
         });
@@ -781,7 +787,7 @@ export async function runCli(
       parsed.json
         ? `${JSON.stringify({ ok: true, result: machineResult(result) }, null, 2)}\n`
         : `${
-            result.command === "init"
+            result.command === "setup" || result.command === "init"
               ? humanInit(result)
               : result.command === "generate"
                 ? humanGenerate(result)

@@ -11,7 +11,8 @@ export type CliDiagnosticCode =
   | "NXHX-CLI-DEV-0010"
   | "NXHX-CLI-CLEAN-0011"
   | "NXHX-CLI-BOUNDARY-0013"
-  | "NXHX-CLI-INIT-0015";
+  | "NXHX-CLI-INIT-0015"
+  | "NXHX-CLI-SETUP-0016";
 
 export interface CliDiagnostic {
   readonly code: CliDiagnosticCode;

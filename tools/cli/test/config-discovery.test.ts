@@ -57,9 +57,8 @@ function configValue(overrides: ConfigOverrides = {}): Record<string, unknown> {
     ...(overrides.appRoot === null ? {} : { appRoot: overrides.appRoot ?? "src/app" }),
     ...(overrides.boundaries === undefined ? {} : { boundaries: overrides.boundaries }),
     haxe: {
-      hxml: "build.hxml",
+      sourceRoots: ["haxe", "shared/haxe"],
       generatedRoot: "src-gen",
-      defines: ["application.feature"],
       extraInputs: ["schema/domain.json"],
     },
     next: {
@@ -98,13 +97,14 @@ function legacyConfigValue(): Record<string, unknown> {
   value.$schema = LEGACY_CONFIG_SCHEMA_ID;
   value.schemaVersion = 1;
   value.haxe = {
-    ...(value.haxe as Record<string, unknown>),
+    hxml: "build.hxml",
+    generatedRoot: "src-gen",
     defines: [
       "genes.ts",
       "genes.ts.no_extension",
       "genes.ts.jsx_import_source=react",
-      "application.feature",
     ],
+    extraInputs: ["schema/domain.json"],
   };
   value.output = {
     manifest: ".nextjshx/manifest.json",
@@ -178,7 +178,7 @@ test("parses and freezes the closed schema-v2 config", () => {
   assert.equal(config.next.cacheComponents, false);
   assert.deepEqual(config.next.experimentalCacheDirectives, []);
   assert.deepEqual(config.boundaries, {});
-  assert.deepEqual(config.haxe.defines, ["application.feature"]);
+  assert.deepEqual(config.haxe.sourceRoots, ["haxe", "shared/haxe"]);
   assert.deepEqual(effectiveOutputProfile(config), {
     language: "typescript",
     intent: "reviewable",
@@ -189,7 +189,6 @@ test("parses and freezes the closed schema-v2 config", () => {
     jsxRuntime: "automatic",
   });
   assert.deepEqual(effectiveHaxeDefines(config), [
-    "application.feature",
     "genes.ts",
     "genes.ts.no_extension",
     "genes.ts.jsx_import_source=react",
@@ -198,7 +197,7 @@ test("parses and freezes the closed schema-v2 config", () => {
   assert.deepEqual(config.haxe.extraInputs, ["schema/domain.json"]);
   assert(Object.isFrozen(config));
   assert(Object.isFrozen(config.haxe));
-  assert(Object.isFrozen(config.haxe.defines));
+  assert(Object.isFrozen(config.haxe.sourceRoots));
   assert(Object.isFrozen(config.haxe.extraInputs));
   assert(Object.isFrozen(config.output.profile));
   assert(Object.isFrozen(config.next.experimentalCacheDirectives));
@@ -209,7 +208,7 @@ test("reads schema v1 through a deterministic no-write migration report", () => 
   const config = parseNextJsHxConfig(legacyConfigValue());
   const current = parseNextJsHxConfig(configValue());
   assert.equal(config.schemaVersion, 1);
-  assert.deepEqual(config.haxe.defines, ["application.feature"]);
+  assert.deepEqual(config.haxe.sourceRoots, ["haxe"]);
   assert.deepEqual(config.migration, {
     fromSchemaVersion: 1,
     toSchemaVersion: 2,
@@ -227,10 +226,9 @@ test("reads schema v1 through a deterministic no-write migration report", () => 
       "genes.ts.no_extension",
       "genes.ts.jsx_import_source=react",
     ],
-    retainedApplicationDefines: ["application.feature"],
+    retainedApplicationDefines: [],
   });
   assert.deepEqual(effectiveHaxeDefines(config), [
-    "application.feature",
     "genes.ts",
     "genes.ts.no_extension",
     "genes.ts.jsx_import_source=react",
@@ -403,7 +401,7 @@ test("rejects unknown root and nested keys deterministically", () => {
 });
 
 test(
-  "rejects unknown versions, unsafe paths, package paths, and duplicate defines",
+  "rejects unknown versions, unsafe paths, package paths, and compiler-owned inputs",
   () => {
     const version = { ...configValue(), schemaVersion: 3 };
     expectDiagnostic(
@@ -430,44 +428,22 @@ test(
     const duplicate = configValue();
     duplicate.haxe = {
       ...(duplicate.haxe as Record<string, unknown>),
-      defines: ["application.feature", "application.feature"],
+      sourceRoots: ["haxe", "haxe"],
     };
     expectDiagnostic(
       () => parseNextJsHxConfig(duplicate),
       "NXHX-CONFIG-VALUE-0007",
     );
 
-    for (const reservedDefine of [
-      "nextjshx.adapter-plan-output",
-      "nextjshx.adapter-plan-output=.nextjshx/plans/attacker.json",
-      "nextjshx.boundary-plan-output",
-      "nextjshx.boundary-plan-output=.nextjshx/plans/attacker.json",
-      "nextjshx.app-root=attacker/app",
-      "nextjshx.cache-components",
-      "nextjshx.experimental.cache-private",
-      "nextjshx.experimental.cache-remote",
-      "nextjshx.generated-root=attacker-output",
-      "nextjshx.future-mechanism=unsafe",
-      "genes.ts",
-      "genes.ts.no_extension",
-      "genes.ts.jsx_import_source=react",
-      "genes.no_extension",
-      "genes.react.inline_markup",
-      "genes.react.jsx_runtime_module=react",
-      "genes.future_mechanism=unsafe",
-      "dts",
-      "contains whitespace",
-    ]) {
-      const reserved = configValue();
-      reserved.haxe = {
-        ...(reserved.haxe as Record<string, unknown>),
-        defines: [reservedDefine],
-      };
-      expectDiagnostic(
-        () => parseNextJsHxConfig(reserved),
-        "NXHX-CONFIG-VALUE-0007",
-      );
-    }
+    const compilerOwned = configValue();
+    compilerOwned.haxe = {
+      ...(compilerOwned.haxe as Record<string, unknown>),
+      defines: ["genes.ts"],
+    };
+    expectDiagnostic(
+      () => parseNextJsHxConfig(compilerOwned),
+      "NXHX-CONFIG-UNKNOWN-0004",
+    );
 
     const externalManifest = configValue();
     externalManifest.output = {
@@ -525,7 +501,10 @@ test("discovers a single npm package, src/app, versions, and configured paths", 
       path.join(root, "package-lock.json"),
     );
     assert.equal(result.nextPackage.requestedVersion, "16.2.12");
-    assert.equal(result.configuredPaths?.hxml, path.join(root, "build.hxml"));
+    assert.equal(
+      result.configuredPaths?.hxml,
+      path.join(root, ".nextjshx/toolchain/nextjshx.hxml"),
+    );
     assert.equal(
       result.configuredPaths?.manifest,
       path.join(root, ".nextjshx/manifest.json"),

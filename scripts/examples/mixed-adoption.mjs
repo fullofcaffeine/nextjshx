@@ -36,7 +36,6 @@ const PRESERVED_INPUTS = Object.freeze([
   "native/use-signal.ts",
   "next.config.mjs",
   "nextjshx.config.json",
-  "nextjshx.hxml",
   "package.json",
   "tsconfig.json",
 ]);
@@ -191,13 +190,25 @@ async function verifyInitPreservesNative() {
     "utf8",
   );
   try {
-    const output = JSON.parse(runCli(["init", "--json"]));
+    const output = JSON.parse(runCli(["setup", "--json"]));
     assert.equal(output.ok, true);
+    assert.equal(output.result.command, "setup");
     assert.equal(
       output.result.scripts.find((script) => script.name === "dev").action,
       "preserved",
     );
     assert.deepEqual(await preservedDigests(), before);
+    for (const relative of [
+      "nextjshx.hxml",
+      "haxe/MixedAdoptionMain.hx",
+      "haxe/mixed_adoption/AdapterPlan.hx",
+    ]) {
+      assert.equal(
+        await exists(path.join(APP, relative)),
+        false,
+        `mixed-adoption retains compiler plumbing: ${relative}`,
+      );
+    }
   } finally {
     await fs.rm(libraries, { recursive: true, force: true });
     await fs.rm(haxerc, { force: true });

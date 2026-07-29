@@ -147,7 +147,7 @@ function configuredProject(options: ProfileCommandOptions): {
       discovery.packageRoot,
       "a discovered schema-v2 config or supported schema-v1 migration input",
       "configuration missing after required discovery",
-      "Run nextjshx init or add the documented declarative config.",
+      "Run nextjshx setup or add the documented declarative config.",
     );
   }
   return Object.freeze({

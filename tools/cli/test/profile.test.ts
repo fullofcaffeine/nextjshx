@@ -24,6 +24,12 @@ function writeJson(file: string, value: unknown): void {
 function fixtureRoot(): string {
   const root = mkdtempSync(path.join(os.tmpdir(), "nextjshx-profile-"));
   mkdirSync(path.join(root, "src/app"), { recursive: true });
+  mkdirSync(path.join(root, "haxe/profile_fixture"), { recursive: true });
+  writeFileSync(
+    path.join(root, "haxe/profile_fixture/App.hx"),
+    "package profile_fixture;\nclass App {}\n",
+    "utf8",
+  );
   writeJson(path.join(root, "package.json"), {
     name: "nextjshx-profile-fixture",
     private: true,
@@ -39,9 +45,8 @@ function fixtureRoot(): string {
     schemaVersion: 2,
     appRoot: "src/app",
     haxe: {
-      hxml: "build.hxml",
+      sourceRoots: ["haxe"],
       generatedRoot: "src-gen",
-      defines: [],
     },
     next: {
       package: "next",
@@ -59,7 +64,6 @@ function fixtureRoot(): string {
       jsxRuntime: "automatic",
     },
   });
-  writeFileSync(path.join(root, "build.hxml"), "-main Main\n-js src-gen/index.tsx\n");
   return root;
 }
 

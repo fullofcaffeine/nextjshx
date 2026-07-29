@@ -178,12 +178,20 @@ export {
   verifyLastGoodGeneratedTree,
 } from "./commands.js";
 export {
+  type InitRuntime,
   type InitCommandOptions,
   type InitCommandResult,
   type InitFileReport,
   type InitScriptReport,
+  type SetupFaultPoint,
   runInitCommand,
 } from "./init.js";
+export {
+  type ToolchainFaultPoint,
+  type ToolchainOptions,
+  type ToolchainPublication,
+  ensureCompilerToolchain,
+} from "./toolchain.js";
 export {
   type ProcessRequest,
   type ProcessResult,
