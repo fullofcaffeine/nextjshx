@@ -10,7 +10,7 @@ import nextjshx.client.ClientComponentMacro;
 class Fixture {
 	public static macro function install():Expr {
 		AdapterPlanRegistry.install("tests/client-components/.tmp/rejected-plan.json", "0.0.0-development", "4.3.7",
-			"1.41.0+1ead794285d4f43cbbc96078d4eac4a4d8bf6cce", "16.2.12");
+			"1.41.0+8a7f7aaf3227fdee79a3cbd25d90ef2c99975f78", "16.2.12");
 		PageLayoutMacro.install();
 		ClientComponentMacro.install();
 		return macro null;

@@ -12,10 +12,103 @@ or write `app/**`. The later renderer emits a short typed reference to the
 genes-ts implementation, and Next's own route-literal helper remains the
 second oracle.
 
-## Page contract
+## Preferred module-shaped page contract
 
-A page has one `@:next.page(path)` annotation and one public static, non-generic
-`render` function:
+When a route owner needs no construction, inheritance, interface, or runtime
+class identity, put the annotation on a module-level `render` function:
+
+```haxe
+package app.routes;
+
+import genes.react.Element;
+import js.lib.Promise;
+import nextjs.app.PageProps;
+import nextjs.route.SearchParams;
+
+typedef TodoParams = {
+  final id:String;
+}
+
+/**
+ * The annotation gives this ordinary module function one App Router owner.
+ * NextJsHx checks the route/props contract and derives Genes' framework-neutral
+ * direct ESM lowering; it does not introduce a route runtime.
+ */
+@:next.page("todos/[id]")
+function render(
+  props:PageProps<TodoParams, SearchParams>
+):Promise<Element> {
+  return props.params.then(params ->
+    <main>Todo {params.id}</main>
+  );
+}
+
+/** Next consumes this as a direct named export from the same module. */
+function generateStaticParams():Array<TodoParams> {
+  return [{id: "first"}];
+}
+```
+
+The generated implementation is an ordinary module rather than a redundant
+all-static class:
+
+```ts
+export function render(
+  props: PageProps<TodoParams, SearchParams>
+): Promise<JSX.Element> {
+  return props.params.then(params => <main>Todo {params.id}</main>);
+}
+
+export function generateStaticParams(): Array<TodoParams> {
+  return [{id: "first"}];
+}
+```
+
+NextJsHx then emits the same narrow convention surface a careful vanilla
+Next.js page would expose:
+
+```tsx
+import {
+  generateStaticParams as generateStaticParamsImplementation,
+  render
+} from "../../../src-gen/app/routes/TodoPage";
+
+const NextJsHxDefault:
+  (props: PageProps<"/todos/[id]">) => Promise<JSX.Element> = render;
+export default NextJsHxDefault;
+
+export async function generateStaticParams() {
+  return generateStaticParamsImplementation();
+}
+```
+
+The Haxe advantage is earlier route-cardinality, Promise-shaped props, HXX,
+and href checking while the runtime, exports, and App Router behavior remain
+ordinary Next.js. In vanilla TypeScript, the equivalent `page.tsx` functions
+are already module functions; NextJsHx deliberately preserves that familiar
+shape instead of asking Haxe authors to create a static namespace class.
+
+The macro also generates a module-level `href`. Import it by field when another
+Haxe module needs the link:
+
+```haxe
+import app.routes.TodoPage.href as todoHref;
+
+final destination = todoHref({id: todo.id});
+```
+
+Static `metadata` values temporarily remain available on the compatibility
+class form. A module-shaped owner should use `generateMetadata` until Genes
+provides the framework-neutral direct module-value lowering needed to emit
+that `const` without retaining Haxe's synthetic module-fields class. Attempting
+the unsupported form fails before output with
+`NXHX-PAGE-LAYOUT-MODULE-0011`.
+
+## Compatibility class page contract
+
+A class form remains supported when class identity is meaningful or while a
+static named value requires it. It has one `@:next.page(path)` annotation and
+one public static, non-generic `render` function:
 
 ```haxe
 package app.routes;

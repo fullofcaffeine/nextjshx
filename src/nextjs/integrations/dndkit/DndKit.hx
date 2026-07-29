@@ -1,5 +1,6 @@
 package nextjs.integrations.dndkit;
 
+import genes.js.ArrayCallbacks;
 import nextjs.integrations.dndkit.ReorderResult;
 import nextjs.raw.integrations.dndkit.ArrayMove;
 import nextjs.raw.integrations.dndkit.DndIdentifier;
@@ -71,12 +72,10 @@ class DndKit {
 	}
 
 	static function findIndex<Item>(items:Array<Item>, id:String, idOf:Item->String):Int {
-		for (index in 0...items.length) {
-			if (idOf(items[index]) == id) {
-				return index;
-			}
-		}
-		return -1;
+		// Genes exposes Haxe 4.3's missing findIndex as a typed, zero-wrapper
+		// native Array operation. The generated semantic module therefore stays
+		// close to idiomatic TypeScript without an indexed generic assertion.
+		return ArrayCallbacks.findIndex(items, item -> idOf(item) == id);
 	}
 
 	static function stringId(id:DndIdentifier):Null<String> {

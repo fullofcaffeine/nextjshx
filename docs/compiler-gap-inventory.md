@@ -5,7 +5,7 @@ to ordinary Haxe-to-TypeScript/JavaScript contracts. The repro source contains
 no Next.js, React, route, adapter, or project-specific names.
 
 The evidence is pinned to genes-ts `1.41.0` at commit
-`1ead794285d4f43cbbc96078d4eac4a4d8bf6cce`, Haxe `4.3.7`, and both supported
+`8a7f7aaf3227fdee79a3cbd25d90ef2c99975f78`, Haxe `4.3.7`, and both supported
 genes output profiles. Run it with:
 
 ```sh

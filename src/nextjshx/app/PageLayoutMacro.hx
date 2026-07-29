@@ -36,6 +36,7 @@ private enum PageLayoutKind {
 private typedef PageLayoutDeclaration = {
 	final kind:PageLayoutKind;
 	final metadata:MetadataEntry;
+	final ownerField:Null<Field>;
 }
 
 private typedef PageQueryDeclaration = {
@@ -79,6 +80,7 @@ class PageLayoutMacro {
 	public static inline final APP_ROOT_DEFINE:String = "nextjshx.app-root";
 	public static inline final GENERATED_ROOT_DEFINE:String = "nextjshx.generated-root";
 	static inline final LAYOUT_SLOTS_METADATA:String = ":next.layoutSlots";
+	static inline final MODULE_FUNCTION_METADATA:String = ":genes.moduleFunction";
 
 	static final BOUNDARY_METADATA = [
 		":next.page",
@@ -103,6 +105,23 @@ class PageLayoutMacro {
 		return type.pack.concat([type.name]).join(".");
 	}
 
+	static function isModuleOwner(type:ClassType):Bool {
+		return switch type.kind {
+			#if (haxe_ver >= 4.2)
+			case KModuleFields(_): true;
+			#end
+			case _: false;
+		};
+	}
+
+	static function ownerName(type:ClassType):String {
+		return isModuleOwner(type) ? type.module : fullTypeName(type);
+	}
+
+	static function fieldMetadata(field:Field, name:String):Array<MetadataEntry> {
+		return field.meta == null ? [] : field.meta.filter(entry -> entry.name == name);
+	}
+
 	static function kindName(kind:PageLayoutKind):String {
 		return switch kind {
 			case Page: "Page";
@@ -117,7 +136,54 @@ class PageLayoutMacro {
 		};
 	}
 
-	static function declaration(type:ClassType):Null<PageLayoutDeclaration> {
+	static function declaration(type:ClassType, fields:Array<Field>):Null<PageLayoutDeclaration> {
+		if (isModuleOwner(type)) {
+			final pages = [];
+			final layouts = [];
+			final queries = [];
+			final boundaries = [];
+			for (field in fields) {
+				for (entry in fieldMetadata(field, ":next.page")) {
+					pages.push({field: field, metadata: entry});
+					boundaries.push({field: field, metadata: entry});
+				}
+				for (entry in fieldMetadata(field, ":next.layout")) {
+					layouts.push({field: field, metadata: entry});
+					boundaries.push({field: field, metadata: entry});
+				}
+				for (entry in fieldMetadata(field, ":next.query")) {
+					queries.push({field: field, metadata: entry});
+				}
+				for (name in BOUNDARY_METADATA) {
+					if (name == ":next.page" || name == ":next.layout") {
+						continue;
+					}
+					for (entry in fieldMetadata(field, name)) {
+						boundaries.push({field: field, metadata: entry});
+					}
+				}
+			}
+			if (pages.length == 0 && layouts.length == 0) {
+				if (queries.length > 0) {
+					fail("NXHX-ROUTE-QUERY-SCHEMA-0001",
+						'@:next.query on ${ownerName(type)}.${queries[0].field.name} requires the same module-level function to declare @:next.page.',
+						queries[0].metadata.pos);
+				}
+				return null;
+			}
+			if (boundaries.length != 1 || pages.length + layouts.length != 1) {
+				final position = boundaries.length > 1 ? boundaries[1].metadata.pos : (pages.length > 1 ? pages[1].metadata.pos : layouts[1].metadata.pos);
+				fail("NXHX-PAGE-LAYOUT-BOUNDARY-0001",
+					'Module ${ownerName(type)} must declare exactly one App Router boundary annotation on one module-level function; found ${boundaries.length}.',
+					position);
+			}
+			final selected = pages.length == 1 ? pages[0] : layouts[0];
+			return {
+				kind: pages.length == 1 ? Page : Layout,
+				metadata: selected.metadata,
+				ownerField: selected.field
+			};
+		}
 		final pages = type.meta.get().filter(entry -> entry.name == ":next.page");
 		final layouts = type.meta.get().filter(entry -> entry.name == ":next.layout");
 		final queries = type.meta.get().filter(entry -> entry.name == ":next.query");
@@ -133,19 +199,20 @@ class PageLayoutMacro {
 			fail("NXHX-PAGE-LAYOUT-BOUNDARY-0001",
 				'${fullTypeName(type)} must declare exactly one App Router boundary annotation; found ${boundaries.length}.', position);
 		}
-		return pages.length == 1 ? {kind: Page, metadata: pages[0]} : {kind: Layout, metadata: layouts[0]};
+		return pages.length == 1 ? {kind: Page, metadata: pages[0], ownerField: null} : {kind: Layout, metadata: layouts[0], ownerField: null};
 	}
 
-	static function queryDeclaration(type:ClassType, kind:PageLayoutKind):Null<PageQueryDeclaration> {
-		final queries = type.meta.get().filter(entry -> entry.name == ":next.query");
+	static function queryDeclaration(type:ClassType, declaration:PageLayoutDeclaration):Null<PageQueryDeclaration> {
+		final queries = declaration.ownerField == null ? type.meta.get()
+			.filter(entry -> entry.name == ":next.query") : fieldMetadata(declaration.ownerField, ":next.query");
 		if (queries.length == 0) {
 			return null;
 		}
-		if (kind != Page) {
+		if (declaration.kind != Page) {
 			return fail("NXHX-ROUTE-QUERY-SCHEMA-0001", '@:next.query is page-only because layouts do not receive searchParams.', queries[0].pos);
 		}
 		if (queries.length != 1) {
-			return fail("NXHX-ROUTE-QUERY-SCHEMA-0001", '@:next.query may appear at most once on ${fullTypeName(type)}.', queries[1].pos);
+			return fail("NXHX-ROUTE-QUERY-SCHEMA-0001", '@:next.query may appear at most once on ${ownerName(type)}.', queries[1].pos);
 		}
 		return {metadata: queries[0], schema: QuerySchemaValidator.fromMetadata(type, queries[0])};
 	}
@@ -167,6 +234,35 @@ class PageLayoutMacro {
 
 	static function hasAccess(field:Field, access:Access):Bool {
 		return field.access != null && field.access.contains(access);
+	}
+
+	static function isPublicField(type:ClassType, field:Field):Bool {
+		return isModuleOwner(type) ? !hasAccess(field, APrivate) : hasAccess(field, APublic);
+	}
+
+	static function isStaticField(type:ClassType, field:Field):Bool {
+		return isModuleOwner(type) || hasAccess(field, AStatic);
+	}
+
+	/**
+	 * Requests Genes' framework-neutral module-function lowering for one native
+	 * Next export body. Application code owns only the Next annotation; the
+	 * compiler marker is derived plumbing and therefore cannot conflict with a
+	 * user-selected binding name.
+	 */
+	static function markModuleFunction(field:Field):Void {
+		final metadata = field.meta == null ? [] : field.meta;
+		if (metadata.exists(entry -> entry.name == MODULE_FUNCTION_METADATA)) {
+			fail("NXHX-PAGE-LAYOUT-MODULE-0011",
+				'${field.name} must not declare @:genes.moduleFunction directly; NextJsHx derives the exact native binding from the reviewed App Router export.',
+				field.pos);
+		}
+		metadata.push({
+			name: MODULE_FUNCTION_METADATA,
+			params: [{expr: EConst(CString(field.name, DoubleQuotes)), pos: field.pos}],
+			pos: field.pos
+		});
+		field.meta = metadata;
 	}
 
 	static function resolveAliases(type:Type):Type {
@@ -370,16 +466,23 @@ class PageLayoutMacro {
 		return Context.resolveType(type, position);
 	}
 
-	static function renderField(type:ClassType, kind:PageLayoutKind, pattern:RoutePattern, fields:Array<Field>):RenderMethod {
+	static function renderField(type:ClassType, declaration:PageLayoutDeclaration, pattern:RoutePattern, fields:Array<Field>):RenderMethod {
+		final kind = declaration.kind;
 		final label = kindName(kind);
-		final renders = fields.filter(field -> field.name == "render");
+		final renders = declaration.ownerField == null ? fields.filter(field -> field.name == "render") : [declaration.ownerField];
 		if (renders.length != 1) {
 			return fail("NXHX-PAGE-LAYOUT-RENDER-0004",
-				'$label declaration ${fullTypeName(type)} must expose exactly one public static render function; found ${renders.length}.', type.pos);
+				'$label declaration ${ownerName(type)} must expose exactly one public static render function; found ${renders.length}.', type.pos);
 		}
 		final field = renders[0];
-		if (!hasAccess(field, APublic) || !hasAccess(field, AStatic)) {
-			return fail("NXHX-PAGE-LAYOUT-RENDER-0004", '$label render ${fullTypeName(type)}.render must be public static.', field.pos);
+		if (declaration.ownerField != null && field.name != "render") {
+			return fail("NXHX-PAGE-LAYOUT-RENDER-0004",
+				'Module-level @:next.${annotationName(kind)} must annotate the function named render so ${type.module}.render maps directly to Next\'s default export; found ${field.name}.',
+				field.pos);
+		}
+		if (!isPublicField(type, field) || !isStaticField(type, field)) {
+			return fail("NXHX-PAGE-LAYOUT-RENDER-0004", '$label render ${ownerName(type)}.render must be public static or a public module-level function.',
+				field.pos);
 		}
 		final method = switch field.kind {
 			case FFun(value): value;
@@ -451,20 +554,25 @@ class PageLayoutMacro {
 	}
 
 	static function validateStaticMetadata(type:ClassType, field:Field):Field {
-		if (!hasAccess(field, AStatic) || !hasAccess(field, AFinal)) {
-			return fail("NXHX-PAGE-LAYOUT-METADATA-0008", '${fullTypeName(type)}.metadata must be public static final.', field.pos);
+		if (isModuleOwner(type)) {
+			return fail("NXHX-PAGE-LAYOUT-MODULE-0011",
+				'${ownerName(type)}.metadata cannot yet be emitted as a direct module value. Use a module-level generateMetadata function, or keep this page/layout in the compatibility class form until Genes provides framework-neutral direct module-value lowering.',
+				field.pos);
+		}
+		if (!isStaticField(type, field) || !hasAccess(field, AFinal)) {
+			return fail("NXHX-PAGE-LAYOUT-METADATA-0008", '${ownerName(type)}.metadata must be public static final.', field.pos);
 		}
 		final fieldType = switch field.kind {
 			case FVar(complexType, value) if (value != null):
-				requireNamedType(complexType, "NXHX-PAGE-LAYOUT-METADATA-0008", '${fullTypeName(type)}.metadata', field.pos);
+				requireNamedType(complexType, "NXHX-PAGE-LAYOUT-METADATA-0008", '${ownerName(type)}.metadata', field.pos);
 			case FVar(_, _):
-				return fail("NXHX-PAGE-LAYOUT-METADATA-0008", '${fullTypeName(type)}.metadata requires an inline initialized value.', field.pos);
+				return fail("NXHX-PAGE-LAYOUT-METADATA-0008", '${ownerName(type)}.metadata requires an inline initialized value.', field.pos);
 			case _:
-				return fail("NXHX-PAGE-LAYOUT-METADATA-0008", '${fullTypeName(type)}.metadata must be a typed field, not a function or property.', field.pos);
+				return fail("NXHX-PAGE-LAYOUT-METADATA-0008", '${ownerName(type)}.metadata must be a typed field, not a function or property.', field.pos);
 		};
 		if (!isSemanticType(fieldType, "nextjs.raw.metadata.Metadata", "Metadata")) {
 			return fail("NXHX-PAGE-LAYOUT-METADATA-0008",
-				'${fullTypeName(type)}.metadata must use nextjs.raw.metadata.Metadata so Next remains the metadata type oracle; found ${fieldType.toString()}.',
+				'${ownerName(type)}.metadata must use nextjs.raw.metadata.Metadata so Next remains the metadata type oracle; found ${fieldType.toString()}.',
 				field.pos);
 		}
 		return field;
@@ -495,15 +603,15 @@ class PageLayoutMacro {
 	}
 
 	static function validateGeneratedMetadata(type:ClassType, kind:PageLayoutKind, pattern:RoutePattern, field:Field):GeneratedMetadataMethod {
-		if (!hasAccess(field, AStatic)) {
-			return fail("NXHX-PAGE-LAYOUT-METADATA-0008", '${fullTypeName(type)}.generateMetadata must be public static.', field.pos);
+		if (!isStaticField(type, field)) {
+			return fail("NXHX-PAGE-LAYOUT-METADATA-0008", '${ownerName(type)}.generateMetadata must be public static or module-level.', field.pos);
 		}
 		final method = switch field.kind {
 			case FFun(value): value;
-			case _: return fail("NXHX-PAGE-LAYOUT-METADATA-0008", '${fullTypeName(type)}.generateMetadata must be a function.', field.pos);
+			case _: return fail("NXHX-PAGE-LAYOUT-METADATA-0008", '${ownerName(type)}.generateMetadata must be a function.', field.pos);
 		};
 		if (method.params.length != 0) {
-			fail("NXHX-PAGE-LAYOUT-METADATA-0008", '${fullTypeName(type)}.generateMetadata must be non-generic.', field.pos);
+			fail("NXHX-PAGE-LAYOUT-METADATA-0008", '${ownerName(type)}.generateMetadata must be non-generic.', field.pos);
 		}
 		if (method.args.length < 1 || method.args.length > 2) {
 			fail("NXHX-PAGE-LAYOUT-METADATA-0008",
@@ -537,16 +645,16 @@ class PageLayoutMacro {
 	}
 
 	static function validateStaticParams(type:ClassType, pattern:RoutePattern, field:Field):StaticParamsMethod {
-		if (!hasAccess(field, AStatic)) {
-			return fail("NXHX-PAGE-LAYOUT-STATIC-PARAMS-0009", '${fullTypeName(type)}.generateStaticParams must be public static.', field.pos);
+		if (!isStaticField(type, field)) {
+			return fail("NXHX-PAGE-LAYOUT-STATIC-PARAMS-0009", '${ownerName(type)}.generateStaticParams must be public static or module-level.', field.pos);
 		}
 		if (pattern.parameters.length == 0) {
 			return fail("NXHX-PAGE-LAYOUT-STATIC-PARAMS-0009",
-				'${fullTypeName(type)}.generateStaticParams requires at least one dynamic route segment; route "${pattern.publicPath}" has none.', field.pos);
+				'${ownerName(type)}.generateStaticParams requires at least one dynamic route segment; route "${pattern.publicPath}" has none.', field.pos);
 		}
 		final method = switch field.kind {
 			case FFun(value): value;
-			case _: return fail("NXHX-PAGE-LAYOUT-STATIC-PARAMS-0009", '${fullTypeName(type)}.generateStaticParams must be a function.', field.pos);
+			case _: return fail("NXHX-PAGE-LAYOUT-STATIC-PARAMS-0009", '${ownerName(type)}.generateStaticParams must be a function.', field.pos);
 		};
 		if (method.params.length != 0 || method.args.length != 0) {
 			fail("NXHX-PAGE-LAYOUT-STATIC-PARAMS-0009",
@@ -569,7 +677,7 @@ class PageLayoutMacro {
 		var staticParamsField:Null<Field> = null;
 		var segmentField:Null<Field> = null;
 		for (field in fields) {
-			if (field.name == "render" || !hasAccess(field, APublic)) {
+			if (field.name == "render" || !isPublicField(type, field)) {
 				continue;
 			}
 			switch field.name {
@@ -583,19 +691,19 @@ class PageLayoutMacro {
 					segmentField = field;
 				case _:
 					fail("NXHX-PAGE-LAYOUT-FIELD-0003",
-						'Public $label field ${fullTypeName(type)}.${field.name} has no reviewed App Router export mapping; supported named fields are ${REVIEWED_NAMED_FIELDS.join(", ")}; make helpers private.',
+						'Public $label field ${ownerName(type)}.${field.name} has no reviewed App Router export mapping; supported named fields are ${REVIEWED_NAMED_FIELDS.join(", ")}; make helpers private.',
 						field.pos);
 			}
 		}
 		if (metadataField != null && generatedMetadataField != null) {
 			fail("NXHX-PAGE-LAYOUT-METADATA-0008",
-				'${fullTypeName(type)} cannot export both metadata and generateMetadata; Next.js requires exactly one metadata source.',
+				'${ownerName(type)} cannot export both metadata and generateMetadata; Next.js requires exactly one metadata source.',
 				generatedMetadataField.pos);
 		}
 		final metadata = metadataField == null ? null : validateStaticMetadata(type, metadataField);
 		final generateMetadata = generatedMetadataField == null ? null : validateGeneratedMetadata(type, kind, pattern, generatedMetadataField);
 		final generateStaticParams = staticParamsField == null ? null : validateStaticParams(type, pattern, staticParamsField);
-		final config = segmentField == null ? [] : SegmentConfigMacro.parse(segmentField, fullTypeName(type));
+		final config = segmentField == null ? [] : SegmentConfigMacro.parse(segmentField, ownerName(type));
 		return {
 			fields: segmentField == null ? fields : fields.filter(field -> field.name != "segment"),
 			metadata: metadata,
@@ -636,7 +744,7 @@ class PageLayoutMacro {
 		return relative.startsWith(".") ? relative : './$relative';
 	}
 
-	static function implementationAlias(type:ClassType, kind:PageLayoutKind, asynchronous:Bool):Null<String> {
+	static function implementationAlias(symbol:String, kind:PageLayoutKind, asynchronous:Bool):Null<String> {
 		final reserved = switch kind {
 			case Page: ["PageProps", "JSX", "Metadata", "ResolvingMetadata"];
 			case Layout: ["LayoutProps", "JSX", "Metadata", "ResolvingMetadata"];
@@ -644,11 +752,11 @@ class PageLayoutMacro {
 		if (asynchronous) {
 			reserved.push("Promise");
 		}
-		if (!reserved.contains(type.name)) {
+		if (!reserved.contains(symbol)) {
 			return null;
 		}
 		var alias = 'NextJsHx${kindName(kind)}Implementation';
-		while (reserved.contains(alias) || alias == type.name) {
+		while (reserved.contains(alias) || alias == symbol) {
 			alias += "Type";
 		}
 		return alias;
@@ -771,7 +879,7 @@ class PageLayoutMacro {
 			return fields;
 		}
 		final type = localClass.get();
-		final value = declaration(type);
+		final value = declaration(type, fields);
 		if (value == null) {
 			return fields;
 		}
@@ -780,8 +888,8 @@ class PageLayoutMacro {
 		}
 		final path = declarationPath(type, value);
 		final pattern = RoutePatternMacro.parse(path, value.metadata.pos);
-		final query = queryDeclaration(type, value.kind);
-		final render = renderField(type, value.kind, pattern, fields);
+		final query = queryDeclaration(type, value);
+		final render = renderField(type, value, pattern, fields);
 		final named = validateNamedFields(type, value.kind, pattern, fields);
 		final cache:Null<CacheDirectiveDeclaration> = CacheDirectiveMacro.modifier(type);
 		if (cache != null) {
@@ -801,19 +909,58 @@ class PageLayoutMacro {
 					named.generateStaticParams.field.pos);
 			}
 		}
-		if (!type.meta.has(":keep")) {
-			type.meta.add(":keep", [], value.metadata.pos);
+		if (value.ownerField == null) {
+			if (!type.meta.has(":keep")) {
+				type.meta.add(":keep", [], value.metadata.pos);
+			}
+		} else {
+			for (field in [
+				render.field,
+				named.metadata,
+				named.generateMetadata == null ? null : named.generateMetadata.field,
+				named.generateStaticParams == null ? null : named.generateStaticParams.field
+			]) {
+				if (field != null && (field.meta == null || !field.meta.exists(entry -> entry.name == ":keep"))) {
+					final metadata = field.meta == null ? [] : field.meta;
+					metadata.push({name: ":keep", params: [], pos: value.metadata.pos});
+					field.meta = metadata;
+				}
+			}
+			markModuleFunction(render.field);
+			if (named.generateMetadata != null) {
+				markModuleFunction(named.generateMetadata.field);
+			}
+			if (named.generateStaticParams != null) {
+				markModuleFunction(named.generateStaticParams.field);
+			}
 		}
 		final modulePath = implementationModule(type, pattern, value.metadata.pos);
-		final alias = implementationAlias(type, value.kind, render.asynchronous);
+		final implementationSymbol = value.ownerField == null ? type.name : render.field.name;
+		final alias = implementationAlias(implementationSymbol, value.kind, render.asynchronous);
 		final nextKind = value.kind == Page ? AdapterKind.Page : AdapterKind.Layout;
 		final convention = value.kind == Page ? "page.tsx" : "layout.tsx";
 		final props = value.kind == Page ? "PageProps" : "LayoutProps";
 		final result = '${render.asynchronous ? "Promise<" : ""}JSX.Element${render.asynchronous ? ">" : ""}';
 		final imports = [
-			new AdapterImport(modulePath, type.name, alias),
+			new AdapterImport(modulePath, implementationSymbol, alias),
 			new AdapterImport("react", "JSX", null, true)
 		];
+		if (value.ownerField != null) {
+			for (field in [
+				named.metadata,
+				named.generateMetadata == null ? null : named.generateMetadata.field,
+				named.generateStaticParams == null ? null : named.generateStaticParams.field
+			]) {
+				if (field != null) {
+					final importAlias = switch field.name {
+						case "generateMetadata": "NextJsHxGenerateMetadataImplementation";
+						case "generateStaticParams": "NextJsHxGenerateStaticParamsImplementation";
+						case _: null;
+					};
+					imports.push(new AdapterImport(modulePath, field.name, importAlias));
+				}
+			}
+		}
 		if (named.metadata != null || named.generateMetadata != null) {
 			imports.push(new AdapterImport("next", "Metadata", null, true));
 		}
@@ -838,14 +985,14 @@ class PageLayoutMacro {
 		}
 		AdapterPlanRegistry.register({
 			kind: nextKind,
-			sourceType: fullTypeName(type),
+			sourceType: ownerName(type),
 			sourceField: render.field.name,
-			typePosition: type.pos,
+			typePosition: value.ownerField == null ? type.pos : render.field.pos,
 			fieldPosition: render.field.pos,
 			metadataPosition: value.metadata.pos,
 			segmentPath: pattern.filesystemPath,
 			targetPath: pattern.filesystemPath == "" ? convention : '${pattern.filesystemPath}/$convention',
-			implementation: new AdapterImplementation(modulePath, type.name),
+			implementation: new AdapterImplementation(modulePath, implementationSymbol),
 			imports: imports,
 			directives: cache == null ? [] : [cache.directive],
 			exports: exports,
