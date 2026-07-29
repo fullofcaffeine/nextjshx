@@ -1,6 +1,8 @@
 package client_components.client;
 
-import nextjs.client.React;
+import genes.react.React.useState;
+import genes.react.React.useMemo;
+import genes.react.React.deps;
 
 typedef DependencyProps = {
 	final label:String;
@@ -11,52 +13,52 @@ typedef DependencyProps = {
 class DependencyHooks {
 	@:next.hook
 	public static function useConstant():Int {
-		return React.useMemo(() -> 42, React.deps());
+		return useMemo(() -> 42, deps());
 	}
 
 	@:next.hook
 	public static function useSummary(value:Int, label:String, enabled:Bool):String {
-		return React.useMemo((value, label, enabled) -> enabled ? '$label:$value' : label, React.deps(value, label, enabled));
+		return useMemo((value, label, enabled) -> enabled ? '$label:$value' : label, deps(value, label, enabled));
 	}
 
 	@:next.hook
 	public static function useRange(first:Int, second:Int):Int {
-		return React.useMemo((first, second) -> second - first, React.deps(first, second));
+		return useMemo((first, second) -> second - first, deps(first, second));
 	}
 
 	@:next.hook
 	public static function useProperty(props:DependencyProps):String {
-		return React.useMemo(() -> props.label.toUpperCase(), React.deps(props.label));
+		return useMemo(() -> props.label.toUpperCase(), deps(props.label));
 	}
 
 	@:next.hook
 	public static function useDuplicate(value:Int):Int {
-		return React.useMemo((first, second) -> first + second, React.deps(value, value));
+		return useMemo((first, second) -> first + second, deps(value, value));
 	}
 
 	@:next.hook
 	public static function useNullableSnapshot(initial:Null<String>):Null<String> {
-		final label = React.useState(initial);
-		return React.useMemo((current) -> current, React.deps(label.value));
+		final label = useState(initial);
+		return useMemo((current) -> current, deps(label.value));
 	}
 
 	@:next.hook
 	public static function useObserved(first:Void->Int, second:Void->String):String {
-		return React.useMemo((number, label) -> '$number:$label', React.deps(first(), second()));
+		return useMemo((number, label) -> '$number:$label', deps(first(), second()));
 	}
 
 	@:next.hook
 	public static function useRepeatedSnapshots(first:Int, second:Int):Int {
-		final firstState = React.useState(first);
-		final firstMemo = React.useMemo((current) -> current * 2, React.deps(firstState.value));
-		final secondState = React.useState(second);
-		final secondMemo = React.useMemo((current) -> current * 3, React.deps(secondState.value));
+		final firstState = useState(first);
+		final firstMemo = useMemo((current) -> current * 2, deps(firstState.value));
+		final secondState = useState(second);
+		final secondMemo = useMemo((current) -> current * 3, deps(secondState.value));
 		return firstMemo + secondMemo;
 	}
 
 	@:next.hook
 	public static function useNullableLabel():Null<String> {
-		final label = React.useState((null : Null<String>));
+		final label = useState((null : Null<String>));
 		label.set("ready");
 		return label.value;
 	}

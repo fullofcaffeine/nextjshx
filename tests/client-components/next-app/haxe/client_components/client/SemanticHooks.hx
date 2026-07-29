@@ -1,6 +1,12 @@
 package client_components.client;
 
-import nextjs.client.React;
+import genes.react.React.useStateLazy;
+import genes.react.React.useState;
+import genes.react.React.useMemo;
+import genes.react.React.useCallback;
+import genes.react.React.useOptimistic;
+import genes.react.React.deps;
+import nextjs.client.React.startTransition;
 
 typedef SemanticCounter = {
 	final value:Int;
@@ -34,9 +40,9 @@ class SemanticHooks {
 	@:next.hook
 	@:next.exportHook
 	public static function useSemanticCounter(initial:Int):SemanticCounter {
-		final count = React.useState(initial);
-		final mode = React.useState(CounterMode.Idle);
-		final doubled = React.useMemo((current) -> current * 2, React.deps(count.value));
+		final count = useState(initial);
+		final mode = useState(CounterMode.Idle);
+		final doubled = useMemo((current) -> current * 2, deps(count.value));
 		return {
 			value: count.value,
 			doubled: doubled,
@@ -49,7 +55,7 @@ class SemanticHooks {
 
 	@:next.hook
 	public static function useFormatter(initial:LabelFormatter):SemanticFormatter {
-		final formatter = React.useStateLazy(() -> initial);
+		final formatter = useStateLazy(() -> initial);
 		return {
 			format: formatter.value,
 			replace: next -> formatter.set(next)
@@ -58,15 +64,15 @@ class SemanticHooks {
 
 	@:next.hook
 	public static function useLabeler(suffix:String):String->String {
-		return React.useCallback((label:String) -> label + suffix, React.deps(suffix));
+		return useCallback((label:String) -> label + suffix, deps(suffix));
 	}
 
 	@:next.hook
 	public static function useOptimisticCount(passthrough:Int):OptimisticCount {
-		final count = React.useOptimistic(passthrough, (current:Int, amount:Int) -> current + amount);
+		final count = useOptimistic(passthrough, (current:Int, amount:Int) -> current + amount);
 		return {
 			value: count.value,
-			incrementBy: amount -> React.startTransition(() -> count.apply(amount))
+			incrementBy: amount -> startTransition(() -> count.apply(amount))
 		};
 	}
 }

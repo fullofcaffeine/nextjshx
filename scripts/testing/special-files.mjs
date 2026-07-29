@@ -269,13 +269,13 @@ function validateGeneratedTypescript() {
   assert(errorView.includes("static render(props: ErrorProps): JSX.Element"));
   assert(errorView.includes('onClick={props.reset}'));
   assert(errorView.includes("{props.error.message}"));
-  assert(loadingView.includes("static render(): Promise<JSX.Element>"));
+  assert(loadingView.includes("static render(): globalThis.Promise<JSX.Element>"));
   assert(notFoundView.includes("static render(): JSX.Element"));
-  assert(defaultView.includes("static render(props: DefaultProps<DefaultParams>): Promise<JSX.Element>"));
+  assert(defaultView.includes("static render(props: DefaultProps<DefaultParams>): globalThis.Promise<JSX.Element>"));
   assert(defaultView.includes("props.params.then(function (params: DefaultParams)"));
   assert(defaultView.includes("params.id"));
   assert(emptyDefaultView.includes("static render(): JSX.Element"));
-  assert(defaultProps.includes("params: Promise<Params>"));
+  assert(defaultProps.includes("params: globalThis.Promise<Params>"));
   assert(errorProps.includes("error: Error & { digest?: string }"));
   assert(errorProps.includes("reset: () => void"));
   for (const source of [errorView, loadingView, notFoundView, defaultView, emptyDefaultView, defaultProps, errorProps]) {

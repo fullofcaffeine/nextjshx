@@ -1,6 +1,6 @@
 package mixed_adoption.client;
 
-import nextjs.client.React;
+import genes.react.React.useState;
 
 typedef BridgeChannel<Value> = {
 	final items:Array<Value>;
@@ -27,7 +27,7 @@ class HaxeHooks {
 	@:next.hook
 	@:next.exportHook
 	public static function useBridgeChannel<Value>(items:Array<Value>):BridgeChannel<Value> {
-		final index = React.useState(0);
+		final index = useState(0);
 		return {
 			items: items,
 			index: index.value,

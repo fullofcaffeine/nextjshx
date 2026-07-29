@@ -2,7 +2,7 @@
 
 NextJsHx is a Next.js-first framework for authoring ordinary Next.js
 applications and reusable modules in typed Haxe. Haxe compiles to
-TypeScript/TSX through [genes-ts](https://github.com/fullofcaffeine/genes), and
+TypeScript/TSX through [genes-ts](https://github.com/fullofcaffeine/genes-ts), and
 small generated adapters provide the exact App Router filenames, directives,
 and exports that Next expects.
 
@@ -39,12 +39,7 @@ The Haxe version also uses a module function—there is no static utility class:
 
 ```haxe
 function findPost(slug:PostSlug):Null<Post> {
-	for (post in allPosts()) {
-		if (post.slug == slug) {
-			return post;
-		}
-	}
-	return null;
+	return allPosts().find(post -> post.slug == slug);
 }
 
 <NextLink href={ArticlePage.href({slug: post.slug})}>{post.title}</NextLink>;
@@ -53,7 +48,16 @@ function findPost(slug:PostSlug):Null<Post> {
 Next still owns the link and route. Haxe carries the named `PostSlug`, checks
 route cardinality, and generates the URL encoder from the page contract, so a
 renamed or missing parameter fails at the HXX source instead of drifting into a
-separate template string.
+separate template string. The Haxe source keeps the familiar collection
+operation. Native `Array.find` lowering is a separate framework-neutral
+genes-ts output-quality goal; until that equivalence is implemented and
+verified, generated output may retain Haxe's `Lambda.find` helper.
+
+React Server Components use React Flight to carry rendered server trees and
+supported values into the client runtime. NextJsHx keeps that native protocol
+and checks its value contract in Haxe before generation; see
+[React Flight values](docs/react-flight.md) for the plain-language model,
+supported value families, and the Genes-versus-NextJsHx ownership boundary.
 
 ## Next-native compatibility
 

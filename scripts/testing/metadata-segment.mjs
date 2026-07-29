@@ -294,11 +294,11 @@ async function renderAndValidateTypescript() {
 
   assert(staticPage.includes("declare static metadata: import('next').Metadata"));
   assert(generatedPage.includes("static generateMetadata("));
-  assert(generatedPage.includes("static generateStaticParams(): Promise<ProductParams[]>"));
+  assert(generatedPage.includes("static generateStaticParams(): globalThis.Promise<ProductParams[]>"));
   assert(generatedLayout.includes("static generateStaticParams(): CatalogParams[]"));
-  assert(metadataProps.includes("params: Promise<Params>"));
+  assert(metadataProps.includes("params: globalThis.Promise<Params>"));
   assert(!metadataProps.includes("searchParams"));
-  assert(pageMetadataProps.includes("searchParams: Promise<Query>"));
+  assert(pageMetadataProps.includes("searchParams: globalThis.Promise<Query>"));
   for (const source of [staticPage, generatedPage, generatedLayout]) {
     assert(!source.includes("SegmentConfig"), "SegmentConfig runtime builder leaked into genes-ts output");
     assert(!/static segment\b/.test(source), "compile-time segment field leaked into genes-ts output");

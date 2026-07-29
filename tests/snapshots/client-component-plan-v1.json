@@ -4,7 +4,7 @@
   "toolchain": {
     "nextjshx": "0.0.0-development",
     "haxe": "4.3.7",
-    "genesTs": "1.38.2+f0ffa29e6d49fe81541977c6a3aae6b80000cec6",
+    "genesTs": "1.41.0+1ead794285d4f43cbbc96078d4eac4a4d8bf6cce",
     "next": "16.2.12"
   },
   "intents": [
@@ -67,23 +67,23 @@
         "fieldName": "render",
         "typePosition": {
           "file": "tests/client-components/next-app/haxe/client_components/client/FlightBoundary.hx",
-          "startLine": 44,
+          "startLine": 53,
           "startCharacter": 1,
-          "endLine": 66,
+          "endLine": 75,
           "endCharacter": 2
         },
         "fieldPosition": {
           "file": "tests/client-components/next-app/haxe/client_components/client/FlightBoundary.hx",
-          "startLine": 45,
+          "startLine": 54,
           "startCharacter": 2,
-          "endLine": 65,
+          "endLine": 74,
           "endCharacter": 3
         },
         "metadataPosition": {
           "file": "tests/client-components/next-app/haxe/client_components/client/FlightBoundary.hx",
-          "startLine": 43,
+          "startLine": 52,
           "startCharacter": 1,
-          "endLine": 43,
+          "endLine": 52,
           "endCharacter": 23
         }
       },
@@ -357,23 +357,23 @@
         "fieldName": "useSemanticCounter",
         "typePosition": {
           "file": "tests/client-components/next-app/haxe/client_components/client/SemanticHooks.hx",
-          "startLine": 33,
+          "startLine": 39,
           "startCharacter": 1,
-          "endLine": 72,
+          "endLine": 78,
           "endCharacter": 2
         },
         "fieldPosition": {
           "file": "tests/client-components/next-app/haxe/client_components/client/SemanticHooks.hx",
-          "startLine": 36,
+          "startLine": 42,
           "startCharacter": 2,
-          "endLine": 48,
+          "endLine": 54,
           "endCharacter": 3
         },
         "metadataPosition": {
           "file": "tests/client-components/next-app/haxe/client_components/client/SemanticHooks.hx",
-          "startLine": 35,
+          "startLine": 41,
           "startCharacter": 2,
-          "endLine": 35,
+          "endLine": 41,
           "endCharacter": 19
         }
       },

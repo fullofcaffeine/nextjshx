@@ -1,7 +1,7 @@
 package clientification.client;
 
 import genes.react.Element;
-import nextjs.client.React;
+import genes.react.React.useState;
 
 typedef LeafToggleProps = {
 	final label:String;
@@ -11,7 +11,7 @@ typedef LeafToggleProps = {
 @:next.clientComponent
 class LeafToggle {
 	public static function render(props:LeafToggleProps):Element {
-		final count = React.useState(0);
+		final count = useState(0);
 		return <button type="button" onClick={() -> count.update(value -> value + 1)}>
 			{props.label + ": " + count.value}
 		</button>;

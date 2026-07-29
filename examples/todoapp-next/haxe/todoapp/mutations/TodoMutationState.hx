@@ -41,6 +41,11 @@ typedef TodoMutationState = {
  * `@:next.shared` explicitly approves this dependency for both server and
  * client graphs after boundary analysis. It must stay runtime-neutral:
  * importing server-only modules here would fail before generated output.
+ *
+ * The functions would otherwise be ordinary module-level factories. This
+ * static shell exists only because the current graph marker attaches shared
+ * ownership to a class; it carries no construction or runtime class identity
+ * and should become a module when that NextJsHx owner contract supports one.
  */
 @:next.shared
 class TodoMutationStates {

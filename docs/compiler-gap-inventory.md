@@ -4,8 +4,8 @@ This inventory reduces the compiler-facing seams exposed by the stable fixture
 to ordinary Haxe-to-TypeScript/JavaScript contracts. The repro source contains
 no Next.js, React, route, adapter, or project-specific names.
 
-The evidence is pinned to genes-ts `1.38.2` at commit
-`f0ffa29e6d49fe81541977c6a3aae6b80000cec6`, Haxe `4.3.7`, and both supported
+The evidence is pinned to genes-ts `1.41.0` at commit
+`1ead794285d4f43cbbc96078d4eac4a4d8bf6cce`, Haxe `4.3.7`, and both supported
 genes output profiles. Run it with:
 
 ```sh
@@ -22,6 +22,8 @@ npm run test:compiler-gaps
 | `GENES-CAP-JSX-001` | — | Module-scoped JSX type imports already work through `genes.ts.jsx_import_source`. | Keep the pinned define and strict TSX fixture; no compiler issue. |
 | `GENES-CAP-TEMPLATE-001` | — | Authored typed string templates preserve their template-literal shape in TypeScript and runtime order in classic JavaScript. | Provided by genes-ts PR #2 at the pinned green commit; route hrefs use the generic API without framework behavior in the compiler. |
 | `GENES-CAP-CALL-TYPE-001` | — | Haxe can erase a closed primitive-backed abstract before a generic extern call reaches TypeScript emission. | genes-ts PR #22 adds a direct-extern, declaration-opted-in, compile-time witness that preserves the closed type without a runtime helper or framework knowledge. |
+| `GENES-CAP-CALL-EMITTED-001` | — | The same erasure occurs when the generic callee is ordinary Haxe code emitted by genes rather than an extern. | genes-ts PR #90 generalizes the occurrence-local witness to marked directly emitted generic callables, preserves classic-JavaScript runtime identity, and omits only independently proven safe outer-null widening assertions. |
+| `GENES-CAP-UNDEFINABLE-PRESENCE-001` | — | TypeScript cannot infer a stored `T | undefined` value is present merely because a separately stored boolean says so. | genes-ts PRs #86 and #88 add occurrence-local and explicit stored presence proofs that produce idiomatic TypeScript narrowing and erase from classic JavaScript without introducing framework vocabulary. |
 | `GENES-CAP-CALL-IDENTITY-001` | — | Haxe can relocate an inner generic call or give it the same macro span as an unrelated fluent outer call. | Stacked genes-ts PR #35 carries a deterministic registration identity through the typed tree, verifies the exact extern target, and erases the carrier in both output profiles. |
 | `GENES-CAP-ENUM-HIGHER-ORDER-001` | — | Haxe can erase an enum-abstract leaf nested in callbacks, arrays, aliases, anonymous structures, or generic applications before TypeScript emission. | Stacked genes-ts PR #37 captures only explicitly observed pre-erasure source types, recursively restores their closed leaves, and leaves unrelated widened paths conservative. |
 | `GENES-CAP-LOCAL-CONST-001` | — | Initialized Haxe locals with no rebinding were emitted as mutable `let` declarations. | genes-ts PR #46 derives one complete typed-tree write inventory and emits canonical `const` in TypeScript, TSX, and classic ES2015 output while keeping uncertain or mutable bindings as `let`. |
@@ -64,7 +66,30 @@ emits `makeCell<"pending" | "ready">("pending")`; classic Genes emits only
 `makeCell("pending")`. Unmarked externs, wrong witness arity, unresolved types,
 runtime aliases, and non-call input fail with exact upstream diagnostics. The
 NextJsHx semantic Hook macro uses this generic boundary internally so
-application code remains the ordinary `React.useState(CatalogFilter.All)`.
+application code remains the ordinary
+`genes.react.React.useState(CatalogFilter.All)`.
+
+## `GENES-CAP-CALL-EMITTED-001`: emitted generic call types
+
+The same source fact can be lost when the generic helper is written in Haxe and
+emitted by genes. The semantic decoder now composes the generalized,
+compile-time-only witness internally:
+
+```haxe
+public static macro function accept(value:Expr):Expr {
+	return macro genes.ts.TypeArguments.call(
+		nextjs.codec.Decode.acceptTyped($value),
+		$value
+	);
+}
+```
+
+For a `TodoPriority` value, genes-ts v1.41.0 emits
+`Decode.acceptTyped<"P0" | "P1" | "P2">(...)`; classic JavaScript emits the
+ordinary value call with no witness or runtime helper. The upstream fixture is
+framework-neutral, rejects aliases and unmarked callables that have lost their
+declaration proof, and retains the existing closed-type and witness-arity
+diagnostics. NextJsHx owns only the decoder composition and Todo/Next evidence.
 
 ## `GENES-CAP-CALL-IDENTITY-001`: exact fluent call identity
 

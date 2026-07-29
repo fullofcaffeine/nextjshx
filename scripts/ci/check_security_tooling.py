@@ -135,8 +135,8 @@ EXPECTED_SHARP_VERSION = "0.35.3"
 EXPECTED_NODE_TYPES_VERSION = "20.19.24"
 EXPECTED_REACT_TYPES_VERSION = "19.2.17"
 EXPECTED_REACT_DOM_TYPES_VERSION = "19.2.3"
-EXPECTED_GENES_VERSION = "1.38.2"
-EXPECTED_GENES_COMMIT = "f0ffa29e6d49fe81541977c6a3aae6b80000cec6"
+EXPECTED_GENES_VERSION = "1.41.0"
+EXPECTED_GENES_COMMIT = "1ead794285d4f43cbbc96078d4eac4a4d8bf6cce"
 EXPECTED_HELDER_VERSION = "0.3.1"
 EXPECTED_LICENSE = "GPL-3.0-only"
 EXPECTED_LICENSE_SHA256 = (
@@ -2124,8 +2124,9 @@ def validate_test_harness() -> None:
             "NXHX-REACT-HOOK-0002",
             "NXHX-REACT-USE-0003",
             "NXHX-REACT-PURITY-0004",
-            "NXHX-REACT-STATE-0001",
-            "NXHX-REACT-DEPS-0001",
+            "GTS-REACT-STATE-001",
+            "GTS-REACT-DEPS-001",
+            "GTS-REACT-DEPS-002",
             "NXHX-REACT-EXPORT-0002",
             "react-hooks/exhaustive-deps",
             "react-hooks/rules-of-hooks",
@@ -3162,8 +3163,10 @@ def validate_docs_and_modes() -> None:
         "Consume TypeScript, JavaScript, and existing Next modules from Haxe",
         '@:ts.type("[$0, $1]")',
         "@:next.exportHook",
-        "NXHX-REACT-STATE-0001",
-        "NXHX-REACT-DEPS-0001",
+        "genes.react",
+        "GTS-REACT-STATE-001",
+        "GTS-REACT-DEPS-001",
+        "GTS-REACT-DEPS-002",
         "NXHX-REACT-EXPORT-0002",
         "Haxe is the primary typechecker",
         "npm run test:client-components",

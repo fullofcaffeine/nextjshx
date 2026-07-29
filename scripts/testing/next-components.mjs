@@ -137,7 +137,7 @@ function verifyPositiveOutput() {
 	);
 	assert.match(
 		curatedOutput,
-		/export type AsyncFormAction = \(\(arg0: globalThis\.FormData\) => Promise<void>\)/,
+		/export type AsyncFormAction = \(\(arg0: globalThis\.FormData\) => globalThis\.Promise<void>\)/,
 		"asynchronous next/form actions must use the current Web FormData contract",
 	);
   const publicBoundary = `${consumer}\n${curatedOutput}`;

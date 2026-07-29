@@ -84,4 +84,10 @@ comparison. Prefer familiar typed collection operations—including `map`,
 `reduceRight`, and `at`—when both Haxe source and genes output stay close to
 JavaScript/TypeScript. Inspect output and do not trade a clear loop for a
 retained Lambda helper. hxnodejs is not the owner of language-level Array
-ergonomics. Require executable evidence for capability claims.
+ergonomics. Build reusable HXML inventory, filesystem watching, serialized
+rebuilds, Haxe compiler-server lifecycle, structured build events, and durable
+artifact publication from framework-neutral `@genes-ts/tooling`; NextJsHx owns
+only the Next process, Next validation, application commands, last-good
+admission, ownership policy, and framework diagnostics layered over those
+primitives. Require executable evidence for capability claims, including warm
+edit-loop latency and generated-file churn before making performance claims.

@@ -285,9 +285,8 @@ behavior remain independent oracles.
 | `NXHX-REACT-USE-0003` | React `use` is outside render, nested, or protected by `try`/`catch` | Call it directly in a Component/Hook; use conditions freely and an Error Boundary for rejection |
 | `NXHX-REACT-PURITY-0004` | A known non-idempotent call or non-local static mutation runs during render | Supply stable data or move the effect outside render |
 | `NXHX-REACT-METADATA-0005` | Reviewed Hook metadata is duplicated, parameterized, or attached to an unsupported field | Keep one zero-argument marker on a static/module-level function |
-| `NXHX-REACT-STATE-0001` | An eager semantic state value may be callable and React could execute it as an initializer | Use `React.useStateLazy(() -> value)` |
-| `NXHX-REACT-DEPS-0001` | Semantic memo dependencies are not one direct closed `React.deps(...)` expression | Inline the explicit dependencies or deliberately use the raw memo binding |
-| `NXHX-REACT-DEPS-0002` | A computed memo dependency lacks a matching calculation parameter, or its parameter arity/type/shape is unsafe to relocate | Use ordinary required parameters on an anonymous function or arrow calculation, one per dependency in authored order |
+| `GTS-REACT-STATE-001` | An eager semantic state value may be callable and React could execute it as an initializer | Use `useStateLazy(() -> value)` from `genes.react.React` |
+| `GTS-REACT-DEPS-001/002` | Semantic memo dependencies are not one direct closed `deps(...)` expression, or a computed dependency lacks a safe named snapshot | Inline the explicit dependencies through `genes.react.React.deps`, name computed snapshots, or deliberately use the raw memo binding |
 | `NXHX-REACT-EXPORT-0002` | A Hook publication request is not one public static use-prefixed reviewed Haxe Hook | Correct the Hook declaration or remove `@:next.exportHook` |
 
 The state, memo, export-adapter, callable-value, and bidirectional interop
@@ -298,6 +297,12 @@ proves nullable/defaulted scalar parsers, App Router history, and Hooks authored
 on either side of the Haxe/TypeScript boundary.
 
 ## React 19 Flight prop contract
+
+If Flight is unfamiliar, start with the short
+[React Flight values](react-flight.md) guide. In brief, Flight is React's
+Server-Component transport and value model—not JSON and not a NextJsHx
+serializer. The section below is the exact application-facing capability
+contract for the pinned React/Next lane.
 
 The base allowlist remains intentionally smaller than every value React may
 support. It recursively accepts:
@@ -312,6 +317,16 @@ support. It recursively accepts:
 For the pinned React 19.2.7 / Next.js 16.2.12 lane, the versioned
 `nextjs.client.flight.v19` package adds only values whose Haxe identity,
 generated TypeScript, and Flight runtime behavior are all exercised:
+
+The reusable React value vocabulary and recursive validator are owned by
+`genes.react.flight.v19`; the `nextjs.client.flight.v19` scalar, collection,
+typed-array, and global-symbol names are Haxe-only compatibility aliases that
+still emit the same native TypeScript identities. NextJsHx keeps only the host
+policy that Genes cannot prove generically: Next Server/Client graph ownership,
+module-stable `FlightPromise`, generated `FlightServerFunction`,
+`CachedPromise`, the raw Next ReactNode view, and `NXHX-*` diagnostics. Raw
+Promise, Symbol, and function shapes are rejected by Genes before the host
+extension policy runs, so structural resemblance cannot forge provenance.
 
 The upstream contract is React's
 [`use client` serializable-types reference](https://react.dev/reference/rsc/use-client)

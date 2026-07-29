@@ -46,10 +46,12 @@ class CataloguePage {
 ## Negative control: clientify the whole view
 
 ```haxe
+import genes.react.React.useState;
+
 @:next.clientComponent
 class CatalogueDashboard {
 	public static function render(props:CatalogueDashboardProps):Element {
-		final count = React.useState(0);
+		final count = useState(0);
 		return <main>
 			{LargeCatalogue.render()}
 			<button onClick={() -> count.update(value -> value + 1)}>

@@ -87,7 +87,7 @@ function verifyPositiveOutput() {
     "NextResponse.rewrite(",
     "NextResponse.next(",
     "new URLPattern(",
-    "after(Promise.resolve",
+    "after(globalThis.Promise.resolve",
     "connection()",
     "userAgentFromString(",
     "userAgent({\"headers\"",

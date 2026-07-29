@@ -2,7 +2,9 @@ package todoapp.client;
 
 import js.Browser;
 import js.lib.Promise;
-import nextjs.client.React;
+import genes.react.React.useCallback;
+import genes.react.React.deps;
+import nextjs.client.React.startTransition;
 import nextjs.raw.Navigation;
 import nextjs.raw.react.React as RawReact;
 import nextjs.raw.server.WebFormData;
@@ -57,28 +59,26 @@ class MutationHook {
 		final lastSubmission = RawReact.useRef((null : Null<WebFormData>));
 		final online = RawReact.useSyncExternalStore(subscribeOnline, readOnline, readServerOnline);
 		final initialState = TodoMutationStates.ready(operation, readyMessage);
-		final execute = React.useCallback((previous:TodoMutationState, formData:WebFormData) -> {
-			try {
-				return action(previous, formData).then(result -> {
-					if (result.phase == TodoMutationPhase.Succeeded) {
-						router.refresh();
-					}
-					active.current = false;
-					return result;
-				}, _error -> {
-					active.current = false;
-					return TodoMutationStates.transportFailure(operation);
-				});
-			} catch (_:haxe.Exception) {
+		final execute = useCallback(function(previous:TodoMutationState, formData:WebFormData):Promise<TodoMutationState> {
+			// Start the call inside a Promise continuation so a synchronous host
+			// throw and an asynchronous Server Function rejection share one typed
+			// transport-failure path without a broad JavaScript catch value.
+			return Promise.resolve(true).then(_ready -> action(previous, formData)).then(result -> {
+				if (result.phase == TodoMutationPhase.Succeeded) {
+					router.refresh();
+				}
 				active.current = false;
-				return Promise.resolve(TodoMutationStates.transportFailure(operation));
-			}
-		}, React.deps(action, operation, router));
+				return result;
+			}, _error -> {
+				active.current = false;
+				return TodoMutationStates.transportFailure(operation);
+			});
+		}, deps(action, operation, router));
 		final actionState = RawReact.useActionState(execute, initialState);
 		final state = actionState.first;
 		final dispatch = actionState.second;
 		final pending = actionState.third;
-		final actionSubmission = React.useCallback((formData:WebFormData) -> {
+		final actionSubmission = useCallback((formData:WebFormData) -> {
 			if (active.current || pending) {
 				return;
 			}
@@ -89,22 +89,22 @@ class MutationHook {
 			lastSubmission.current = cloneFormData(submission);
 			optimistic(cloneFormData(submission));
 			dispatch(submission);
-		}, React.deps(dispatch, instanceId, operation, optimistic, pending));
-		final submit = React.useCallback((formData:WebFormData) -> {
-			React.startTransition(() -> actionSubmission(formData));
-		}, React.deps(actionSubmission));
-		final retry = React.useCallback(() -> {
+		}, deps(dispatch, instanceId, operation, optimistic, pending));
+		final submit = useCallback((formData:WebFormData) -> {
+			startTransition(() -> actionSubmission(formData));
+		}, deps(actionSubmission));
+		final retry = useCallback(() -> {
 			final saved = lastSubmission.current;
 			if (saved == null || active.current || pending || !online || !state.retryable) {
 				return;
 			}
 			active.current = true;
 			final submission = cloneFormData(saved);
-			React.startTransition(() -> {
+			startTransition(() -> {
 				optimistic(cloneFormData(submission));
 				dispatch(submission);
 			});
-		}, React.deps(dispatch, online, optimistic, pending, state.retryable));
+		}, deps(dispatch, online, optimistic, pending, state.retryable));
 		return {
 			state: state,
 			action: actionSubmission,

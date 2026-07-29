@@ -1,4 +1,6 @@
 package nextjs.client.flight.v19;
 
-/** Exact React 19 Flight capability for a native `Float32Array`. */
-typedef FlightFloat32Array = js.lib.Float32Array;
+/** NextJsHx alias for Genes' native React 19 `Float32Array` capability. */
+@:genes.compilerInternal
+@:genes.semanticOnly
+typedef FlightFloat32Array = genes.react.flight.v19.FlightFloat32Array;

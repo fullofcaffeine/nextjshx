@@ -1,4 +1,6 @@
 package nextjs.client.flight.v19;
 
-/** Exact React 19 Flight capability for a native `Uint32Array`. */
-typedef FlightUint32Array = js.lib.Uint32Array;
+/** NextJsHx alias for Genes' native React 19 `Uint32Array` capability. */
+@:genes.compilerInternal
+@:genes.semanticOnly
+typedef FlightUint32Array = genes.react.flight.v19.FlightUint32Array;

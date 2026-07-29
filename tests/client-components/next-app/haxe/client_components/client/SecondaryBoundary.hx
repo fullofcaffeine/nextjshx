@@ -1,7 +1,7 @@
 package client_components.client;
 
 import genes.react.Element;
-import nextjs.client.React;
+import nextjs.client.React.use;
 
 /** Module anchor proving secondary Haxe types retain their full identity. */
 class SecondaryBoundary {}
@@ -18,7 +18,7 @@ class NestedToggle {
 		var label = props.label;
 		for (resource in CachedResource.labels()) {
 			if (props.showCached) {
-				label = React.use(resource);
+				label = use(resource);
 			}
 		}
 		return <button type={"button"}>{label}</button>;

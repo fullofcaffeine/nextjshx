@@ -33,8 +33,27 @@ The decision is based on these reviewed revisions:
 - genes-ts `79fa0ead5058c1f1b6c19d047559a4681b47fdcc`;
 - WordPressHx `50d4b7fc025e020e8fed01de94af13ab8ed98844`.
 
-No upstream implementation or downstream dependency change is made by this
-report. NextJsHx must consume only a released and pinned genes capability.
+## Implementation status
+
+The original review made no implementation or downstream dependency change.
+The accepted generic mechanisms now exist in the genes repository as the
+separately versioned `@genes-ts/tooling` package:
+
+- `@genes-ts/tooling/artifacts` publishes and recovers exact authorized
+  generated-file transitions;
+- `@genes-ts/tooling/hxml` inventories explicit HXML inputs;
+- `@genes-ts/tooling/watch` reconciles native events with authoritative
+  snapshots;
+- `@genes-ts/tooling/loop` serializes bursty rebuild requests and guarantees
+  one newest-state follow-up;
+- `@genes-ts/tooling/haxe-server` owns a compatible project-local Haxe
+  `--wait` lifecycle with direct-compile fallback.
+
+Version `0.1.0` and its framework-neutral conformance vectors are present in
+the genes source tree, but the first immutable npm publication is still a
+separate release task. NextJsHx must continue using its local implementation
+until it can consume released, pinned package bytes; it must then migrate to
+the shared primitives rather than maintaining competing copies.
 
 ## Why this work exists
 
@@ -275,6 +294,43 @@ project locks, durable host journals, host recovery commands, and framework
 manifest concerns it does not need. It would also make a compiler invocation
 responsible for paths it did not emit. Keeping a separate package preserves the
 compiler's narrow failure-atomic contract.
+
+## Standard development-loop contract
+
+The shared package standardizes lifecycle mechanics, not one framework CLI.
+Every consumer should still expose the familiar commands for its host:
+
+| User intent | Generic Genes/tooling work | Host-owned work |
+| --- | --- | --- |
+| `dev` / watch | inventory HXML, reconcile edits, merge causes, serialize compiles, reuse an owned compatible Haxe server, publish one authorized generation | run the Next, Gutenberg, or other framework development service; retain last-good admission and host diagnostics |
+| `typecheck` / check | compile the selected Haxe/genes profile and report structured compiler lifecycle facts | run framework and ecosystem oracles such as Next type generation, strict TypeScript, React lint, or WordPress package checks |
+| production `build` | perform one deterministic compile/generation and durable publication using the configured output language and intent | run the framework's production compiler, validators, packaging, and deployment preparation |
+
+The next generic layer should compose the existing primitives into a small
+session and event protocol. It must not introduce another watcher, server
+manager, publisher, or framework-neutral command that secretly owns a Next or
+WordPress process.
+
+Fast watch behavior is part of the contract:
+
+- source-only edits reuse one compatible project-scoped Haxe compilation
+  server;
+- compiler, HXML, classpath, define, toolchain, or output-profile identity
+  changes restart or invalidate that server;
+- bursts never create overlapping compiles, and an edit during compilation
+  guarantees one rerun from newest state;
+- a dead or unavailable owned server falls back to a bounded direct compile
+  without adopting a foreign process;
+- only a complete authorized generation reaches the live tree.
+
+Performance must be measured rather than inferred from the presence of
+`--wait`. The shared benchmark corpus should record cold direct compilation,
+warm compiler-server compilation, no-op and one-file edits, edit-to-ready
+p50/p95, burst and edit-during-compile behavior, server recovery, generated
+file churn, and time spent in Haxe typing, genes planning/lowering/emission,
+publication, and host validation. NextJsHx should compare the complete
+Haxe-edit-to-Next-ready loop with an equivalent vanilla TypeScript Next app;
+other hosts should provide their own native JavaScript/TypeScript comparison.
 
 ## Compiler-output coherence
 

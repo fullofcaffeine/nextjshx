@@ -8,7 +8,7 @@ import type {NoParams} from "../nextjs/route/NoParams"
 export type RootLayoutProps = {
 	children: import('react').ReactNode,
 	modal: import('react').ReactNode,
-	params: Promise<NoParams>
+	params: globalThis.Promise<NoParams>
 }
 
 /**

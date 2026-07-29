@@ -8,6 +8,6 @@ import {Register} from "../../genes/Register"
  * Both values remain Promise-shaped to match current Next.js behavior.
  */
 export type PageProps<Params, Query> = {
-	params: Promise<Params>,
-	searchParams: Promise<Query>
+	params: globalThis.Promise<Params>,
+	searchParams: globalThis.Promise<Query>
 }

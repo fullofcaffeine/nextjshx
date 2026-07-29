@@ -298,14 +298,14 @@ function validateGeneratedTypescript() {
     "dynamic page lost its generated closed-query companion",
   );
   assert(dynamic.includes("return `/todos/${__nextRoute0Encoded0}`;"));
-  assert(pageProps.includes("params: Promise<Params>"));
-  assert(pageProps.includes("searchParams: Promise<Query>"));
+  assert(pageProps.includes("params: globalThis.Promise<Params>"));
+  assert(pageProps.includes("searchParams: globalThis.Promise<Query>"));
   assert(layoutProps.includes("children: import('react').ReactNode"));
-  assert(layoutProps.includes("params: Promise<Params>"));
+  assert(layoutProps.includes("params: globalThis.Promise<Params>"));
   assert(rootLayout.includes("export type RootLayoutProps = {"));
   assert(rootLayout.includes("analytics: import('react').ReactNode"));
   assert(rootLayout.includes("children: import('react').ReactNode"));
-  assert(rootLayout.includes("params: Promise<NoParams>"));
+  assert(rootLayout.includes("params: globalThis.Promise<NoParams>"));
   assert(rootLayout.includes("props.children"));
   assert(rootLayout.includes("props.analytics"));
   assert(!rootLayout.includes("RootLayoutProps."), "slotted layout props emitted a runtime accessor helper");
@@ -333,10 +333,21 @@ function validateGeneratedTypescript() {
       consumer.includes('append("tag", Std.string(__nextQuery0Item2))'),
     "generated query companion lost scalar or repeated fields",
   );
+  assert(
+    dynamic.includes("(((__nextQuery0Optional1)! as boolean))"),
+    "optional query encoding lost Genes' erased, exact presence proof",
+  );
   assert(!consumer.includes("TodoQuery"), "query schema created a consumer runtime dependency");
   for (const source of [root, rootLayout, dynamic, grouped, intercepted, parallel, pageProps, layoutProps]) {
     assert(!/\b(?:any|unknown)\b/.test(source), "generated page/layout public API contains a broad type");
-    assert(!/\sas\s/.test(source), "generated page/layout public API contains a TypeScript assertion");
+    const withoutPresenceProof = source.replaceAll(
+      "(((__nextQuery0Optional1)! as boolean))",
+      "__nextQuery0Optional1",
+    );
+    assert(
+      !/\sas\s/.test(withoutPresenceProof),
+      "generated page/layout public API contains an assertion other than Genes' compiler-owned Undefinable presence proof",
+    );
     assert(!source.includes(portable(ROOT)), "generated page/layout source leaked the compiler host path");
   }
 

@@ -1,7 +1,8 @@
 package todoapp.client;
 
 import genes.react.Element;
-import nextjs.client.React;
+import genes.react.React.useState;
+import genes.react.React.useOptimistic;
 import nextjs.integrations.dndkit.DndKit;
 import nextjs.integrations.recharts.StackedBars;
 import nextjs.raw.Navigation;
@@ -61,15 +62,15 @@ class SortableTodoList {
 	 * views project one server-owned collection rather than synchronized stores.
 	 */
 	public static function render(props:SortableTodoListProps):Element {
-		final order = React.useOptimistic(todoIds(props.todos), (_current:Array<String>, next:Array<String>) -> next);
+		final order = useOptimistic(todoIds(props.todos), (_current:Array<String>, next:Array<String>) -> next);
 		final mutation = MutationHook.useTodoMutation(ServerFunction.ref(TodoActions.reorder), TodoMutationOperation.Reorder,
 			"Drag a handle or focus it and press Space to reorder.", formData -> switch orderMutationForm(formData) {
 				case Decoded(input): order.apply(input.payload.map(id -> (id : String)));
 				case Rejected(_): {}
 			});
-		final announcement = React.useState("Drag a handle or focus it and press Space to reorder.");
+		final announcement = useState("Drag a handle or focus it and press Space to reorder.");
 		final discovery = TodoDiscovery.useTodoDiscovery();
-		final commandOpen = React.useState(false);
+		final commandOpen = useState(false);
 		final router = Navigation.useRouter();
 		final currentIds = mergeCurrentIds(order.value, props.todos);
 		final projection = TodoDiscovery.project(currentIds, props.todos, discovery.status, discovery.priority, discovery.search);

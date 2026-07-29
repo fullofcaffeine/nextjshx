@@ -45,12 +45,7 @@ function cacheScope():String {
 }
 
 function find(id:TodoId):Null<Todo> {
-	for (todo in list()) {
-		if (todo.id == id) {
-			return todo;
-		}
-	}
-	return null;
+	return list().find(todo -> todo.id == id);
 }
 
 function create(title:String, note:String, priority:TodoPriority):Todo {

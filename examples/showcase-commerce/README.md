@@ -53,11 +53,15 @@ The corresponding Haxe uses the same React operations, but names the update
 mode and dependency list:
 
 ```haxe
-final filter = React.useState(CatalogFilter.All);
-final quantities = React.useState(new Array<CartQuantity>());
-final lines = React.useMemo(
+import genes.react.React.deps;
+import genes.react.React.useMemo;
+import genes.react.React.useState;
+
+final filter = useState(CatalogFilter.All);
+final quantities = useState(new Array<CartQuantity>());
+final lines = useMemo(
 	(products, current) -> buildLines(products, current),
-	React.deps(products, quantities.value)
+	deps(products, quantities.value)
 );
 
 final add = slug -> quantities.update(
@@ -66,9 +70,10 @@ final add = slug -> quantities.update(
 final showAll = () -> filter.set(CatalogFilter.All);
 ```
 
-`React.deps(...)` is erased into the ordinary dependency array; it exists so
-Haxe can contextually type the callback and so the generated function remains
-visible to React's official lint.
+`deps(...)` is erased into the ordinary dependency array; it exists so Haxe
+can contextually type the callback and so the generated function remains
+visible to React's official lint. The API lives in the reusable
+`genes.react` layer rather than being tied to Next.js.
 
 ## Run it
 
@@ -79,13 +84,14 @@ npm run build --workspace @nextjshx/showcase-commerce
 
 ## Gotchas
 
-- `React.deps(...)` must stay directly inside semantic `useMemo`; this preserves
+- `deps(...)` must stay directly inside semantic `useMemo`; this preserves
   an inline dependency array visible to React lint.
 - Use `useStateLazy` for function-valued state so React does not mistake the
   stored function for an initializer.
-- `ProductCatalog` is a module. `CartHook` retains a temporary documented
-  static shell only for the current analyzer/export bridge; direct module Hook
-  authoring is a framework-neutral genes-ts capability in progress.
+- `ProductCatalog` is a module. `CartHook` retains a documented static shell
+  only because the current NextJsHx `@:next.hook`/`@:next.exportHook` owner
+  contract requires one public static field; its state, memo, dependency, and
+  analyzer-visible function machinery already comes from `genes.react`.
 - Cart state is intentionally client-local; this example does not pretend to
   provide checkout, inventory, authentication, or server persistence.
 

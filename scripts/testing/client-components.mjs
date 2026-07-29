@@ -159,25 +159,25 @@ const NEGATIVE_CASES = new Map([
   ],
   [
     "react-use-try",
-    "tests/client-components/negative/client_components_negative/ReactUseTry.hx:15: characters 18-59 : [NXHX-REACT-USE-0003] React use binding nextjs.client.React.use cannot be called inside try/catch because React uses throwing to suspend. Use an Error Boundary; conditions and loops remain valid for React use.",
+    "tests/client-components/negative/client_components_negative/ReactUseTry.hx:15: characters 18-53 : [NXHX-REACT-USE-0003] React use binding nextjs.client.React.use cannot be called inside try/catch because React uses throwing to suspend. Use an Error Boundary; conditions and loops remain valid for React use.",
   ],
   [
     "react-use-outside",
-    "tests/client-components/negative/client_components_negative/ReactUseOutside.hx:8: characters 10-51 : [NXHX-REACT-USE-0003] React use binding nextjs.client.React.use may only be called from a @:next.clientComponent render or an @:next.hook function.",
+    "tests/client-components/negative/client_components_negative/ReactUseOutside.hx:8: characters 10-45 : [NXHX-REACT-USE-0003] React use binding nextjs.client.React.use may only be called from a @:next.clientComponent render or an @:next.hook function.",
   ],
   [
     "uncached-react-use",
-    `tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 17-56 : Could not find a suitable overload, reasons follow
-tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 17-56 : Overload resolution failed for (resource : nextjs.client.CachedPromise<use.T>) -> use.T
-tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 27-55 : js.lib.Promise<String> should be nextjs.client.CachedPromise<Unknown<0>>
-tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 27-55 : ... For function argument 'resource'
-tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 17-56 : Overload resolution failed for (resource : nextjs.raw.react.Context<use.T>) -> use.T
-tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 27-55 : js.lib.Promise<String> should be nextjs.raw.react.Context<Unknown<0>>
-tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 27-55 : ... For function argument 'resource'
-tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 17-56 : Overload resolution failed for (resource : nextjs.client.flight.v19.FlightPromise<use.T>) -> use.T
-tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 27-55 : js.lib.Promise<String> should be nextjs.client.flight.v19.FlightPromise<Unknown<0>>
-tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 27-55 : ... For function argument 'resource'
-tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 17-56 : End of overload failure reasons`,
+    `tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 17-50 : Could not find a suitable overload, reasons follow
+tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 17-50 : Overload resolution failed for (resource : nextjs.client.CachedPromise<use.T>) -> use.T
+tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 21-49 : js.lib.Promise<String> should be nextjs.client.CachedPromise<Unknown<0>>
+tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 21-49 : ... For function argument 'resource'
+tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 17-50 : Overload resolution failed for (resource : nextjs.raw.react.Context<use.T>) -> use.T
+tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 21-49 : js.lib.Promise<String> should be nextjs.raw.react.Context<Unknown<0>>
+tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 21-49 : ... For function argument 'resource'
+tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 17-50 : Overload resolution failed for (resource : nextjs.client.flight.v19.FlightPromise<use.T>) -> use.T
+tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 21-49 : js.lib.Promise<String> should be nextjs.client.flight.v19.FlightPromise<Unknown<0>>
+tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 21-49 : ... For function argument 'resource'
+tests/client-components/negative/client_components_negative/UncachedReactUse.hx:14: characters 17-50 : End of overload failure reasons`,
   ],
   [
     "impure-random",
@@ -193,39 +193,39 @@ tests/client-components/negative/client_components_negative/UncachedReactUse.hx:
   ],
   [
     "callable-state",
-    "tests/client-components/negative/client_components_negative/CallableState.hx:11: characters 18-25 : [NXHX-REACT-STATE-0001] useState(value) received a value whose static type may be callable. React would interpret that value as a lazy initializer. Use useStateLazy(() -> value) to store function-valued state.",
+    "tests/client-components/negative/client_components_negative/CallableState.hx:11: characters 12-19 : [GTS-REACT-STATE-001] useState(value) received a value whose static type may be callable. React would treat it as a lazy initializer; use useStateLazy(() -> value) to store function-valued state.",
   ],
   [
     "stored-memo-dependencies",
-    "tests/client-components/negative/client_components_negative/StoredMemoDependencies.hx:11: characters 41-47 : [NXHX-REACT-DEPS-0001] Semantic useMemo requires a direct React.deps(...) expression so the emitted dependency list remains inline and constant-length. Use nextjs.raw.react.React.useMemo for a deliberately raw dependency value.",
+    "tests/client-components/negative/client_components_negative/StoredMemoDependencies.hx:11: characters 35-41 : [GTS-REACT-DEPS-001] Semantic useMemo requires a direct deps(...) expression imported from genes.react.React so the emitted dependency list remains inline and constant-length.",
   ],
   [
     "stored-callback-dependencies",
-    "tests/client-components/negative/client_components_negative/StoredCallbackDependencies.hx:10: characters 60-72 : [NXHX-REACT-DEPS-0001] Semantic useCallback requires a direct React.deps(...) expression so the emitted dependency list remains inline and constant-length. Use nextjs.raw.react.React.useCallback for a deliberately raw dependency value.",
+    "tests/client-components/negative/client_components_negative/StoredCallbackDependencies.hx:10: characters 54-66 : [GTS-REACT-DEPS-001] Semantic useCallback requires a direct deps(...) expression imported from genes.react.React so the emitted dependency list remains inline and constant-length.",
   ],
   [
     "standalone-dependencies",
-    "tests/client-components/negative/client_components_negative/StandaloneDependencies.hx:9: characters 14-19 : [NXHX-REACT-DEPS-0001] React.deps(...) is compile-time dependency packaging and must appear directly as the second argument of React.useMemo(...) or React.useCallback(...).",
+    "tests/client-components/negative/client_components_negative/StandaloneDependencies.hx:9: characters 8-13 : [GTS-REACT-DEPS-001] deps(...) is compile-time packaging and must appear directly inside useMemo(...), useCallback(...), or useEffect(...).",
   ],
   [
     "memo-computed-dependency",
-    "tests/client-components/negative/client_components_negative/MemoComputedDependency.hx:10: characters 58-69 : [NXHX-REACT-DEPS-0002] Computed memo dependencies need a named scalar shared by the calculation and dependency list. Add one calculation parameter for each dependency, for example React.useMemo((current) -> current * 2, React.deps(state.value)).",
+    "tests/client-components/negative/client_components_negative/MemoComputedDependency.hx:12: characters 46-57 : [GTS-REACT-DEPS-002] Computed memo dependencies need a named scalar shared by the calculation and dependency list. Add one calculation parameter for each dependency, for example useMemo((current) -> current * 2, deps(state.value)).",
   ],
   [
     "memo-dependency-arity",
-    "tests/client-components/negative/client_components_negative/MemoDependencyArity.hx:9: characters 24-59 : [NXHX-REACT-DEPS-0002] Memo calculation declares 2 dependency parameter(s), but React.deps(...) supplies 1. Declare exactly one parameter for each dependency in the same order.",
+    "tests/client-components/negative/client_components_negative/MemoDependencyArity.hx:10: characters 18-53 : [GTS-REACT-DEPS-002] Memo calculation declares 2 dependency parameter(s), but deps(...) supplies 1. Declare exactly one parameter for each dependency in the same order.",
   ],
   [
     "named-memo-snapshot",
-    "tests/client-components/negative/client_components_negative/NamedMemoSnapshot.hx:9: lines 9-11 : [NXHX-REACT-DEPS-0002] Dependency-parameter memo calculations cannot be named functions because relocating their parameters would change recursive calls. Use an anonymous function or arrow calculation.",
+    "tests/client-components/negative/client_components_negative/NamedMemoSnapshot.hx:10: lines 10-12 : [GTS-REACT-DEPS-002] Dependency-parameter memo calculations cannot be named functions because relocating their parameters would change recursive calls. Use an anonymous function or arrow calculation.",
   ],
   [
     "rest-memo-snapshot",
-    "tests/client-components/negative/client_components_negative/RestMemoSnapshot.hx:9: lines 9-11 : [NXHX-REACT-DEPS-0002] Memo dependency parameter `current` cannot use rest semantics because it represents exactly one dependency scalar.",
+    "tests/client-components/negative/client_components_negative/RestMemoSnapshot.hx:10: lines 10-12 : [GTS-REACT-DEPS-002] Memo dependency parameter `current` cannot use rest semantics because it represents exactly one dependency scalar.",
   ],
   [
     "wrong-memo-snapshot-type",
-    "tests/client-components/negative/client_components_negative/WrongMemoSnapshotType.hx:9: characters 64-69 : [NXHX-REACT-DEPS-0002] Memo dependency parameter `current` expects exactly String, but its dependency has Int.",
+    "tests/client-components/negative/client_components_negative/WrongMemoSnapshotType.hx:10: characters 52-57 : [GTS-REACT-DEPS-002] Memo dependency parameter `current` expects exactly String, but its dependency has Int.",
   ],
   [
     "wrong-state-replacement",
@@ -239,8 +239,8 @@ tests/client-components/negative/client_components_negative/WrongOptimisticActio
   ],
   [
     "wrong-optimistic-reducer",
-    `tests/client-components/negative/client_components_negative/WrongOptimisticReducer.hx:9: characters 57-70 : String should be Int
-tests/client-components/negative/client_components_negative/WrongOptimisticReducer.hx:9: characters 57-70 : ... For function argument 'reducer'`,
+    `tests/client-components/negative/client_components_negative/WrongOptimisticReducer.hx:9: characters 51-64 : String should be Int
+tests/client-components/negative/client_components_negative/WrongOptimisticReducer.hx:9: characters 51-64 : ... For function argument 'reducer'`,
   ],
   [
     "unreviewed-hook-export",
@@ -592,8 +592,8 @@ function verifyPlanAndDeterminism() {
     "float32: Float32Array",
     "float64: Float64Array",
     "symbol: symbol",
-    "resource: Promise<FlightResourcePayload>",
-    "ping: ((arg0: string) => Promise<string>)",
+    "resource: globalThis.Promise<FlightResourcePayload>",
+    "ping: ((arg0: string) => globalThis.Promise<string>)",
   ]) {
     assert(flightImplementation.includes(exactType), `missing exact Flight type ${exactType}`);
   }
@@ -606,7 +606,7 @@ function verifyPlanAndDeterminism() {
     "utf8",
   );
   assert(flightResource.startsWith('import "server-only"'));
-  assert(flightResource.includes("declare static payload: Promise<FlightResourcePayload>"));
+  assert(flightResource.includes("declare static payload: globalThis.Promise<FlightResourcePayload>"));
   assert.equal((flightResource.match(/new Promise/g) ?? []).length, 2);
   assert.equal((flightResource.match(/setTimeout/g) ?? []).length, 2);
   assert(!flightResource.includes("Promise.resolve"));
@@ -662,7 +662,13 @@ function verifyPlanAndDeterminism() {
   assert(semanticHooks.includes("count[1](function (previous: number)"));
   assert(semanticHooks.includes("const current: number = count[0]"));
   assert(semanticHooks.includes("}, [current])"));
-  assert(semanticHooks.includes("StateRuntime.replaceCallable(formatter[1], next)"));
+  assert(
+    semanticHooks.includes(
+      "StateRuntime_Fields_.replaceCallable(formatter[1], next)",
+    ),
+  );
+  assert(semanticHooks.includes('from "../../genes/react/StateRuntime"'));
+  assert(!semanticHooks.includes("../../nextjshx/client/StateRuntime"));
   assert.match(
     semanticHooks,
     /import \{[^}]*\buseOptimistic\b[^}]*\bstartTransition\b[^}]*\} from "react"/,

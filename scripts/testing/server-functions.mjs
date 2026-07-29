@@ -249,7 +249,7 @@ function verifyPlanAndDeterminism() {
     "utf8",
   );
   assert(client.includes("next-app/app/actions/todos"));
-  assert(client.includes("(formData: globalThis.FormData) => Promise<void>"));
+  assert(client.includes("(formData: globalThis.FormData) => globalThis.Promise<void>"));
   assert(!client.includes("server_functions/actions/TodoActions"));
   const implementation = fs.readFileSync(
     path.join(DIRECT_OUTPUT, "server_functions/actions/TodoActions.tsx"),

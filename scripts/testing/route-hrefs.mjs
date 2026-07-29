@@ -17,8 +17,8 @@ const NEXT_OUTPUT = path.join(NEXT_APP, ".next");
 const NEXT_BIN = path.join(ROOT, "node_modules/next/dist/bin/next");
 const TSC_BIN = path.join(ROOT, "node_modules/typescript/bin/tsc6");
 const HAXE_VERSION = "4.3.7";
-const GENES_VERSION = "1.38.2";
-const GENES_COMMIT = "f0ffa29e6d49fe81541977c6a3aae6b80000cec6";
+const GENES_VERSION = "1.41.0";
+const GENES_COMMIT = "1ead794285d4f43cbbc96078d4eac4a4d8bf6cce";
 const DIAGNOSTIC_SOURCE = "tests/route-hrefs/src/route_href_fixture/NegativeDeclarations.hx";
 const ANSI_ESCAPE = /\x1b\[[0-?]*[ -/]*[@-~]/g;
 
@@ -235,8 +235,20 @@ function verifyGeneratedOutput() {
     runtime.includes("const __nextQuery0Absent3: boolean") && runtime.includes("if (!__nextQuery0Absent3)"),
     "optional query values lost their exact undefined guard",
   );
+  assert(
+    runtime.includes("((__nextQuery0Optional3)! as string)") &&
+      runtime.includes("((__nextRoute0Optional)! as string[])"),
+    "optional path/query values lost Genes' erased, exact presence proof",
+  );
   assert(!runtime.includes('return "/todos/" +'), "ordinary concatenation widened the typed href");
-  assert(!/TemplateLiteral(?:Marker)?|unsafeCast|\sas\s/.test(runtime), "compiler markers or assertions leaked into route output");
+  const withoutPresenceProof = runtime.replaceAll(
+    /\(\([A-Za-z_$][\w$]*\)! as (?:boolean|number|string(?:\[\])?)\)/g,
+    "__genesPresenceProof",
+  );
+  assert(
+    !/TemplateLiteral(?:Marker)?|unsafeCast|\sas\s/.test(withoutPresenceProof),
+    "compiler markers or assertions other than Genes' Undefinable presence proof leaked into route output",
+  );
 
   for (const source of [server, client]) {
     assert(!source.includes("TodoRoute"), "a consumer retained the generated route helper class");
