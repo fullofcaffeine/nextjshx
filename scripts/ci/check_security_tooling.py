@@ -30,6 +30,9 @@ DOCS_ROOT = ROOT / "docs"
 DOCS_INDEX = DOCS_ROOT / "README.md"
 CLI_PACKAGE = ROOT / "tools/cli/package.json"
 CLI_TSCONFIG = ROOT / "tools/cli/tsconfig.json"
+CLI_RUNTIME_TSCONFIG = ROOT / "tools/cli/tsconfig.runtime.json"
+TEST_LANES = ROOT / "config/test-lanes.json"
+TEST_LANES_SCHEMA = ROOT / "schemas/test-lanes.schema.json"
 CONFIG_SCHEMA = ROOT / "schemas/nextjshx-config.schema.json"
 OUTPUT_MANIFEST_SCHEMA = ROOT / "schemas/generated-output-manifest.schema.json"
 OUTPUT_TRANSACTION_SCHEMA = ROOT / "schemas/generated-output-transaction.schema.json"
@@ -384,7 +387,9 @@ def validate_workflows() -> int:
     workflow = read_text(WORKFLOW)
     required_fragments = (
         "permissions:\n  contents: read",
+        "cancel-in-progress: ${{ github.event_name == 'pull_request' }}",
         "  secret-scan:\n",
+        "  test-plan:\n",
         "  haxe-format:\n",
         "  compatibility-contract:\n",
         "  next-stable-fixture:\n",
@@ -394,6 +399,8 @@ def validate_workflows() -> int:
         "  showcase-matrix:\n",
         "  todoapp-production-e2e:\n",
         "  security-tooling:\n",
+        "  governance-result:\n",
+        'cron: "23 4 * * *"',
         "fetch-depth: 0",
         "bash scripts/ci/install-gitleaks.sh --install-dir",
         "bash scripts/security/run-gitleaks.sh",
@@ -419,6 +426,11 @@ def validate_workflows() -> int:
         'NEXT_TELEMETRY_DISABLED: "1"',
         "npm run test:architecture",
         "npm run test:security-tooling",
+        "npm run test:loop:validate",
+        "npm run test:loop:explain",
+        "--output .nextjshx/testing/plan.json",
+        "This plan does not skip any existing required job.",
+        "Require every declared governance job to succeed",
     )
     for fragment in required_fragments:
         if fragment not in workflow:
@@ -452,19 +464,12 @@ def validate_hook_wiring() -> None:
     pre_commit = read_text(ROOT / "scripts/hooks/pre-commit")
     for fragment in (
         'scripts/lint/hx_format_guard.sh" --tool-only',
-        "only partially staged",
+        'scripts/testing/test-lanes.mjs" check-staged',
+        'scripts/testing/test-lanes.mjs" changed --staged --hook',
         "scripts/lint/local_path_guard_staged.sh",
         'scripts/lint/whitespace_guard.sh" --staged',
         'scripts/security/run-gitleaks.sh" --staged',
-        "scripts/compat/support-matrix.mjs",
-        "scripts/bindings/next-surface.mjs",
-        "scripts/bindings/sync-next-bindings.mjs",
-        "examples/(todoapp-next|showcase-",
-        "scripts/examples/todoapp-next.mjs\" source",
-        "scripts/examples/showcases.mjs\" source",
-        "scripts/ci/check_architecture_docs.py",
-        "(issues|interactions)\\.jsonl",
-        "scripts/ci/check_security_tooling.py",
+        "Validating staged JSON contracts",
         'BD_BIN="$ROOT_DIR/.cache/beads-bin/bd"',
     ):
         if fragment not in pre_commit:
@@ -714,6 +719,18 @@ def validate_package_contract() -> None:
         "test:architecture": "python3 scripts/ci/check_architecture_docs.py",
         "test:support-matrix": "node scripts/compat/support-matrix.mjs check",
         "test:security-tooling": "python3 scripts/ci/check_security_tooling.py",
+        "test:loop:validate": "node scripts/testing/test-lanes.mjs validate",
+        "test:loop:self": (
+            "node scripts/testing/test-lanes.mjs self-test && "
+            "node --test scripts/testing/test-lanes.test.mjs"
+        ),
+        "test:cli-preparation": (
+            "node --test scripts/testing/cli-build-preparation.test.mjs"
+        ),
+        "test:loop:explain": "node scripts/testing/test-lanes.mjs explain",
+        "test:focused": "node scripts/testing/test-lanes.mjs focused",
+        "test:changed": "node scripts/testing/test-lanes.mjs changed",
+        "test:smoke": "node scripts/testing/test-lanes.mjs smoke",
         "test:haxe:positive": "node scripts/testing/haxe-fixtures.mjs positive",
         "test:haxe:negative": "node scripts/testing/haxe-fixtures.mjs negative",
         "test:haxe": "node scripts/testing/haxe-fixtures.mjs all",
@@ -797,36 +814,7 @@ def validate_package_contract() -> None:
         "test:integrations": "node scripts/testing/package-integrations.mjs",
         "test:next-server": "node scripts/testing/next-server.mjs",
         "test:codecs": "node scripts/testing/codecs.mjs",
-        "test:harness": (
-            "npm run test:next-surface && npm run test:next-bindings && "
-            "npm run test:next-drift && "
-            "npm run test:next-core-navigation && "
-            "npm run test:next-components && "
-            "npm run test:showcase-ui && "
-            "npm run test:dnd-kit && "
-            "npm run test:recharts && "
-            "npm run test:integrations && "
-            "npm run test:next-server && "
-            "npm run test:codecs && "
-            "npm run test:haxe && "
-            "npm run test:adapter-plan && "
-            "npm run test:routes && npm run test:page-layouts && "
-            "npm run test:metadata-segment && "
-            "npm run test:route-handlers && "
-            "npm run test:special-files && "
-            "npm run test:proxy && "
-            "npm run test:route-hrefs && "
-            "npm run test:environment-boundaries && "
-            "npm run test:clientification-boundaries && "
-            "npm run test:client-components && "
-            "npm run test:mdx-components && "
-            "npm run test:content-blocks && "
-            "npm run test:server-functions && "
-            "npm run test:cache-boundaries && "
-            "npm run test:dev && "
-            "npm run test:tooling && npm run test:snapshots && "
-            "npm run test:package-shape && npm run test:compiler-gaps"
-        ),
+        "test:harness": "node scripts/testing/test-lanes.mjs harness",
         "test:prepush": (
             "npm run test:plan && npm run test:support-matrix && "
             "npm run test:architecture && npm run test:security-tooling && "
@@ -852,6 +840,26 @@ def validate_package_contract() -> None:
         ),
         "test:fixture:next-stable:smoke": (
             "node scripts/fixtures/next-stable.mjs smoke"
+        ),
+        "test:fixture:next-stable:primary": (
+            "npm run test:fixture:next-stable:turbopack && "
+            "npm run test:fixture:next-stable:smoke"
+        ),
+        "test:fixture:next-stable:matrix": (
+            "npm run test:fixture:next-stable:turbopack && "
+            "npm run test:fixture:next-stable:smoke && "
+            "npm run test:fixture:next-stable:webpack && "
+            "npm run test:fixture:next-stable:smoke"
+        ),
+        "test:showcase:landing": (
+            "node scripts/examples/showcases.mjs verify landing"
+        ),
+        "test:showcase:blog": "node scripts/examples/showcases.mjs verify blog",
+        "test:showcase:commerce": (
+            "node scripts/examples/showcases.mjs verify commerce"
+        ),
+        "test:showcase:field-atlas": (
+            "node scripts/examples/showcases.mjs verify field-atlas"
         ),
         "test:fixture": (
             "npm run test:fixture:next-stable && "
@@ -1309,11 +1317,12 @@ def validate_package_contract() -> None:
 
     cli_package = read_json(CLI_PACKAGE)
     expected_cli_scripts = {
-        "build": "tsc6 --project tsconfig.json",
-        "postbuild": "node scripts/mark-bin.mjs",
-        "cli": "npm run build && node .tmp/src/cli.js",
+        "build": "npm run build:test",
+        "build:runtime": "node scripts/ensure-build.mjs runtime",
+        "build:test": "node scripts/ensure-build.mjs test",
+        "cli": "npm run build:runtime && node .tmp/src/cli.js",
         "test:commands": (
-            "npm run build && node --test "
+            "npm run build:test && node --test "
             ".tmp/test/adapter-plan-renderer.test.js "
             ".tmp/test/boundary-plan.test.js "
             ".tmp/test/cli-entrypoint.test.js .tmp/test/commands.test.js "
@@ -1325,15 +1334,15 @@ def validate_package_contract() -> None:
             ".tmp/test/watch-inputs.test.js"
         ),
         "test:config": (
-            "npm run build && node --test .tmp/test/config-discovery.test.js"
+            "npm run build:test && node --test .tmp/test/config-discovery.test.js"
         ),
         "test:ownership": (
-            "npm run build && node --test .tmp/test/ownership-preflight.test.js"
+            "npm run build:test && node --test .tmp/test/ownership-preflight.test.js"
         ),
         "test:publication": (
-            "npm run build && node --test .tmp/test/publication.test.js"
+            "npm run build:test && node --test .tmp/test/publication.test.js"
         ),
-        "test": "npm run build && node --test .tmp/test/*.test.js",
+        "test": "npm run build:test && node --test .tmp/test/*.test.js",
     }
     expected_cli_dependencies = {
         "ajv": EXPECTED_AJV_VERSION,
@@ -1377,6 +1386,30 @@ def validate_package_contract() -> None:
         )
     ):
         raise SecurityToolingFailure("CLI TypeScript must retain strict fail-closed checks")
+    cli_runtime_tsconfig = read_json(CLI_RUNTIME_TSCONFIG)
+    if (
+        cli_runtime_tsconfig.get("extends") != "./tsconfig.json"
+        or cli_runtime_tsconfig.get("include") != ["src/**/*.ts"]
+        or cli_runtime_tsconfig.get("exclude") != ["test/**/*.ts"]
+    ):
+        raise SecurityToolingFailure(
+            "runtime CLI build must inherit strict checks while excluding the test corpus"
+        )
+    cli_build_helper = read_text(ROOT / "tools/cli/scripts/ensure-build.mjs")
+    for fragment in (
+        "createHash",
+        "package-lock.json",
+        "tsconfig.runtime.json",
+        "typescript/package.json",
+        ".nextjshx-cli-build.json",
+        "runtimeOutputFingerprint",
+        "testOutputFingerprint",
+        "renameSync",
+    ):
+        if fragment not in cli_build_helper:
+            raise SecurityToolingFailure(
+                f"prepared CLI build lost stale-output protection: {fragment}"
+            )
 
     config_schema = read_json(CONFIG_SCHEMA)
     if (
@@ -1891,7 +1924,131 @@ def validate_haxe_locks() -> None:
         raise SecurityToolingFailure("helder.set Lix lock contains a non-cache classpath")
 
 
+def validate_test_lane_topology() -> None:
+    schema = read_json(TEST_LANES_SCHEMA)
+    if schema.get("$id") != "https://nextjshx.dev/schemas/test-lanes.schema.json":
+        raise SecurityToolingFailure("test-lane schema identity drifted")
+
+    manifest = read_json(TEST_LANES)
+    if manifest.get("selectionMode") != "observation":
+        raise SecurityToolingFailure(
+            "affected test selection must remain observational until its confidence gate passes"
+        )
+    if manifest.get("fullBackstops") != {
+        "main": True,
+        "nightly": True,
+        "release": True,
+    }:
+        raise SecurityToolingFailure(
+            "test-lane topology must retain main, nightly, and release full backstops"
+        )
+    confidence = manifest.get("confidenceWindow")
+    if (
+        not isinstance(confidence, dict)
+        or confidence.get("minimumRuns", 0) < 30
+        or confidence.get("minimumDays", 0) < 14
+        or confidence.get("resetOnMiss") is not True
+    ):
+        raise SecurityToolingFailure("selector promotion confidence policy weakened")
+
+    lanes = manifest.get("lanes")
+    if not isinstance(lanes, list):
+        raise SecurityToolingFailure("test-lane manifest must contain lanes")
+    lane_by_id = {
+        lane.get("id"): lane for lane in lanes if isinstance(lane, dict)
+    }
+    if len(lane_by_id) != len(lanes):
+        raise SecurityToolingFailure("test-lane manifest has invalid or duplicate IDs")
+
+    required_ids = {
+        "loop.validate",
+        "loop.self",
+        "cli.preparation",
+        "haxe.positive",
+        "haxe.negative",
+        "adapter.plan",
+        "codecs",
+        "next.core.navigation",
+        "fixture.stable.primary",
+        "fixture.stable.matrix",
+        "showcase.ui",
+        "showcase.landing",
+        "showcase.blog",
+        "showcase.commerce",
+        "showcase.field-atlas",
+        "showcases.all",
+        "example.mixed.full",
+        "todo.build",
+        "todo.smoke",
+        "todo.e2e",
+    }
+    missing = sorted(required_ids - lane_by_id.keys())
+    if missing:
+        raise SecurityToolingFailure(
+            "test-lane manifest lost required semantic owners: " + ", ".join(missing)
+        )
+
+    for lane_id, lane in lane_by_id.items():
+        groups = set(lane.get("groups", []))
+        if lane.get("claimStatus") == "required":
+            if not {"main", "nightly", "release"}.issubset(groups):
+                raise SecurityToolingFailure(
+                    f"claim-bearing lane {lane_id} lost a full backstop"
+                )
+            if lane.get("quarantine") is not None:
+                raise SecurityToolingFailure(
+                    f"quarantined lane {lane_id} cannot support a public claim"
+                )
+        if not isinstance(lane.get("timeoutSeconds"), int):
+            raise SecurityToolingFailure(f"test lane {lane_id} has no timeout")
+        if not str(lane.get("reproduction", "")).startswith("npm run "):
+            raise SecurityToolingFailure(
+                f"test lane {lane_id} has no bounded npm reproduction command"
+            )
+
+    primary = lane_by_id["fixture.stable.primary"]
+    if "pr-primary" not in primary.get("groups", []):
+        raise SecurityToolingFailure("the clean primary Next canary is not a PR owner")
+    required_primary_evidence = {
+        "haxe-positive",
+        "cli",
+        "ownership",
+        "determinism",
+        "strict-typescript",
+        "next-build",
+        "runtime",
+    }
+    if not required_primary_evidence.issubset(set(primary.get("evidence", []))):
+        raise SecurityToolingFailure(
+            "the primary Next canary no longer proves the full vertical path"
+        )
+    primary_environments = primary.get("environments")
+    if primary_environments != [
+        {
+            "node": ["20.19.3"],
+            "bundler": ["turbopack"],
+            "profile": ["typescript/optimized"],
+        }
+    ]:
+        raise SecurityToolingFailure("the primary PR canary environment drifted")
+
+    matrix = lane_by_id["fixture.stable.matrix"]
+    if matrix.get("environments") != [
+        {
+            "node": ["20.9.0", "24.18.0"],
+            "bundler": ["turbopack", "webpack"],
+            "profile": ["typescript/optimized"],
+        }
+    ]:
+        raise SecurityToolingFailure(
+            "the stable fixture matrix no longer matches the public support lanes"
+        )
+    if lane_by_id["loop.validate"].get("expansion") != "full":
+        raise SecurityToolingFailure("selector changes must expand to full validation")
+
+
 def validate_test_harness() -> None:
+    validate_test_lane_topology()
     schema = read_json(HAXE_FIXTURES_SCHEMA)
     if schema.get("$id") != "https://nextjshx.dev/schemas/haxe-fixtures.schema.json":
         raise SecurityToolingFailure("Haxe fixture schema identity drifted")
@@ -3350,6 +3507,8 @@ def validate_docs_and_modes() -> None:
         "scripts/examples/todoapp-next.mjs",
         "scripts/examples/showcases.mjs",
         "scripts/testing/compiler-gaps.mjs",
+        "scripts/testing/test-lanes.mjs",
+        "tools/cli/scripts/ensure-build.mjs",
         "scripts/testing/haxe-fixtures.mjs",
         "scripts/testing/package-shape.mjs",
         "scripts/testing/next-surface.mjs",

@@ -830,7 +830,7 @@ async function verifyBuild(bundlerFlag) {
   await removeGeneratedState();
   await verifyToolchain();
   await verifyAuthoredTypes();
-  await run("npm", ["run", "build", "--workspace", "@nextjshx/cli-internal"]);
+  await run(process.execPath, ["tools/cli/scripts/ensure-build.mjs", "runtime"]);
   const createdLinks = await linkWorkspaceDependencies();
   try {
     await run(

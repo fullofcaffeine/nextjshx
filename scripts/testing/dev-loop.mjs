@@ -275,7 +275,7 @@ try {
   assert(originalSource.includes(ORIGINAL_MARKER), "dev fixture marker drifted");
   await removeGeneratedState();
   createdLinks = await linkDependencies();
-  await run("npm", ["run", "build", "--workspace", "@nextjshx/cli-internal"]);
+  await run(process.execPath, ["tools/cli/scripts/ensure-build.mjs", "runtime"]);
   const port = await reservePort();
   dev = spawn(
     process.execPath,

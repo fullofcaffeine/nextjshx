@@ -410,6 +410,7 @@ async function verifyBrowser() {
 }
 
 async function verify() {
+  execute(process.execPath, ["tools/cli/scripts/ensure-build.mjs", "runtime"]);
   await clean();
   await verifySource();
   await verifyOwnershipCollision();

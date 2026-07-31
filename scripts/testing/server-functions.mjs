@@ -362,7 +362,7 @@ function generatedProof() {
 }
 
 function verifyProductionBuild() {
-  run("npm", ["run", "build", "--workspace", "@nextjshx/cli-internal"]);
+  run(process.execPath, ["tools/cli/scripts/ensure-build.mjs", "runtime"]);
   linkDependencies();
   const output = run(process.execPath, [CLI, "build", "--", "--turbopack"], {
     cwd: NEXT_APP,

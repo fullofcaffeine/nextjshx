@@ -145,7 +145,7 @@ try {
     fs.access(INPUT),
     fs.access(TAILWIND),
   ]);
-  await run("npm", ["run", "build", "--workspace", "@nextjshx/cli-internal"]);
+  await run(process.execPath, ["tools/cli/scripts/ensure-build.mjs", "runtime"]);
   await run(process.execPath, [TAILWIND, "-i", INPUT, "-o", OUTPUT], PROJECT);
 
   styles = managed(

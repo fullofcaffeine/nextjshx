@@ -138,9 +138,47 @@ cache identities isolated per test, and browser page/console/hydration,
 request, and unexpected response diagnostics teardown-fatal. Classify a known
 framework cancellation or deliberate failure by exact marker and route. Never add a broad console or network-error allowlist to make the suite green.
 
+## Use the fast feedback loop while implementing
+
+Start with the test owner that understands the changed contract:
+
+```sh
+npm run test:loop:explain -- --staged
+npm run test:focused -- --id <lane-id>
+npm run test:smoke
+```
+
+The explanation lists every selected lane, the file/owner relationship that
+selected it, every omitted lane, the declared environments, and a local
+reproduction command. Unknown paths and changes to the selector, toolchain,
+workflow, hooks, security policy, support matrix, lockfile, or core
+publication/process code expand to full validation.
+
+`test:smoke` gives a bounded local cross-layer check: real positive and
+negative Haxe compilation, deterministic adapter planning, strict generated
+TypeScript, cheap runtime assertions, and a harness failure-propagation
+sentinel. It does not replace the clean production Next build and runtime path
+that CI runs for executable changes.
+
+Affected selection remains observational. It may not remove required
+pull-request evidence until the documented run-count and time window complete
+without unexplained selector misses. See the
+[testing strategy](docs/testing-strategy.md) and
+[feedback-loop measurements](docs/testing-feedback-loop.md).
+
+Follow the repository's compiler-aware testing trophy rather than targeting a
+unit/integration/E2E count ratio. Static/compiler checks are broad, cross-tool
+integration tests are the largest executable layer, focused unit tests own
+isolated logic, and fewer production E2E journeys prove runtime behavior. This
+shape fits NextJsHx because its most important failures occur when Haxe, Genes,
+generated TSX, ownership publication, TypeScript, and Next disagree.
+Maintained examples remain QA: they must compile, strictly check, production
+build, and run the behavior they teach.
+
 ## Before closing work
 
-Run the issue-owned tests and the root gates:
+Run the issue-owned lanes first. Before exposing a branch or closing completed
+work, run the complete repository gates required by the active issue:
 
 ```sh
 npm test

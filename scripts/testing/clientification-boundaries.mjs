@@ -172,7 +172,7 @@ function verifySources() {
 try {
   clean();
   verifySources();
-  run("npm", ["run", "build", "--workspace", "@nextjshx/cli-internal"]);
+  run(process.execPath, ["tools/cli/scripts/ensure-build.mjs", "runtime"]);
   linkDependencies();
   const build = run(process.execPath, [CLI, "build", "--", "--turbopack"], {
     cwd: FIXTURE,

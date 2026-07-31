@@ -5,6 +5,29 @@ for a real type check or runtime result. The baseline harness is intentionally
 framework-light: later Beads add feature fixtures to these contracts rather
 than inventing one-off runners.
 
+## Start with the smallest meaningful check
+
+Do not begin every change with the complete suite. Ask the validated lane
+manifest which semantic owners cover the changed files, then run one owner or
+the local semantic smoke:
+
+```sh
+npm run test:loop:explain -- --staged
+npm run test:focused -- --id <lane-id>
+npm run test:smoke
+```
+
+`config/test-lanes.json` is the single test-topology and path-ownership
+authority. Each stable lane names its evidence, cost, timeout, environment,
+mutating roots, preparation, artifacts, claim status, and local reproduction
+command. Unknown or cross-cutting paths expand to full validation. The
+selector is currently **observation only**: CI publishes the plan it would
+choose while retaining every existing required pull-request job.
+
+The [testing feedback-loop report](testing-feedback-loop.md) documents the
+current command graph, measured repeated work, exact selection rules, and
+promotion criteria.
+
 ## Baseline commands
 
 ```sh
@@ -46,9 +69,99 @@ npm run test:harness
 npm run test:example:todoapp
 ```
 
-`test:harness` runs all evidence layers. The root `npm test` also runs the strict
-Next fixture plus the production todo-app build, HTTP smoke, and browser flow,
-so it remains the complete local gate.
+`test:harness` runs the reusable compiler, binding, CLI, deterministic-output,
+and focused runtime lanes declared in the manifest. The full showcase command
+owns `showcase-ui`, so the harness no longer repeats that exact owner before
+root `npm test` runs every showcase. Root `npm test` also runs the strict Next
+fixture plus the production todo-app build, HTTP smoke, and browser flow, so it
+remains the complete local gate.
+
+## Feedback rings and semantic smoke
+
+The feedback rings answer when a check should run:
+
+- **R0 focused/editor:** one named semantic owner during implementation;
+- **R1 local smoke:** cheap cross-layer canaries before remote CI;
+- **R2 required PR primary:** one clean Haxe → generated TSX → ownership →
+  strict TypeScript/Next typegen → Turbopack build → production runtime path;
+- **R3 affected extended:** expensive owners selected by known risk;
+- **R4 main/nightly full:** all current-primary lanes plus selector-miss audit;
+- **R5 release/claim:** every claimed Node, bundler, version, and profile cell
+  from clean inputs.
+
+`npm run test:smoke` is deliberately semantic rather than a random percentage.
+It validates the manifest and runner self-test, one positive Haxe compile, the
+exact negative diagnostic, deterministic adapter-plan evidence, strict
+generated TypeScript, and cheap runtime assertions. It does not make a snapshot
+impersonate a Next build: the stable Turbopack fixture remains the clean
+required remote vertical canary for every executable pull request.
+
+Selection cannot become a required affected-only gate until at least 30 varied
+runs and 14 days of observation show no unexplained miss. A miss resets the
+confidence window for that owner. Main, nightly, and release remain permanent
+full backstops.
+
+## Why the suite uses a compiler-aware testing trophy
+
+NextJsHx uses a testing trophy adapted to a compiler and framework integration,
+not a fixed unit/integration/E2E count ratio.
+
+The reason is the product's real failure boundary. NextJsHx does not stop after
+evaluating one library function:
+
+```text
+Haxe source
+  -> Haxe typing and macros
+  -> Genes TypeScript/TSX generation
+  -> NextJsHx ownership and publication
+  -> strict TypeScript and Next analysis
+  -> Next build and runtime/browser behavior
+```
+
+Most high-impact regressions occur where two stages disagree. A route macro can
+pass its unit test while emitting a shape Next rejects; a generated snapshot
+can look correct while TypeScript rejects it; a production build can pass while
+hydration, action transport, or cache invalidation fails in the browser.
+Therefore a classic testing pyramid dominated by isolated unit tests would give
+fast but incomplete confidence. The opposite extreme—putting most behavior
+through browsers—would find failures late, run slowly, and make diagnosis and
+flake control worse.
+
+The trophy balances those costs:
+
+1. **Broad static and compiler checks** reject invalid states early through
+   Haxe typing, exact negative diagnostics, deterministic Genes output, strict
+   TypeScript, React lint, Next type generation, schemas, and policy checks.
+2. **Integration tests form the largest executable layer** because they prove
+   agreement between Haxe, Genes, generated TSX, ownership publication,
+   TypeScript, and Next. Unit mocks cannot prove those boundaries.
+3. **Focused unit tests own isolated logic** such as route parsing,
+   normalization, plan validation, selectors, fingerprints, codecs, and
+   transaction state machines. These keep test-driven implementation fast and
+   failures local.
+4. **Fewer production-real E2E journeys** prove behavior that only a running
+   application can establish: hydration, navigation, streaming, Server
+   Functions, caching, errors, security boundaries, and HMR.
+
+The practical capability rule is stronger than a ratio: every public behavior
+gets the cheapest focused check that detects its local invalid states, one real
+cross-tool integration path, and an E2E journey whenever runtime or browser
+behavior is part of the claim. Lane counts and durations are measured for
+cost, balance, and failure yield, but are not treated as a quality score.
+
+TDD and BDD describe how contributors use this evidence rather than competing
+suite shapes. For TDD, reproduce a failure in the smallest named owner,
+implement the change, then climb through smoke and the affected integrations.
+For behavior-driven work, the production HTTP or Playwright journey is the
+executable behavior specification; Gherkin syntax is not required.
+
+Maintained examples are QA products. Every example must compile from Haxe,
+strictly check its generated TS/TSX, complete the appropriate Next production
+build, and execute the behavior it teaches. Browser-facing claims use
+zero-retry Playwright with page, console, hydration, request, and unexpected
+response failures treated as fatal. A changed showcase may use its focused PR
+owner, while all maintained examples remain full main/nightly/release
+evidence.
 
 ## Local and hosted gates
 
@@ -67,7 +180,10 @@ The gates are deliberately cumulative:
   current Node versions, stable Next declarations, Turbopack and webpack
   production builds, the reusable typed-boundary harness, maintained
   showcases, and the flagship production Playwright suite. Canary declaration
-  drift is visible but non-blocking.
+  drift is visible but non-blocking. An early plan job explains the
+  observation-only affected selection, a daily schedule supplies a cold full
+  backstop, and the final job fails unless every declared governance job
+  succeeded.
 - **Publication preflight** (`npm run public:preflight`) is the complete local
   release gate. It combines formatting, whitespace, both history scans,
   dependency auditing, every compiler/integration fixture, production builds,
@@ -75,6 +191,24 @@ The gates are deliberately cumulative:
 
 This split keeps ordinary commits responsive without allowing a fast local
 check to stand in for the complete hosted or publication evidence.
+
+## Results, caches, retries, and reproduction
+
+Focused, changed, smoke, and harness executions write ignored structured
+records under `.nextjshx/testing/`. A result includes source identity, reason,
+environment, execution time, outcome, timeout/retry/quarantine state,
+prepared-CLI state, artifacts, and the exact local reproduction command.
+
+CLI fixtures share a fingerprinted runtime build, while CLI tests share a
+fingerprinted test build. A prepared result is accepted only when its source,
+package, lockfile, TypeScript, tsconfig, Node, platform, architecture, and mode
+identity still matches and the required outputs exist. Cache or prepared-output
+misses always rebuild; neither is evidence by itself.
+
+Deterministic failures are not retried into green. Playwright remains at zero
+automatic retries. Every lane has a timeout and process-group cleanup, and the
+runner self-test deliberately verifies nonzero and timeout propagation.
+Quarantined evidence cannot support a public compatibility claim.
 
 The dependency gate also protects the reviewed host toolchain, not only Haxe
 source. The current lock keeps React and React DOM at 19.2.7, the TypeScript

@@ -1024,7 +1024,7 @@ async function verifyBuild() {
   await fs.chmod(STATE, 0o600);
   assert.equal((await fs.stat(STATE)).mode & 0o777, 0o600, "runtime todo state must be owner-only");
 
-  run("npm", ["run", "build", "--workspace", "@nextjshx/cli-internal"]);
+  run(process.execPath, ["tools/cli/scripts/ensure-build.mjs", "runtime"]);
   const createdLinks = await linkWorkspaceDependencies();
   try {
     run(process.execPath, [TAILWIND_BIN, "-i", "styles/app.css", "-o", "public/styles.css", "--minify"], {

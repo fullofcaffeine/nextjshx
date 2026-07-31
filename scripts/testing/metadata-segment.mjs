@@ -306,7 +306,7 @@ async function renderAndValidateTypescript() {
     assert(!source.includes(portable(ROOT)), "generated metadata source leaked the compiler host path");
   }
 
-  run("npm", ["run", "build", "--workspace", "@nextjshx/cli-internal"]);
+  run(process.execPath, ["tools/cli/scripts/ensure-build.mjs", "runtime"]);
   const cli = await import(`${pathToFileURL(CLI_INDEX).href}?metadata-segment=${Date.now()}`);
   const plan = cli.parseAdapterPlan(JSON.parse(fs.readFileSync(TYPESCRIPT_PLAN_PATH, "utf8")));
   const outputs = cli.renderAdapterPlan("tests/metadata-segment/.tmp/app", plan);
