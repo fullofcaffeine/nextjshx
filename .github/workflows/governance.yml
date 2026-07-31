@@ -7,6 +7,8 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: "23 4 * * *"
   workflow_dispatch:
 
 permissions:
@@ -14,9 +16,77 @@ permissions:
 
 concurrency:
   group: governance-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  test-plan:
+    name: Test selection plan (observation only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out full history for merge-base selection
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 20.19.3
+          cache: npm
+
+      - name: Install locked development dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Validate and explain the observed test plan
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BASE: ${{ github.event.before }}
+          PUSH_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          npm run test:loop:validate
+          mkdir -p .nextjshx/testing
+          case "$EVENT_NAME" in
+            pull_request)
+              npm run test:loop:explain -- \
+                --base "$PR_BASE" --head "$PR_HEAD" \
+                --output .nextjshx/testing/plan.json |
+                tee .nextjshx/testing/plan.txt
+              ;;
+            push)
+              if test -n "$PUSH_BASE" &&
+                test "$PUSH_BASE" != "0000000000000000000000000000000000000000"; then
+                npm run test:loop:explain -- \
+                  --base "$PUSH_BASE" --head "$PUSH_HEAD" \
+                  --output .nextjshx/testing/plan.json |
+                  tee .nextjshx/testing/plan.txt
+              else
+                npm run test:loop:explain -- \
+                  --path config/test-lanes.json \
+                  --output .nextjshx/testing/plan.json |
+                  tee .nextjshx/testing/plan.txt
+              fi
+              ;;
+            *)
+              npm run test:loop:explain -- \
+                --path config/test-lanes.json \
+                --output .nextjshx/testing/plan.json |
+                tee .nextjshx/testing/plan.txt
+              ;;
+          esac
+          {
+            echo "## Observed test selection"
+            echo
+            echo "This plan does not skip any existing required job."
+            echo
+            echo '```text'
+            cat .nextjshx/testing/plan.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
   secret-scan:
     name: Full-history secret scan
     runs-on: ubuntu-latest
@@ -284,3 +354,37 @@ jobs:
           npm run test:support-matrix
           npm run test:architecture
           npm run lint:whitespace
+
+  governance-result:
+    name: Governance final result
+    if: always()
+    needs:
+      - test-plan
+      - secret-scan
+      - haxe-format
+      - compatibility-contract
+      - next-stable-fixture
+      - next-stable-declaration-drift
+      - next-canary-declaration-drift
+      - baseline-test-harness
+      - showcase-matrix
+      - todoapp-production-e2e
+      - security-tooling
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require every declared governance job to succeed
+        env:
+          JOB_RESULTS: ${{ toJSON(needs) }}
+        run: |
+          node - <<'NODE'
+          const jobs = JSON.parse(process.env.JOB_RESULTS);
+          const failed = Object.entries(jobs)
+            .filter(([, value]) => value.result !== "success")
+            .map(([name, value]) => `${name}=${value.result}`);
+          if (failed.length > 0) {
+            console.error(`required governance jobs did not succeed: ${failed.join(", ")}`);
+            process.exit(1);
+          }
+          console.log(`governance-result: OK: ${Object.keys(jobs).length} declared jobs succeeded`);
+          NODE

@@ -15,6 +15,9 @@ layer. Choose the shortest path below for the work you are doing.
   Next.js, React, and TypeScript versions.
 - [Testing strategy](testing-strategy.md): which guarantees come from Haxe,
   generated TypeScript, Next builds, runtime tests, and browser evidence.
+- [Testing feedback loop](testing-feedback-loop.md): focused commands,
+  affected-owner explanations, timing records, and the observation-only
+  selector rollout.
 
 ## Build an application
 

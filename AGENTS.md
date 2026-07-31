@@ -386,6 +386,16 @@ bd prime                # Refresh Beads context
 
 - Use Beads for all durable work, blockers, decisions, and discovered follow-up.
   Run `bd prime` for the current command syntax and synchronization profile.
+- Use `config/test-lanes.json` as the test-topology and path-ownership
+  authority. During implementation, run
+  `npm run test:loop:explain -- --staged`, the smallest named owner through
+  `npm run test:focused -- --id <lane-id>`, and then `npm run test:smoke`.
+  Do not begin every edit with the complete suite, and do not let a focused
+  snapshot or cache replace real Haxe, strict TypeScript, Next build, runtime,
+  browser, compatibility, or release evidence. Unknown, selector, toolchain,
+  workflow, security, support, lockfile, and core publication/process changes
+  expand to full validation. Affected selection remains observation-only until
+  the documented confidence window passes without unexplained misses.
 - Make pull request descriptions as specific and reproducible as possible.
   State where the problem was discovered and why the change was needed, explain
   the exact solution and its intended limits, include a positive example of the

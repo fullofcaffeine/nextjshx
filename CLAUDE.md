@@ -55,10 +55,20 @@ bd close <id>         # Complete work
 
 ```bash
 npm ci
+npm run test:loop:explain -- --staged
+npm run test:focused -- --id <lane-id>
+npm run test:smoke
 npm test
 npm run format:haxe:check
 npm run public:preflight
 ```
+
+Use the validated test-lane manifest for the implementation loop instead of
+starting every change with `npm test`. Run the named semantic owner, then the
+local smoke; complete Next/browser/compatibility evidence remains in CI and
+publication preflight. Affected selection is observation-only until its
+documented confidence window passes, and unknown or cross-cutting paths must
+expand to full validation.
 
 ## Architecture Overview
 

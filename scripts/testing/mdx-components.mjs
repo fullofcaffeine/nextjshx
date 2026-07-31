@@ -101,7 +101,7 @@ function verifyNegativeCases() {
 
 async function main() {
   clean();
-  run("npm", ["run", "build", "--workspace", "@nextjshx/cli-internal"]);
+  run(process.execPath, ["tools/cli/scripts/ensure-build.mjs", "runtime"]);
   run("haxe", ["tests/mdx-components/build-positive.hxml"]);
   const first = {
     plan: digest(PLAN),

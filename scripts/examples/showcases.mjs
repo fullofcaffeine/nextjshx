@@ -1096,7 +1096,7 @@ async function browserSmoke(showcase) {
 async function verifyAll(showcases = SHOWCASES) {
   await verifySourceContracts();
   run(process.execPath, ["scripts/testing/showcase-ui.mjs"]);
-  run("npm", ["run", "build", "--workspace", "@nextjshx/cli-internal"]);
+  run(process.execPath, ["tools/cli/scripts/ensure-build.mjs", "runtime"]);
   for (const showcase of showcases) {
     try {
       await verifyDeterminism(showcase);
