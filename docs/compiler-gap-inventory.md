@@ -5,7 +5,7 @@ to ordinary Haxe-to-TypeScript/JavaScript contracts. The repro source contains
 no Next.js, React, route, adapter, or project-specific names.
 
 The evidence is pinned to genes-ts `1.41.0` at commit
-`8a7f7aaf3227fdee79a3cbd25d90ef2c99975f78`, Haxe `4.3.7`, and both supported
+`0b7a4ca9d10682baeeb6a457ac666a02b7dc2376`, Haxe `4.3.7`, and both supported
 genes output profiles. Run it with:
 
 ```sh
@@ -27,6 +27,7 @@ npm run test:compiler-gaps
 | `GENES-CAP-CALL-IDENTITY-001` | — | Haxe can relocate an inner generic call or give it the same macro span as an unrelated fluent outer call. | Stacked genes-ts PR #35 carries a deterministic registration identity through the typed tree, verifies the exact extern target, and erases the carrier in both output profiles. |
 | `GENES-CAP-ENUM-HIGHER-ORDER-001` | — | Haxe can erase an enum-abstract leaf nested in callbacks, arrays, aliases, anonymous structures, or generic applications before TypeScript emission. | Stacked genes-ts PR #37 captures only explicitly observed pre-erasure source types, recursively restores their closed leaves, and leaves unrelated widened paths conservative. |
 | `GENES-CAP-LOCAL-CONST-001` | — | Initialized Haxe locals with no rebinding were emitted as mutable `let` declarations. | genes-ts PR #46 derives one complete typed-tree write inventory and emits canonical `const` in TypeScript, TSX, and classic ES2015 output while keeping uncertain or mutable bindings as `let`. |
+| `GENES-CAP-MODULE-VALUE-001` | — | Genuine immutable Haxe module values retained a compiler-synthetic `_Fields_` class, so hosts could not consume an ordinary direct ESM binding. | Stacked genes-ts PR #100 adds explicit framework-neutral `@:genes.moduleValue`, typed TS/JS `const` output, direct imports, declarations, source maps, DCE neutrality, collision checks, and conservative initialization rules. NextJsHx derives it for validated App Router metadata without adding Next behavior to Genes. |
 
 ## `GENES-CAP-LOCAL-CONST-001`: immutable local declarations
 

@@ -47,9 +47,9 @@ export default async function Article({ params }: PageProps<"/journal/[slug]">) 
 ```
 
 That is already good Next.js. The Haxe version keeps the same module-oriented
-catalogue and native `notFound()` behavior, while `PostSlug`,
-`ArticlePage.href({slug})`, exhaustive domain values, and HXX move route,
-link, prop, and child mistakes to the Haxe source before TSX exists.
+catalogue and native `notFound()` behavior, while `PostSlug`, the generated
+`articleHref({slug})` module binding, exhaustive domain values, and HXX move
+route, link, prop, and child mistakes to the Haxe source before TSX exists.
 
 The catalogue stays a module, not a class used as a namespace:
 
@@ -61,13 +61,36 @@ function find(slug:PostSlug):Null<Post> {
 	return null;
 }
 
-<NextLink href={ArticlePage.href({slug: next.slug})}>{next.title}</NextLink>;
+import blog.app.ArticlePage.href as articleHref;
+
+<NextLink href={articleHref({slug: next.slug})}>{next.title}</NextLink>;
 ```
 
 `PostSlug` carries one named route representation through the catalogue API,
 while the generated `href` companion couples URL construction to the page's
 dynamic parameter shape. This deterministic example permits string literals to
 construct slugs; an untrusted external slug would still need validation.
+
+The pages and layout are ordinary Haxe module functions and values, just like
+idiomatic Next.js modules:
+
+```haxe
+@:next.page("journal/[slug]")
+function render(props:PageProps<ArticleParams, SearchParams>):Promise<Element> {
+	return props.params.then(params -> {
+		final post = find(params.slug);
+		return post == null ? missing() : renderArticle(post);
+	});
+}
+
+function generateStaticParams():Array<ArticleParams> {
+	return all().map(post -> {slug: post.slug});
+}
+```
+
+NextJsHx connects these checked functions to the standard `page.tsx` default
+and named exports. Genes emits normal TypeScript/TSX module functions and
+constants, so no class is needed merely to hold static fields.
 
 ## Run it
 
@@ -78,11 +101,11 @@ npm run build --workspace @nextjshx/showcase-blog
 
 ## Gotchas
 
-- `@:async` marks Promise-shaped Haxe methods; it does not introduce another
-  scheduler or replace Next’s async component behavior.
-- The catalogue is a Haxe module. Page owners are still classes only because
-  the current `@:next.page` macro attaches convention metadata to a type; direct
-  module-owned pages are tracked as a framework/compiler improvement.
+- Promise-shaped route props remain ordinary JavaScript Promises. This example
+  uses `.then(...)`; Next still controls when the route is rendered.
+- Route owners and the catalogue use Haxe modules. Use classes only when
+  construction, inheritance, interface implementation, metadata, or runtime
+  class identity is part of the design.
 - Call Next’s native not-found control flow after typed lookup fails.
 - Edit the Haxe catalogue and authored styles; generated TSX is build output.
 

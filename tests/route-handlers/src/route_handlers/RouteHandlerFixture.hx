@@ -8,7 +8,7 @@ import nextjshx.route.RouteHandlerMacro;
 
 class RouteHandlerFixture {
 	public static macro function install(outputPath:String):Expr {
-		AdapterPlanRegistry.install(outputPath, "0.0.0-development", "4.3.7", "1.41.0+8a7f7aaf3227fdee79a3cbd25d90ef2c99975f78", "16.2.12");
+		AdapterPlanRegistry.install(outputPath, "0.0.0-development", "4.3.7", "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376", "16.2.12");
 		RouteHandlerMacro.install();
 		return macro null;
 	}

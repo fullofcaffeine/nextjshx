@@ -16,7 +16,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..")
 const CLI_BIN = path.join(ROOT, "tools/cli/.tmp/src/cli.js");
 const NEXT_BIN = path.join(ROOT, "node_modules/next/dist/bin/next");
 const TSC_BIN = path.join(ROOT, "node_modules/typescript/bin/tsc6");
-const GENES_COMMIT = "8a7f7aaf3227fdee79a3cbd25d90ef2c99975f78";
+const GENES_COMMIT = "0b7a4ca9d10682baeeb6a457ac666a02b7dc2376";
 const SUPPORTED_NODE_VERSIONS = new Set(["20.19.3", "24.18.0"]);
 const VIEWPORTS = Object.freeze([
   Object.freeze({ name: "desktop", width: 1440, height: 1000 }),

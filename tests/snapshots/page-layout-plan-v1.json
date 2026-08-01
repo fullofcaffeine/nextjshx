@@ -4,7 +4,7 @@
   "toolchain": {
     "nextjshx": "0.0.0-development",
     "haxe": "4.3.7",
-    "genesTs": "1.41.0+8a7f7aaf3227fdee79a3cbd25d90ef2c99975f78",
+    "genesTs": "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
     "next": "16.2.12"
   },
   "intents": [
@@ -236,6 +236,82 @@
           "name": "default",
           "sourceField": "render",
           "signature": "(props: LayoutProps<\"/\">) => JSX.Element"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "page",
+      "source": {
+        "typeName": "page_layouts.positive.ModuleStaticMetadata",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/ModuleStaticMetadata.hx",
+          "startLine": 10,
+          "startCharacter": 1,
+          "endLine": 12,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/ModuleStaticMetadata.hx",
+          "startLine": 10,
+          "startCharacter": 1,
+          "endLine": 12,
+          "endCharacter": 2
+        },
+        "metadataPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/ModuleStaticMetadata.hx",
+          "startLine": 9,
+          "startCharacter": 1,
+          "endLine": 9,
+          "endCharacter": 12
+        }
+      },
+      "segmentPath": "module-metadata",
+      "targetPath": "module-metadata/page.tsx",
+      "implementation": {
+        "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ModuleStaticMetadata",
+        "symbol": "render"
+      },
+      "imports": [
+        {
+          "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ModuleStaticMetadata",
+          "symbol": "metadata",
+          "alias": "NextJsHxMetadataImplementation",
+          "typeOnly": false
+        },
+        {
+          "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ModuleStaticMetadata",
+          "symbol": "render",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "next",
+          "symbol": "Metadata",
+          "alias": null,
+          "typeOnly": true
+        },
+        {
+          "modulePath": "react",
+          "symbol": "JSX",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: PageProps<\"/module-metadata\">) => JSX.Element"
+        },
+        {
+          "kind": "named",
+          "name": "metadata",
+          "sourceField": "metadata",
+          "signature": "Metadata"
         }
       ],
       "config": []

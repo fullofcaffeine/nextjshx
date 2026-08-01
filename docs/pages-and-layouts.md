@@ -30,9 +30,9 @@ typedef TodoParams = {
 }
 
 /**
- * The annotation gives this ordinary module function one App Router owner.
- * NextJsHx checks the route/props contract and derives Genes' framework-neutral
- * direct ESM lowering; it does not introduce a route runtime.
+ * The annotation gives this ordinary module function one App Router route.
+ * NextJsHx checks the route and props, then asks Genes to emit a normal named
+ * JavaScript module export. It does not introduce a second routing runtime.
  */
 @:next.page("todos/[id]")
 function render(
@@ -97,18 +97,60 @@ import app.routes.TodoPage.href as todoHref;
 final destination = todoHref({id: todo.id});
 ```
 
-Static `metadata` values temporarily remain available on the compatibility
-class form. A module-shaped owner should use `generateMetadata` until Genes
-provides the framework-neutral direct module-value lowering needed to emit
-that `const` without retaining Haxe's synthetic module-fields class. Attempting
-the unsupported form fails before output with
+Static metadata stays module-shaped too:
+
+```haxe
+import nextjs.raw.metadata.Metadata;
+
+/**
+ * NextJsHx validates this against Next's public Metadata type, then asks Genes
+ * to emit a normal `export const`. The annotation does not evaluate metadata or
+ * introduce a second framework runtime.
+ */
+final metadata:Metadata = {
+  title: "Todo ledger",
+  description: "Typed Haxe over ordinary Next.js"
+};
+```
+
+Genes emits the implementation as the direct typed binding native tools expect:
+
+```ts
+export const metadata: import("next").Metadata = {
+  "title": "Todo ledger",
+  "description": "Typed Haxe over ordinary Next.js"
+};
+```
+
+The narrow convention adapter aliases that implementation binding before it
+publishes Next's canonical named export:
+
+```tsx
+import {
+  metadata as NextJsHxMetadataImplementation,
+  render
+} from "../../../src-gen/app/routes/TodoPage";
+import type { Metadata } from "next";
+
+const NextJsHxDefault:
+  (props: PageProps<"/todos/[id]">) => Promise<JSX.Element> = render;
+export default NextJsHxDefault;
+export const metadata: Metadata = NextJsHxMetadataImplementation;
+```
+
+Application code must not declare `@:genes.moduleValue` itself. NextJsHx owns
+the App Router export name, its type, its generated adapter, and the rule that
+keeps it in the compiled program. Genes owns the reusable conversion from an
+immutable Haxe module value to a normal JavaScript `export const`.
+Direct user ownership fails before output with
 `NXHX-PAGE-LAYOUT-MODULE-0011`.
 
 ## Compatibility class page contract
 
-A class form remains supported when class identity is meaningful or while a
-static named value requires it. It has one `@:next.page(path)` annotation and
-one public static, non-generic `render` function:
+A class form remains supported when construction, inheritance, interface
+implementation, class metadata, or runtime class identity makes the class
+meaningful. It has one `@:next.page(path)` annotation and one public static,
+non-generic `render` function:
 
 ```haxe
 package app.routes;
@@ -137,7 +179,7 @@ class TodoPage {
 `params` and `searchParams` are Promises because that is the pinned Next.js
 contract. `TodoParams` is checked against `todos/[id]` by the same exact route
 validator used by route handlers and hrefs. Missing, extra, or wrong-cardinality
-fields fail at the render declaration before any plan is published.
+fields fail at the render declaration before any generated files are published.
 
 The raw `SearchParams` boundary is a readonly
 `Record<string, string | string[] | undefined>` in emitted TypeScript. Haxe

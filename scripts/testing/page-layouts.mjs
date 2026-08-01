@@ -126,13 +126,13 @@ const NEGATIVE_CASES = [
       'Layout props field "modal" must be required and immutable because Next supplies one closed render snapshot.',
   },
   {
-    id: "module-static-metadata",
-    file: "tests/page-layouts/src/page_layouts/negative/ModuleStaticMetadata.hx",
-    line: 14,
-    range: { kind: "lines", start: 14, end: 16 },
+    id: "module-user-value-marker",
+    file: "tests/page-layouts/src/page_layouts/negative/ModuleUserValueMarker.hx",
+    line: 19,
+    range: { kind: "lines", start: 19, end: 21 },
     code: "NXHX-PAGE-LAYOUT-MODULE-0011",
     message:
-      "page_layouts.negative.ModuleStaticMetadata.metadata cannot yet be emitted as a direct module value. Use a module-level generateMetadata function, or keep this page/layout in the compatibility class form until Genes provides framework-neutral direct module-value lowering.",
+      "metadata must not declare @:genes.moduleValue directly; NextJsHx derives the exact native binding from the reviewed App Router export.",
   },
 ];
 
@@ -240,6 +240,7 @@ function validatePlan() {
       ["page", "@analytics", "@analytics/page.tsx"],
       ["page", "feed/@modal/(..)photo/[id]", "feed/@modal/(..)photo/[id]/page.tsx"],
       ["layout", "", "layout.tsx"],
+      ["page", "module-metadata", "module-metadata/page.tsx"],
       ["page", "module-products/[id]", "module-products/[id]/page.tsx"],
       ["layout", "module-shell", "module-shell/layout.tsx"],
       ["page", "", "page.tsx"],
@@ -263,24 +264,40 @@ function validatePlan() {
   assert.equal(plan.intents[2].exports[0].signature, '(props: PageProps<"/photo/[id]">) => JSX.Element');
   assert.equal(plan.intents[3].exports[0].signature, '(props: LayoutProps<"/">) => JSX.Element');
   assert.equal(
-    plan.intents[4].exports[0].signature,
+    plan.intents[5].exports[0].signature,
     '(props: PageProps<"/module-products/[id]">) => Promise<JSX.Element>',
   );
   assert.equal(
-    plan.intents[5].exports[0].signature,
+    plan.intents[6].exports[0].signature,
     '(props: LayoutProps<"/module-shell">) => JSX.Element',
   );
-  assert.equal(plan.intents[6].exports[0].signature, '(props: PageProps<"/">) => JSX.Element');
   assert.equal(
-    plan.intents[7].exports[0].signature,
+    plan.intents[4].exports[0].signature,
+    '(props: PageProps<"/module-metadata">) => JSX.Element',
+  );
+  assert.deepEqual(
+    plan.intents[4].exports.map((exported) => [
+      exported.kind,
+      exported.name,
+      exported.sourceField,
+    ]),
+    [
+      ["default", "default", "render"],
+      ["named", "metadata", "metadata"],
+    ],
+    "module page lost its direct typed metadata export",
+  );
+  assert.equal(plan.intents[7].exports[0].signature, '(props: PageProps<"/">) => JSX.Element');
+  assert.equal(
+    plan.intents[8].exports[0].signature,
     '(props: LayoutProps<"/todos/[id]">) => Promise<JSX.Element>',
   );
   assert.equal(
-    plan.intents[8].exports[0].signature,
+    plan.intents[9].exports[0].signature,
     '(props: PageProps<"/todos/[id]">) => Promise<JSX.Element>',
   );
   assert.deepEqual(
-    plan.intents[4].exports.map((exported) => [exported.kind, exported.name, exported.sourceField]),
+    plan.intents[5].exports.map((exported) => [exported.kind, exported.name, exported.sourceField]),
     [
       ["default", "default", "render"],
       ["named", "generateStaticParams", "generateStaticParams"],
@@ -309,6 +326,7 @@ function validateGeneratedTypescript() {
   const parallel = generated("page_layouts/positive/ParallelPage.tsx");
   const moduleProduct = generated("page_layouts/positive/ModuleProductPage.tsx");
   const moduleLayout = generated("page_layouts/positive/ModuleRootLayout.tsx");
+  const moduleMetadata = generated("page_layouts/positive/ModuleStaticMetadata.tsx");
   const consumer = generated("page_layouts/NoRuntime.tsx");
   const pageProps = generated("nextjs/app/PageProps.tsx");
   const layoutProps = generated("nextjs/app/LayoutProps.tsx");
@@ -322,10 +340,19 @@ function validateGeneratedTypescript() {
   assert(moduleProduct.includes("export function render("));
   assert(moduleProduct.includes("export function generateStaticParams("));
   assert(moduleLayout.includes("export function render("));
+  assert(moduleMetadata.includes("export function render("));
+  assert(
+    moduleMetadata.includes(
+      "export const metadata: import('next').Metadata = {\"title\": \"Direct module metadata\"};",
+    ),
+    "module page lost its typed direct metadata value",
+  );
   assert(!moduleProduct.includes("ModuleProductPage_Fields_"));
   assert(!moduleLayout.includes("ModuleRootLayout_Fields_"));
+  assert(!moduleMetadata.includes("ModuleStaticMetadata_Fields_"));
   assert(!moduleProduct.includes("Register.setHxClass"));
   assert(!moduleLayout.includes("Register.setHxClass"));
+  assert(!moduleMetadata.includes("Register.setHxClass"));
   assert(
     dynamic.includes(
       "static hrefWithQuery(params: TodoParams, query: TodoQuery): import('next').Route<`/todos/${string}` | `${Extract<`/todos/${string}`, string>}?${string}`>",
@@ -374,7 +401,17 @@ function validateGeneratedTypescript() {
     "optional query encoding lost Genes' erased, exact presence proof",
   );
   assert(!consumer.includes("TodoQuery"), "query schema created a consumer runtime dependency");
-  for (const source of [root, rootLayout, dynamic, grouped, intercepted, parallel, pageProps, layoutProps]) {
+  for (const source of [
+    root,
+    rootLayout,
+    dynamic,
+    grouped,
+    intercepted,
+    parallel,
+    moduleMetadata,
+    pageProps,
+    layoutProps,
+  ]) {
     assert(!/\b(?:any|unknown)\b/.test(source), "generated page/layout public API contains a broad type");
     const withoutPresenceProof = source.replaceAll(
       "(((__nextQuery0Optional1)! as boolean))",

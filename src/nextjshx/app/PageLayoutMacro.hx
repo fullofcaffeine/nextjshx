@@ -81,6 +81,7 @@ class PageLayoutMacro {
 	public static inline final GENERATED_ROOT_DEFINE:String = "nextjshx.generated-root";
 	static inline final LAYOUT_SLOTS_METADATA:String = ":next.layoutSlots";
 	static inline final MODULE_FUNCTION_METADATA:String = ":genes.moduleFunction";
+	static inline final MODULE_VALUE_METADATA:String = ":genes.moduleValue";
 
 	static final BOUNDARY_METADATA = [
 		":next.page",
@@ -245,24 +246,37 @@ class PageLayoutMacro {
 	}
 
 	/**
-	 * Requests Genes' framework-neutral module-function lowering for one native
-	 * Next export body. Application code owns only the Next annotation; the
-	 * compiler marker is derived plumbing and therefore cannot conflict with a
-	 * user-selected binding name.
+	 * Asks Genes to emit one validated route function as a normal JavaScript
+	 * module export. Application code uses only the Next annotation; NextJsHx
+	 * adds the lower-level Genes marker and chooses the reviewed export name.
 	 */
-	static function markModuleFunction(field:Field):Void {
+	static function markDirectModuleBinding(field:Field, metadataName:String, annotation:String):Void {
 		final metadata = field.meta == null ? [] : field.meta;
-		if (metadata.exists(entry -> entry.name == MODULE_FUNCTION_METADATA)) {
+		if (metadata.exists(entry -> entry.name == metadataName)) {
 			fail("NXHX-PAGE-LAYOUT-MODULE-0011",
-				'${field.name} must not declare @:genes.moduleFunction directly; NextJsHx derives the exact native binding from the reviewed App Router export.',
+				'${field.name} must not declare $annotation directly; NextJsHx derives the exact native binding from the reviewed App Router export.',
 				field.pos);
 		}
 		metadata.push({
-			name: MODULE_FUNCTION_METADATA,
+			name: metadataName,
 			params: [{expr: EConst(CString(field.name, DoubleQuotes)), pos: field.pos}],
 			pos: field.pos
 		});
 		field.meta = metadata;
+	}
+
+	static function markModuleFunction(field:Field):Void {
+		markDirectModuleBinding(field, MODULE_FUNCTION_METADATA, "@:genes.moduleFunction");
+	}
+
+	/**
+	 * Asks Genes to emit static route metadata as a normal `export const`.
+	 *
+	 * NextJsHx owns the App Router name and validates Next's Metadata type. Genes
+	 * owns the reusable Haxe-module-value to JavaScript-module conversion.
+	 */
+	static function markModuleValue(field:Field):Void {
+		markDirectModuleBinding(field, MODULE_VALUE_METADATA, "@:genes.moduleValue");
 	}
 
 	static function resolveAliases(type:Type):Type {
@@ -554,13 +568,9 @@ class PageLayoutMacro {
 	}
 
 	static function validateStaticMetadata(type:ClassType, field:Field):Field {
-		if (isModuleOwner(type)) {
-			return fail("NXHX-PAGE-LAYOUT-MODULE-0011",
-				'${ownerName(type)}.metadata cannot yet be emitted as a direct module value. Use a module-level generateMetadata function, or keep this page/layout in the compatibility class form until Genes provides framework-neutral direct module-value lowering.',
-				field.pos);
-		}
 		if (!isStaticField(type, field) || !hasAccess(field, AFinal)) {
-			return fail("NXHX-PAGE-LAYOUT-METADATA-0008", '${ownerName(type)}.metadata must be public static final.', field.pos);
+			final ownership = isModuleOwner(type) ? "a public module-level final" : "public static final";
+			return fail("NXHX-PAGE-LAYOUT-METADATA-0008", '${ownerName(type)}.metadata must be $ownership.', field.pos);
 		}
 		final fieldType = switch field.kind {
 			case FVar(complexType, value) if (value != null):
@@ -927,6 +937,9 @@ class PageLayoutMacro {
 				}
 			}
 			markModuleFunction(render.field);
+			if (named.metadata != null) {
+				markModuleValue(named.metadata);
+			}
 			if (named.generateMetadata != null) {
 				markModuleFunction(named.generateMetadata.field);
 			}
@@ -953,6 +966,7 @@ class PageLayoutMacro {
 			]) {
 				if (field != null) {
 					final importAlias = switch field.name {
+						case "metadata": "NextJsHxMetadataImplementation";
 						case "generateMetadata": "NextJsHxGenerateMetadataImplementation";
 						case "generateStaticParams": "NextJsHxGenerateStaticParamsImplementation";
 						case _: null;
