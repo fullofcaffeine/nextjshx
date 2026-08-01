@@ -125,6 +125,15 @@ const NEGATIVE_CASES = [
     message:
       'Layout props field "modal" must be required and immutable because Next supplies one closed render snapshot.',
   },
+  {
+    id: "module-user-value-marker",
+    file: "tests/page-layouts/src/page_layouts/negative/ModuleUserValueMarker.hx",
+    line: 19,
+    range: { kind: "lines", start: 19, end: 21 },
+    code: "NXHX-PAGE-LAYOUT-MODULE-0011",
+    message:
+      "metadata must not declare @:genes.moduleValue directly; NextJsHx derives the exact native binding from the reviewed App Router export.",
+  },
 ];
 
 function portable(value) {
@@ -231,13 +240,15 @@ function validatePlan() {
       ["page", "@analytics", "@analytics/page.tsx"],
       ["page", "feed/@modal/(..)photo/[id]", "feed/@modal/(..)photo/[id]/page.tsx"],
       ["layout", "", "layout.tsx"],
+      ["page", "module-metadata", "module-metadata/page.tsx"],
+      ["page", "module-products/[id]", "module-products/[id]/page.tsx"],
+      ["layout", "module-shell", "module-shell/layout.tsx"],
       ["page", "", "page.tsx"],
       ["layout", "todos/[id]", "todos/[id]/layout.tsx"],
       ["page", "todos/[id]", "todos/[id]/page.tsx"],
     ],
   );
   assert(plan.intents.every((intent) => intent.source.fieldName === "render"));
-  assert(plan.intents.every((intent) => intent.exports.length === 1));
   assert(plan.intents.every((intent) => intent.exports[0].kind === "default"));
   assert(plan.intents.every((intent) => intent.exports[0].sourceField === "render"));
   assert(
@@ -252,14 +263,46 @@ function validatePlan() {
   assert.equal(plan.intents[1].exports[0].signature, '(props: PageProps<"/">) => JSX.Element');
   assert.equal(plan.intents[2].exports[0].signature, '(props: PageProps<"/photo/[id]">) => JSX.Element');
   assert.equal(plan.intents[3].exports[0].signature, '(props: LayoutProps<"/">) => JSX.Element');
-  assert.equal(plan.intents[4].exports[0].signature, '(props: PageProps<"/">) => JSX.Element');
   assert.equal(
     plan.intents[5].exports[0].signature,
-    '(props: LayoutProps<"/todos/[id]">) => Promise<JSX.Element>',
+    '(props: PageProps<"/module-products/[id]">) => Promise<JSX.Element>',
   );
   assert.equal(
     plan.intents[6].exports[0].signature,
+    '(props: LayoutProps<"/module-shell">) => JSX.Element',
+  );
+  assert.equal(
+    plan.intents[4].exports[0].signature,
+    '(props: PageProps<"/module-metadata">) => JSX.Element',
+  );
+  assert.deepEqual(
+    plan.intents[4].exports.map((exported) => [
+      exported.kind,
+      exported.name,
+      exported.sourceField,
+    ]),
+    [
+      ["default", "default", "render"],
+      ["named", "metadata", "metadata"],
+    ],
+    "module page lost its direct typed metadata export",
+  );
+  assert.equal(plan.intents[7].exports[0].signature, '(props: PageProps<"/">) => JSX.Element');
+  assert.equal(
+    plan.intents[8].exports[0].signature,
+    '(props: LayoutProps<"/todos/[id]">) => Promise<JSX.Element>',
+  );
+  assert.equal(
+    plan.intents[9].exports[0].signature,
     '(props: PageProps<"/todos/[id]">) => Promise<JSX.Element>',
+  );
+  assert.deepEqual(
+    plan.intents[5].exports.map((exported) => [exported.kind, exported.name, exported.sourceField]),
+    [
+      ["default", "default", "render"],
+      ["named", "generateStaticParams", "generateStaticParams"],
+    ],
+    "module page lost its reviewed direct named exports",
   );
   assert(!/\b(?:any|unknown)\b/.test(encoded), "Page/layout plan contains a broad TypeScript type");
   assert(!encoded.includes("ROOT-PAGE-BUSINESS"), "Page business logic leaked into its adapter plan");
@@ -281,6 +324,9 @@ function validateGeneratedTypescript() {
   const grouped = generated("page_layouts/positive/GroupedPage.tsx");
   const intercepted = generated("page_layouts/positive/InterceptedPage.tsx");
   const parallel = generated("page_layouts/positive/ParallelPage.tsx");
+  const moduleProduct = generated("page_layouts/positive/ModuleProductPage.tsx");
+  const moduleLayout = generated("page_layouts/positive/ModuleRootLayout.tsx");
+  const moduleMetadata = generated("page_layouts/positive/ModuleStaticMetadata.tsx");
   const consumer = generated("page_layouts/NoRuntime.tsx");
   const pageProps = generated("nextjs/app/PageProps.tsx");
   const layoutProps = generated("nextjs/app/LayoutProps.tsx");
@@ -291,6 +337,22 @@ function validateGeneratedTypescript() {
   assert(grouped.includes("static href(params: TodoParams): import('next').Route<`/offers/${string}`>"));
   assert(intercepted.includes("static href(params: TodoParams): import('next').Route<`/photo/${string}`>"));
   assert(parallel.includes('static href(): import(\'next\').Route<"/">'));
+  assert(moduleProduct.includes("export function render("));
+  assert(moduleProduct.includes("export function generateStaticParams("));
+  assert(moduleLayout.includes("export function render("));
+  assert(moduleMetadata.includes("export function render("));
+  assert(
+    moduleMetadata.includes(
+      "export const metadata: import('next').Metadata = {\"title\": \"Direct module metadata\"};",
+    ),
+    "module page lost its typed direct metadata value",
+  );
+  assert(!moduleProduct.includes("ModuleProductPage_Fields_"));
+  assert(!moduleLayout.includes("ModuleRootLayout_Fields_"));
+  assert(!moduleMetadata.includes("ModuleStaticMetadata_Fields_"));
+  assert(!moduleProduct.includes("Register.setHxClass"));
+  assert(!moduleLayout.includes("Register.setHxClass"));
+  assert(!moduleMetadata.includes("Register.setHxClass"));
   assert(
     dynamic.includes(
       "static hrefWithQuery(params: TodoParams, query: TodoQuery): import('next').Route<`/todos/${string}` | `${Extract<`/todos/${string}`, string>}?${string}`>",
@@ -324,6 +386,7 @@ function validateGeneratedTypescript() {
   assert(consumer.includes("NoRuntime.retain(`/todos/${__nextRoute0Encoded0}`);"));
   assert(consumer.includes("/offers/"), "route-group href leaked its filesystem group or lost its public path");
   assert(consumer.includes("/photo/"), "intercepted href lost its canonical hard-navigation target");
+  assert(consumer.includes("/module-products/"), "module page href lost its public route");
   assert(!consumer.includes("(marketing)"), "route-group href leaked filesystem-only syntax");
   assert(!consumer.includes("@modal"), "intercepted href leaked parallel-slot syntax");
   assert(!consumer.includes("(..)"), "intercepted href leaked its relative marker");
@@ -338,7 +401,17 @@ function validateGeneratedTypescript() {
     "optional query encoding lost Genes' erased, exact presence proof",
   );
   assert(!consumer.includes("TodoQuery"), "query schema created a consumer runtime dependency");
-  for (const source of [root, rootLayout, dynamic, grouped, intercepted, parallel, pageProps, layoutProps]) {
+  for (const source of [
+    root,
+    rootLayout,
+    dynamic,
+    grouped,
+    intercepted,
+    parallel,
+    moduleMetadata,
+    pageProps,
+    layoutProps,
+  ]) {
     assert(!/\b(?:any|unknown)\b/.test(source), "generated page/layout public API contains a broad type");
     const withoutPresenceProof = source.replaceAll(
       "(((__nextQuery0Optional1)! as boolean))",

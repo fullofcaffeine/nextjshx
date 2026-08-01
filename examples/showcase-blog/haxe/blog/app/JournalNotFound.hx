@@ -1,5 +1,6 @@
 package blog.app;
 
+import blog.app.JournalPage;
 import genes.react.Element;
 import nextjs.components.NextLink;
 
@@ -7,6 +8,11 @@ import nextjs.components.NextLink;
  * `@:next.notFound("journal")` owns `app/journal/not-found.tsx`. Calling
  * Next's native `notFound()` control flow from a child page selects this UI;
  * NextJsHx adds signature and ownership checks, not another error mechanism.
+ *
+ * This remains an all-static class only because the current special-file macro
+ * still discovers a Haxe type owner. The page/layout API no longer needs that
+ * shell; `nxhx-f34.9.9.2` tracks the equivalent module-level source shape
+ * without changing Next's conventional default export.
  */
 @:next.notFound("journal")
 class JournalNotFound {

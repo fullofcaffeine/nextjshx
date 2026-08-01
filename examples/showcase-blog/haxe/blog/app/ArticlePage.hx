@@ -1,5 +1,6 @@
 package blog.app;
 
+import blog.app.JournalPage;
 import blog.domain.Post;
 import blog.domain.Post.PostSlug;
 import blog.domain.PostCatalog.all;
@@ -27,60 +28,70 @@ typedef ArticleParams = {
 }
 
 /**
- * A bracket segment in `@:next.page("journal/[slug]")` generates a typed
- * `ArticleParams` route contract and `ArticlePage.href({slug: ...})`. Next
- * still receives its conventional dynamic `page.tsx`, static params, and
- * metadata exports.
+ * Enumerates the closed catalogue slugs that Next prerenders at build time.
+ *
+ * The direct module function becomes Next's named `generateStaticParams`
+ * export; the typed return shape must agree with the dynamic route contract.
+ */
+function generateStaticParams():Array<ArticleParams> {
+	return all().map(post -> {slug: post.slug});
+}
+
+/**
+ * Derives the native Next metadata result from the same typed catalogue used by
+ * rendering and static params, so route content and document metadata cannot
+ * silently drift into separate sources of truth.
+ */
+function generateMetadata(props:PageMetadataProps<ArticleParams, SearchParams>):Promise<Metadata> {
+	return props.params.then(params -> {
+		final post = find(params.slug);
+		final metadata:Metadata = post == null ? {
+			title: "Missing field note — Moraine"
+		} : {
+			title: post.title + " — Moraine",
+			description: post.dek
+			};
+		return metadata;
+	});
+}
+
+/**
+ * Owns `app/journal/[slug]/page.tsx` as an ordinary module function.
+ *
+ * The bracket segment generates the exact `ArticleParams` contract and
+ * `href({slug})` companion. The Promise chain stays a normal JavaScript Promise
+ * chain; Next still owns Server Component rendering and request timing.
  */
 @:next.page("journal/[slug]")
-class ArticlePage {
-	public static function generateStaticParams():Array<ArticleParams> {
-		return all().map(post -> {slug: post.slug});
-	}
-
-	public static function generateMetadata(props:PageMetadataProps<ArticleParams, SearchParams>):Promise<Metadata> {
-		return props.params.then(params -> {
-			final post = find(params.slug);
-			final metadata:Metadata = post == null ? {
-				title: "Missing field note — Moraine"
-			} : {
-				title: post.title + " — Moraine",
-				description: post.dek
-				};
-			return metadata;
-		});
-	}
-
-	/**
-	 * `@:async` makes the emitted function genuinely `async`; `await(...)`
-	 * lowers to native JavaScript `await`. It does not add a Haxe scheduler or
-	 * change Next's Promise and Server Component semantics.
-	 */
-	@:async
-	public static function render(props:PageProps<ArticleParams, SearchParams>):Promise<Element> {
-		final params = await(props.params);
+function render(props:PageProps<ArticleParams, SearchParams>):Promise<Element> {
+	return props.params.then(params -> {
 		final post = find(params.slug);
 		return post == null ? missing() : renderArticle(post);
-	}
+	});
+}
 
-	static function missing():Element {
-		Navigation.notFound();
-		throw new Error("next/navigation.notFound returned instead of interrupting control flow");
-	}
+/**
+ * Narrows Next's interrupting `notFound()` control flow to an `Element` result
+ * for the page branch while retaining the native 404 mechanism.
+ */
+private function missing():Element {
+	Navigation.notFound();
+	throw new Error("next/navigation.notFound returned instead of interrupting control flow");
+}
 
-	/**
-	 * Renders one already-validated catalogue entry and its typed next link.
-	 *
-	 * Lookup and not-found control flow happen before this helper, so the HXX
-	 * body receives a closed `Post`. Next still owns the native Link behavior
-	 * and Server Component rendering.
-	 */
-	static function renderArticle(post:Post):Element {
-		final body = post.paragraphs.map(paragraph -> <p>{paragraph}</p>);
-		final next = nextAfter(post.slug);
-		final badge:BadgeProps = {variant: BadgeVariant.Outline, className: "issue-badge"};
-		final icon:IconProps = {size: 17, strokeWidth: 1.6};
-		return <main className="article-shell">
+/**
+ * Renders one already-validated catalogue entry and its typed next link.
+ *
+ * Lookup and not-found control flow happen before this private helper, so the
+ * HXX body receives a closed `Post`. Next still owns native Link navigation and
+ * Server Component rendering.
+ */
+private function renderArticle(post:Post):Element {
+	final body = post.paragraphs.map(paragraph -> <p>{paragraph}</p>);
+	final next = nextAfter(post.slug);
+	final badge:BadgeProps = {variant: BadgeVariant.Outline, className: "issue-badge"};
+	final icon:IconProps = {size: 17, strokeWidth: 1.6};
+	return <main className="article-shell">
 			<header className="article-header"><NextLink className="journal-mark compact" href={JournalPage.href()}><span>M</span><strong>Moraine</strong></NextLink><NextLink className="back-index" href={JournalPage.href()}>All dispatches</NextLink></header>
 			<article>
 				<div className="article-lede">
@@ -93,7 +104,6 @@ class ArticlePage {
 					<div className="article-body">{body}</div>
 				</div>
 			</article>
-			<footer className="next-dispatch"><span>NEXT DISPATCH</span><NextLink href={ArticlePage.href({slug: next.slug})}><strong>{next.title}</strong><ArrowRight {...icon} /></NextLink></footer>
+			<footer className="next-dispatch"><span>NEXT DISPATCH</span><NextLink href={href({slug: next.slug})}><strong>{next.title}</strong><ArrowRight {...icon} /></NextLink></footer>
 		</main>;
-	}
 }

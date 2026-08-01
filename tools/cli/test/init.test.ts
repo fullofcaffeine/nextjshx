@@ -140,6 +140,14 @@ test("init creates a byte-stable new-app baseline without changing the lockfile"
       readFileSync(path.join(root, "haxe/nextjshx_app/HomePage.hx"), "utf8"),
       /@:next\.page\(""\)/,
     );
+    assert.match(
+      readFileSync(path.join(root, "haxe/nextjshx_app/HomePage.hx"), "utf8"),
+      /\nfunction render\(_:/,
+    );
+    assert.doesNotMatch(
+      readFileSync(path.join(root, "haxe/nextjshx_app/HomePage.hx"), "utf8"),
+      /\bclass HomePage\b/,
+    );
     assert.equal(
       readNextJsHxConfig(path.join(root, "nextjshx.config.json")).appRoot,
       "src/app",
