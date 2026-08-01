@@ -86,6 +86,12 @@ After this increment:
 - main pushes and the scheduled workflow remain full current-primary
   backstops, and release lanes remain declared from the start.
 
+The later behavior-first convergence does not move or remove any of those
+lanes. It adds independent product-surface scorecards and maintained-example
+tiers to the same manifest. Explain output now lists the surfaces exercised by
+each selected and omitted lane, so affected testing remains about semantic
+owners and claims rather than path proximity alone.
+
 ## Feedback rings
 
 The rings describe when evidence is useful; they do not rank its truth.
@@ -221,6 +227,12 @@ seconds, and stable fixture cells spent roughly 35–51 seconds building plus
 17–46 seconds smoking. This is one run, not a latency distribution. Forward
 lane-result collection is the source for future p50/p95 and selector-yield
 decisions.
+
+Future portfolio reviews also record unique actionable failures, escaped
+defects by surface, diagnosis time, and browser/E2E discoveries converted into
+focused deterministic regressions. The testing-trophy ranges are reviewed per
+surface and by stable behavior owner; the number of lane records is not used as
+a proxy ratio because several lanes intentionally cross more than one layer.
 
 ## Reliability, caches, and artifacts
 

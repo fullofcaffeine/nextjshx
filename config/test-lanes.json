@@ -1,6 +1,6 @@
 {
   "$schema": "https://nextjshx.dev/schemas/test-lanes.schema.json",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "selectionMode": "observation",
   "confidenceWindow": {
     "minimumRuns": 30,
@@ -12,13 +12,799 @@
     "nightly": true,
     "release": true
   },
+  "productSurfaces": [
+    {
+      "id": "repository-governance",
+      "name": "Repository testing and governance",
+      "status": "partial",
+      "claims": ["The test topology, policy checks, and failure propagation remain deterministic and fail closed."],
+      "authoredInputs": ["Repository policy, workflow, lane manifest, and contributor instructions"],
+      "producedOutputs": ["Validated test plan, policy result, and structured lane records"],
+      "supportedProfiles": ["repository-internal"],
+      "requiredEvidence": ["test-topology", "governance", "security"],
+      "laneIds": ["loop.validate", "loop.self", "docs.general", "seed.plan", "architecture", "security.tooling"],
+      "oracles": [
+        {
+          "kind": "invariant",
+          "source": "Schema validation, fail-safe selector rules, and deliberate nonzero/timeout controls",
+          "pin": null
+        }
+      ],
+      "selectorOwnership": "Changes to the topology, workflows, hooks, policy, or an unknown path expand to the complete manifest.",
+      "fullBackstopCommand": "npm run public:preflight",
+      "releaseCommand": "npm run public:preflight",
+      "knownLimitations": ["Internal governance evidence does not establish application or framework behavior."],
+      "owner": "NextJsHx maintainers",
+      "archetype": "security",
+      "testedProfiles": ["repository-internal"],
+      "focusedOwners": ["loop.validate", "loop.self", "docs.general", "seed.plan", "architecture", "security.tooling"],
+      "verticalIntegrationOwners": [],
+      "realRuntimeOrSystemOwners": [],
+      "browserE2EOwners": [],
+      "evidenceOwners": [
+        {
+          "evidence": "test-topology",
+          "laneIds": ["loop.validate", "loop.self", "docs.general"]
+        },
+        {
+          "evidence": "governance",
+          "laneIds": ["loop.validate", "loop.self", "seed.plan", "architecture", "security.tooling"]
+        },
+        {
+          "evidence": "security",
+          "laneIds": ["security.tooling"]
+        }
+      ],
+      "examples": [],
+      "adaptations": ["The selector remains observation-only and unknown ownership expands to the full suite."],
+      "knownSkips": ["Internal governance evidence does not establish application or framework behavior."],
+      "quarantines": [],
+      "lastCleanProof": null,
+      "residualRisks": ["Internal governance evidence does not establish application or framework behavior."],
+      "profileOwners": [
+        {
+          "profile": "repository-internal",
+          "laneIds": ["loop.validate", "loop.self", "docs.general", "seed.plan", "architecture", "security.tooling"]
+        }
+      ]
+    },
+    {
+      "id": "haxe-generation",
+      "name": "Haxe authoring and Genes generation",
+      "status": "partial",
+      "claims": ["Supported Haxe and HXX declarations are checked before output and generate deterministic TypeScript/TSX that passes independent target checks."],
+      "authoredInputs": ["Repository-owned Haxe/HXX declarations and exact public package bindings"],
+      "producedOutputs": ["Genes TypeScript/TSX implementation modules and NextJsHx adapter plans"],
+      "supportedProfiles": ["typescript/optimized"],
+      "requiredEvidence": ["haxe-positive", "haxe-negative", "determinism", "strict-typescript"],
+      "laneIds": ["haxe.positive", "haxe.negative", "adapter.plan", "route.patterns", "page.layouts", "metadata.segment", "route.handlers", "special.files", "proxy", "route.hrefs", "environment.boundaries", "clientification.boundaries", "client.components", "mdx.components", "content.blocks", "server.functions", "cache.boundaries", "codecs", "next.bindings", "next.core.navigation", "next.components", "next.server", "showcase.ui", "integration.dnd-kit", "integration.recharts", "integrations.runtime", "snapshots", "compiler.gaps", "fixture.stable.primary"],
+      "oracles": [
+        {
+          "kind": "pinned-differential",
+          "source": "Pinned Haxe 4.3.7 and Genes 1.41.0 contracts recorded by support_matrix.json",
+          "pin": "Haxe 4.3.7; genes-ts 1.41.0"
+        },
+        {
+          "kind": "real-consumer",
+          "source": "Strict TypeScript 6.0.2 and public Next/React declarations",
+          "pin": "TypeScript 6.0.2; Next 16.2.12; React 19.2.7"
+        }
+      ],
+      "selectorOwnership": "Haxe, macro, binding, and generated-shape owners select focused diagnostics plus declared target/build consumers.",
+      "fullBackstopCommand": "npm run public:preflight",
+      "releaseCommand": "npm run public:preflight",
+      "knownLimitations": ["NextJsHx does not claim the official Haxe target suite; generic compiler conformance remains owned by Genes.", "JavaScript/reviewable profile cells are not yet release claims."],
+      "owner": "NextJsHx maintainers",
+      "archetype": "compiler",
+      "testedProfiles": ["typescript/optimized"],
+      "focusedOwners": ["haxe.positive", "haxe.negative", "adapter.plan", "route.patterns", "page.layouts", "metadata.segment", "special.files", "proxy", "mdx.components", "next.core.navigation", "next.components", "showcase.ui", "snapshots"],
+      "verticalIntegrationOwners": ["next.bindings"],
+      "realRuntimeOrSystemOwners": ["route.handlers", "route.hrefs", "environment.boundaries", "clientification.boundaries", "content.blocks", "cache.boundaries", "codecs", "next.server", "integration.dnd-kit", "integration.recharts", "integrations.runtime", "compiler.gaps", "fixture.stable.primary"],
+      "browserE2EOwners": ["client.components", "server.functions"],
+      "evidenceOwners": [
+        {
+          "evidence": "haxe-positive",
+          "laneIds": ["haxe.positive", "adapter.plan", "route.patterns", "page.layouts", "metadata.segment", "route.handlers", "special.files", "proxy", "route.hrefs", "client.components", "mdx.components", "content.blocks", "codecs", "next.bindings", "next.core.navigation", "next.components", "next.server", "showcase.ui", "integration.dnd-kit", "integration.recharts", "integrations.runtime", "compiler.gaps", "fixture.stable.primary"]
+        },
+        {
+          "evidence": "haxe-negative",
+          "laneIds": ["haxe.negative", "adapter.plan", "route.patterns", "page.layouts", "metadata.segment", "route.handlers", "special.files", "proxy", "route.hrefs", "environment.boundaries", "client.components", "mdx.components", "content.blocks", "server.functions", "cache.boundaries", "codecs", "next.bindings", "next.core.navigation", "next.components", "next.server", "showcase.ui", "integration.dnd-kit", "integration.recharts", "integrations.runtime", "compiler.gaps"]
+        },
+        {
+          "evidence": "determinism",
+          "laneIds": ["adapter.plan", "route.patterns", "page.layouts", "metadata.segment", "route.handlers", "special.files", "proxy", "environment.boundaries", "clientification.boundaries", "client.components", "server.functions", "cache.boundaries", "next.bindings", "snapshots", "fixture.stable.primary"]
+        },
+        {
+          "evidence": "strict-typescript",
+          "laneIds": ["page.layouts", "metadata.segment", "route.handlers", "special.files", "proxy", "route.hrefs", "client.components", "mdx.components", "content.blocks", "server.functions", "cache.boundaries", "codecs", "next.core.navigation", "next.components", "next.server", "showcase.ui", "integration.dnd-kit", "integration.recharts", "integrations.runtime", "compiler.gaps", "fixture.stable.primary"]
+        }
+      ],
+      "examples": ["showcase-ui", "showcase-field-atlas"],
+      "adaptations": ["NextJsHx owns focused downstream Next composition; generic Haxe-to-JS/TS conformance remains in Genes."],
+      "knownSkips": ["NextJsHx does not claim the official Haxe target suite; generic compiler conformance remains owned by Genes.", "JavaScript/reviewable profile cells are not yet release claims."],
+      "quarantines": [],
+      "lastCleanProof": null,
+      "residualRisks": ["NextJsHx does not claim the official Haxe target suite; generic compiler conformance remains owned by Genes.", "JavaScript/reviewable profile cells are not yet release claims."],
+      "profileOwners": [
+        {
+          "profile": "typescript/optimized",
+          "laneIds": ["haxe.positive", "haxe.negative", "adapter.plan", "route.patterns", "page.layouts", "metadata.segment", "route.handlers", "special.files", "proxy", "route.hrefs", "environment.boundaries", "clientification.boundaries", "client.components", "mdx.components", "content.blocks", "server.functions", "cache.boundaries", "codecs", "next.bindings", "next.core.navigation", "next.components", "next.server", "showcase.ui", "integration.dnd-kit", "integration.recharts", "integrations.runtime", "snapshots", "compiler.gaps", "fixture.stable.primary"]
+        }
+      ]
+    },
+    {
+      "id": "package-cli",
+      "name": "NextJsHx package, CLI, and generated-project topology",
+      "status": "partial",
+      "claims": ["The CLI discovers projects, refuses ownership conflicts, publishes generated output transactionally, and remains usable from a clean packed consumer."],
+      "authoredInputs": ["Project configuration, Haxe source roots, native Next files, and CLI commands"],
+      "producedOutputs": ["Owned adapter trees, manifests, diagnostics, and packed consumer artifacts"],
+      "supportedProfiles": ["typescript/optimized"],
+      "requiredEvidence": ["cli", "ownership", "determinism", "clean-consumer", "security"],
+      "laneIds": ["cli.preparation", "cli.config", "cli.ownership", "cli.publication", "cli.commands", "cli.all", "cli.dev", "package.shape", "example.mixed.source", "example.mixed.full", "fixture.stable.primary", "fixture.stable.matrix"],
+      "oracles": [
+        {
+          "kind": "invariant",
+          "source": "Manifest ownership, exact prior-state restoration, journal, and clean-consumer contracts",
+          "pin": null
+        },
+        {
+          "kind": "real-consumer",
+          "source": "Offline npm-packed Haxelib consumer and production Next fixture",
+          "pin": "NextJsHx repository package identity"
+        }
+      ],
+      "selectorOwnership": "CLI unit owners expand to publication, recovery, dev-loop, and a real Next fixture when process or output ownership is affected.",
+      "fullBackstopCommand": "npm run public:preflight",
+      "releaseCommand": "npm run public:preflight",
+      "knownLimitations": ["The repository remains foundation-only and has no supported public release yet."],
+      "owner": "NextJsHx maintainers",
+      "archetype": "package-cli",
+      "testedProfiles": ["typescript/optimized"],
+      "focusedOwners": ["cli.preparation", "cli.config", "cli.ownership", "cli.publication", "cli.commands", "cli.all", "example.mixed.source"],
+      "verticalIntegrationOwners": [],
+      "realRuntimeOrSystemOwners": ["package.shape", "fixture.stable.primary", "fixture.stable.matrix"],
+      "browserE2EOwners": ["cli.dev", "example.mixed.full"],
+      "evidenceOwners": [
+        {
+          "evidence": "cli",
+          "laneIds": ["cli.preparation", "cli.config", "cli.ownership", "cli.publication", "cli.commands", "cli.all", "cli.dev", "example.mixed.full", "fixture.stable.primary", "fixture.stable.matrix"]
+        },
+        {
+          "evidence": "ownership",
+          "laneIds": ["cli.ownership", "cli.publication", "cli.commands", "cli.all", "cli.dev", "example.mixed.source", "example.mixed.full", "fixture.stable.primary", "fixture.stable.matrix"]
+        },
+        {
+          "evidence": "determinism",
+          "laneIds": ["cli.preparation", "cli.publication", "cli.all", "cli.dev", "fixture.stable.primary"]
+        },
+        {
+          "evidence": "clean-consumer",
+          "laneIds": ["package.shape"]
+        },
+        {
+          "evidence": "security",
+          "laneIds": ["cli.ownership", "cli.publication", "cli.all"]
+        }
+      ],
+      "examples": ["mixed-adoption"],
+      "adaptations": ["Real manifest-owned publication and packed consumers are used instead of an in-memory generator double."],
+      "knownSkips": ["The repository remains foundation-only and has no supported public release yet."],
+      "quarantines": [],
+      "lastCleanProof": null,
+      "residualRisks": ["The repository remains foundation-only and has no supported public release yet."],
+      "profileOwners": [
+        {
+          "profile": "typescript/optimized",
+          "laneIds": ["cli.preparation", "cli.config", "cli.ownership", "cli.publication", "cli.commands", "cli.all", "cli.dev", "package.shape", "example.mixed.source", "example.mixed.full", "fixture.stable.primary", "fixture.stable.matrix"]
+        }
+      ]
+    },
+    {
+      "id": "next-runtime",
+      "name": "Next.js production build and Node runtime",
+      "status": "partial",
+      "claims": ["Generated convention modules are accepted by the pinned Next production toolchain and execute through the ordinary Node-hosted App Router runtime."],
+      "authoredInputs": ["Haxe route/component/action/cache declarations and native Next project files"],
+      "producedOutputs": ["Next convention modules, production bundles, routes, responses, and cache behavior"],
+      "supportedProfiles": ["typescript/optimized", "node/turbopack", "node/webpack"],
+      "requiredEvidence": ["strict-typescript", "next-build", "runtime"],
+      "laneIds": ["route.handlers", "route.hrefs", "environment.boundaries", "clientification.boundaries", "client.components", "mdx.components", "content.blocks", "server.functions", "cache.boundaries", "codecs", "next.core.navigation", "next.components", "next.server", "integrations.runtime", "example.mixed.full", "todo.build", "todo.smoke", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all", "fixture.stable.primary", "fixture.stable.matrix"],
+      "oracles": [
+        {
+          "kind": "real-consumer",
+          "source": "Pinned Next type generation, production build, next start, and HTTP behavior",
+          "pin": "Next 16.2.12"
+        }
+      ],
+      "selectorOwnership": "Next convention or runtime changes retain focused generation owners and select the stable production fixture plus behavior-specific applications.",
+      "fullBackstopCommand": "npm run public:preflight",
+      "releaseCommand": "npm run public:preflight",
+      "knownLimitations": ["The Edge Runtime and Pages Router are excluded from the current support scope."],
+      "owner": "NextJsHx maintainers",
+      "archetype": "framework",
+      "testedProfiles": ["typescript/optimized", "node/turbopack", "node/webpack"],
+      "focusedOwners": ["mdx.components", "next.core.navigation", "next.components"],
+      "verticalIntegrationOwners": ["todo.build"],
+      "realRuntimeOrSystemOwners": ["route.handlers", "route.hrefs", "environment.boundaries", "clientification.boundaries", "content.blocks", "cache.boundaries", "codecs", "next.server", "integrations.runtime", "todo.smoke", "fixture.stable.primary", "fixture.stable.matrix"],
+      "browserE2EOwners": ["client.components", "server.functions", "example.mixed.full", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"],
+      "evidenceOwners": [
+        {
+          "evidence": "strict-typescript",
+          "laneIds": ["route.handlers", "route.hrefs", "client.components", "mdx.components", "content.blocks", "server.functions", "cache.boundaries", "codecs", "next.core.navigation", "next.components", "next.server", "integrations.runtime", "example.mixed.full", "todo.build", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all", "fixture.stable.primary", "fixture.stable.matrix"]
+        },
+        {
+          "evidence": "next-build",
+          "laneIds": ["environment.boundaries", "clientification.boundaries", "client.components", "server.functions", "cache.boundaries", "example.mixed.full", "todo.build", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all", "fixture.stable.primary", "fixture.stable.matrix"]
+        },
+        {
+          "evidence": "runtime",
+          "laneIds": ["route.handlers", "route.hrefs", "environment.boundaries", "clientification.boundaries", "content.blocks", "cache.boundaries", "codecs", "next.server", "integrations.runtime", "todo.smoke", "todo.e2e", "fixture.stable.primary", "fixture.stable.matrix"]
+        }
+      ],
+      "examples": ["mixed-adoption", "showcase-landing", "showcase-blog", "showcase-commerce", "showcase-field-atlas", "todoapp-next"],
+      "adaptations": ["Pinned Next production builds and next start remain the framework oracle."],
+      "knownSkips": ["The Edge Runtime and Pages Router are excluded from the current support scope."],
+      "quarantines": [],
+      "lastCleanProof": null,
+      "residualRisks": ["The Edge Runtime and Pages Router are excluded from the current support scope."],
+      "profileOwners": [
+        {
+          "profile": "typescript/optimized",
+          "laneIds": ["route.handlers", "route.hrefs", "environment.boundaries", "clientification.boundaries", "client.components", "mdx.components", "content.blocks", "server.functions", "cache.boundaries", "codecs", "next.core.navigation", "next.components", "next.server", "integrations.runtime", "example.mixed.full", "todo.build", "todo.smoke", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all", "fixture.stable.primary", "fixture.stable.matrix"]
+        },
+        {
+          "profile": "node/turbopack",
+          "laneIds": ["route.handlers", "environment.boundaries", "clientification.boundaries", "client.components", "server.functions", "cache.boundaries", "example.mixed.full", "todo.build", "todo.smoke", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all", "fixture.stable.primary", "fixture.stable.matrix"]
+        },
+        {
+          "profile": "node/webpack",
+          "laneIds": ["fixture.stable.matrix"]
+        }
+      ]
+    },
+    {
+      "id": "react-next-semantics",
+      "name": "React and Next server/client semantics",
+      "status": "partial",
+      "claims": ["Client boundaries, Hooks, Flight values, Server Functions, cache rules, decoding, and environment containment preserve native React and Next semantics."],
+      "authoredInputs": ["Haxe Server and Client Components, Hooks, actions, cache functions, and boundary values"],
+      "producedOutputs": ["Directive-first modules, analyzer-visible Hooks, typed references, Flight payloads, actions, and hydrated components"],
+      "supportedProfiles": ["typescript/optimized", "react-19", "next-app-router"],
+      "requiredEvidence": ["haxe-negative", "react-lint", "next-build", "runtime", "browser"],
+      "laneIds": ["environment.boundaries", "clientification.boundaries", "client.components", "mdx.components", "content.blocks", "server.functions", "cache.boundaries", "codecs", "next.components", "next.server", "showcase.ui", "integration.dnd-kit", "integration.recharts", "integrations.runtime", "example.mixed.full", "todo.e2e", "showcases.all", "fixture.stable.primary"],
+      "oracles": [
+        {
+          "kind": "pinned-differential",
+          "source": "Public React declarations and official React Hooks lint",
+          "pin": "React 19.2.7"
+        },
+        {
+          "kind": "real-consumer",
+          "source": "Next production graph, Server Function transport, cache runtime, and hydrated browser behavior",
+          "pin": "Next 16.2.12"
+        }
+      ],
+      "selectorOwnership": "Boundary changes select focused Haxe diagnostics, React lint, strict generated output, a production Next graph, and browser evidence only for behavior that requires hydration or transport.",
+      "fullBackstopCommand": "npm run public:preflight",
+      "releaseCommand": "npm run public:preflight",
+      "knownLimitations": ["A passing Todo flow does not prove every package facade, showcase, or output profile."],
+      "owner": "NextJsHx maintainers",
+      "archetype": "framework",
+      "testedProfiles": ["typescript/optimized", "react-19", "next-app-router"],
+      "focusedOwners": ["mdx.components", "next.components", "showcase.ui"],
+      "verticalIntegrationOwners": [],
+      "realRuntimeOrSystemOwners": ["environment.boundaries", "clientification.boundaries", "content.blocks", "cache.boundaries", "codecs", "next.server", "integration.dnd-kit", "integration.recharts", "integrations.runtime", "fixture.stable.primary"],
+      "browserE2EOwners": ["client.components", "server.functions", "example.mixed.full", "todo.e2e", "showcases.all"],
+      "evidenceOwners": [
+        {
+          "evidence": "haxe-negative",
+          "laneIds": ["environment.boundaries", "client.components", "mdx.components", "content.blocks", "server.functions", "cache.boundaries", "codecs", "next.components", "next.server", "showcase.ui", "integration.dnd-kit", "integration.recharts", "integrations.runtime", "example.mixed.full", "showcases.all"]
+        },
+        {
+          "evidence": "react-lint",
+          "laneIds": ["client.components", "next.components", "showcase.ui", "showcases.all"]
+        },
+        {
+          "evidence": "next-build",
+          "laneIds": ["environment.boundaries", "clientification.boundaries", "client.components", "server.functions", "cache.boundaries", "example.mixed.full", "showcases.all", "fixture.stable.primary"]
+        },
+        {
+          "evidence": "runtime",
+          "laneIds": ["environment.boundaries", "clientification.boundaries", "content.blocks", "cache.boundaries", "codecs", "next.server", "integration.dnd-kit", "integration.recharts", "integrations.runtime", "todo.e2e", "fixture.stable.primary"]
+        },
+        {
+          "evidence": "browser",
+          "laneIds": ["client.components", "server.functions", "example.mixed.full", "todo.e2e", "showcases.all"]
+        }
+      ],
+      "examples": ["showcase-ui", "mixed-adoption", "showcase-landing", "showcase-blog", "showcase-commerce", "showcase-field-atlas", "todoapp-next"],
+      "adaptations": ["Focused diagnostics are paired with official React lint and real Next runtime observers."],
+      "knownSkips": ["A passing Todo flow does not prove every package facade, showcase, or output profile."],
+      "quarantines": [],
+      "lastCleanProof": null,
+      "residualRisks": ["A passing Todo flow does not prove every package facade, showcase, or output profile."],
+      "profileOwners": [
+        {
+          "profile": "typescript/optimized",
+          "laneIds": ["environment.boundaries", "clientification.boundaries", "client.components", "mdx.components", "content.blocks", "server.functions", "cache.boundaries", "codecs", "next.components", "next.server", "showcase.ui", "integration.dnd-kit", "integration.recharts", "integrations.runtime", "example.mixed.full", "todo.e2e", "showcases.all", "fixture.stable.primary"]
+        },
+        {
+          "profile": "react-19",
+          "laneIds": ["environment.boundaries", "clientification.boundaries", "client.components", "content.blocks", "server.functions", "cache.boundaries", "codecs", "next.components", "next.server", "showcase.ui", "integration.dnd-kit", "integration.recharts", "integrations.runtime", "example.mixed.full", "todo.e2e", "showcases.all", "fixture.stable.primary"]
+        },
+        {
+          "profile": "next-app-router",
+          "laneIds": ["environment.boundaries", "clientification.boundaries", "client.components", "content.blocks", "server.functions", "cache.boundaries", "codecs", "next.server", "integration.dnd-kit", "integration.recharts", "integrations.runtime", "example.mixed.full", "todo.e2e", "showcases.all", "fixture.stable.primary"]
+        }
+      ]
+    },
+    {
+      "id": "browser-applications",
+      "name": "Browser-visible applications",
+      "status": "partial",
+      "claims": ["Declared browser-facing capabilities hydrate and behave in production Chrome with fatal page, console, hydration, request, and unexpected-response failures."],
+      "authoredInputs": ["Browser-facing Haxe and native TSX application source"],
+      "producedOutputs": ["Hydrated production pages, navigation, mutations, recovery, and visible package behavior"],
+      "supportedProfiles": ["typescript/optimized", "chromium/production"],
+      "requiredEvidence": ["browser", "runtime"],
+      "laneIds": ["client.components", "server.functions", "cli.dev", "example.mixed.full", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"],
+      "oracles": [
+        {
+          "kind": "manual-expectation",
+          "source": "Reviewed user-visible scenarios and persisted-state assertions",
+          "pin": null
+        },
+        {
+          "kind": "real-consumer",
+          "source": "Zero-retry Playwright against next start with fatal browser diagnostics",
+          "pin": "Playwright 1.61.1"
+        }
+      ],
+      "selectorOwnership": "Browser lanes are selected only where the complete browser is the lowest faithful observer; all remain full backstop evidence.",
+      "fullBackstopCommand": "npm run public:preflight",
+      "releaseCommand": "npm run public:preflight",
+      "knownLimitations": ["Chromium evidence does not establish other browser engines unless a separate matrix is declared."],
+      "owner": "NextJsHx maintainers",
+      "archetype": "browser-app",
+      "testedProfiles": ["typescript/optimized", "chromium/production"],
+      "focusedOwners": [],
+      "verticalIntegrationOwners": [],
+      "realRuntimeOrSystemOwners": [],
+      "browserE2EOwners": ["client.components", "server.functions", "cli.dev", "example.mixed.full", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"],
+      "evidenceOwners": [
+        {
+          "evidence": "browser",
+          "laneIds": ["client.components", "server.functions", "cli.dev", "example.mixed.full", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"]
+        },
+        {
+          "evidence": "runtime",
+          "laneIds": ["cli.dev", "todo.e2e"]
+        }
+      ],
+      "examples": ["mixed-adoption", "showcase-landing", "showcase-blog", "showcase-commerce", "showcase-field-atlas", "todoapp-next"],
+      "adaptations": ["Playwright uses production applications, zero default retries, and fatal page/console/request diagnostics."],
+      "knownSkips": ["Chromium evidence does not establish other browser engines unless a separate matrix is declared."],
+      "quarantines": [],
+      "lastCleanProof": null,
+      "residualRisks": ["Chromium evidence does not establish other browser engines unless a separate matrix is declared."],
+      "profileOwners": [
+        {
+          "profile": "typescript/optimized",
+          "laneIds": ["client.components", "server.functions", "cli.dev", "example.mixed.full", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"]
+        },
+        {
+          "profile": "chromium/production",
+          "laneIds": ["client.components", "server.functions", "cli.dev", "example.mixed.full", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"]
+        }
+      ]
+    },
+    {
+      "id": "maintained-examples",
+      "name": "Maintained examples",
+      "status": "partial",
+      "claims": ["Each maintained example executes the compile, target-check, build, runtime, or browser level it advertises and no example supports a broader claim than its declared tier."],
+      "authoredInputs": ["Example Haxe, TSX, CSS, package configuration, and teaching documentation"],
+      "producedOutputs": ["Executable example applications, generated modules, production builds, and example-specific observations"],
+      "supportedProfiles": ["typescript/optimized"],
+      "requiredEvidence": ["haxe-positive", "strict-typescript", "next-build", "runtime", "browser"],
+      "laneIds": ["showcase.ui", "example.mixed.source", "example.mixed.full", "todo.source", "todo.build", "todo.smoke", "todo.e2e", "showcases.source", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"],
+      "oracles": [
+        {
+          "kind": "manual-expectation",
+          "source": "Each example's distinctive documented behavior and source-owned assertions",
+          "pin": null
+        },
+        {
+          "kind": "real-consumer",
+          "source": "Example-specific strict build, production server, and browser commands",
+          "pin": "Pinned support_matrix.json toolchain"
+        }
+      ],
+      "selectorOwnership": "One changed showcase selects its distinctive owner; shared UI expands to every dependent example; main, nightly, and release execute the complete maintained set.",
+      "fullBackstopCommand": "npm run public:preflight",
+      "releaseCommand": "npm run public:preflight",
+      "knownLimitations": ["Showcases do not borrow the Todo flagship's deep action/cache/recovery claims, and Todo does not prove showcase-specific package behavior."],
+      "owner": "NextJsHx maintainers",
+      "archetype": "browser-app",
+      "testedProfiles": ["typescript/optimized"],
+      "focusedOwners": ["showcase.ui", "example.mixed.source", "todo.source", "showcases.source"],
+      "verticalIntegrationOwners": ["todo.build"],
+      "realRuntimeOrSystemOwners": ["todo.smoke"],
+      "browserE2EOwners": ["example.mixed.full", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"],
+      "evidenceOwners": [
+        {
+          "evidence": "haxe-positive",
+          "laneIds": ["showcase.ui", "todo.build", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"]
+        },
+        {
+          "evidence": "strict-typescript",
+          "laneIds": ["showcase.ui", "example.mixed.full", "todo.build", "showcases.source", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"]
+        },
+        {
+          "evidence": "next-build",
+          "laneIds": ["example.mixed.full", "todo.build", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"]
+        },
+        {
+          "evidence": "runtime",
+          "laneIds": ["todo.smoke", "todo.e2e"]
+        },
+        {
+          "evidence": "browser",
+          "laneIds": ["example.mixed.full", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"]
+        }
+      ],
+      "examples": ["showcase-ui", "mixed-adoption", "showcase-landing", "showcase-blog", "showcase-commerce", "showcase-field-atlas", "todoapp-next"],
+      "adaptations": ["Each example has a declared tier and may prove only its own distinctive behavior."],
+      "knownSkips": ["Showcases do not borrow the Todo flagship's deep action/cache/recovery claims, and Todo does not prove showcase-specific package behavior."],
+      "quarantines": [],
+      "lastCleanProof": null,
+      "residualRisks": ["Showcases do not borrow the Todo flagship's deep action/cache/recovery claims, and Todo does not prove showcase-specific package behavior."],
+      "profileOwners": [
+        {
+          "profile": "typescript/optimized",
+          "laneIds": ["showcase.ui", "example.mixed.source", "example.mixed.full", "todo.source", "todo.build", "todo.smoke", "todo.e2e", "showcases.source", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"]
+        }
+      ]
+    },
+    {
+      "id": "compatibility-matrices",
+      "name": "Compatibility and package matrices",
+      "status": "partial",
+      "claims": ["Only exact declared Haxe, Genes, TypeScript, Next, React, Node, bundler, package, and declaration cells with their own evidence may advance compatibility wording."],
+      "authoredInputs": ["support_matrix.json, public package declarations, lockfile identities, and package integration inventory"],
+      "producedOutputs": ["Stable and advisory drift reports, strict consumers, and Node/bundler build/runtime matrix results"],
+      "supportedProfiles": ["typescript/optimized", "node-20.9.0", "node-24.18.0", "turbopack", "webpack"],
+      "requiredEvidence": ["compatibility", "package-drift", "strict-typescript", "next-build", "runtime"],
+      "laneIds": ["support.matrix", "next.surface", "next.bindings", "next.drift", "next.core.navigation", "next.components", "next.server", "integrations.inventory", "integrations.runtime", "package.shape", "compiler.gaps", "fixture.stable.primary", "fixture.stable.matrix"],
+      "oracles": [
+        {
+          "kind": "pinned-differential",
+          "source": "Installed public declarations, package exports, exact integrity records, and support_matrix.json",
+          "pin": "Haxe 4.3.7; Genes 1.41.0; TypeScript 6.0.2; Next 16.2.12; React 19.2.7"
+        },
+        {
+          "kind": "real-consumer",
+          "source": "Blocking Node and bundler production fixture matrix",
+          "pin": "Node 20.9.0 and 24.18.0; Turbopack and webpack"
+        }
+      ],
+      "selectorOwnership": "Version, lockfile, declaration, support, or matrix changes expand conservatively and cannot be justified by a different application's green result.",
+      "fullBackstopCommand": "npm run public:preflight",
+      "releaseCommand": "npm run public:preflight",
+      "knownLimitations": ["Canary drift is advisory and non-blocking.", "The repository remains foundation-only despite a verified stable package lane."],
+      "owner": "NextJsHx maintainers",
+      "archetype": "portability",
+      "testedProfiles": ["typescript/optimized", "node-20.9.0", "node-24.18.0", "turbopack", "webpack"],
+      "focusedOwners": ["next.core.navigation", "next.components"],
+      "verticalIntegrationOwners": ["support.matrix", "next.surface", "next.bindings", "next.drift", "integrations.inventory"],
+      "realRuntimeOrSystemOwners": ["next.server", "integrations.runtime", "package.shape", "compiler.gaps", "fixture.stable.primary", "fixture.stable.matrix"],
+      "browserE2EOwners": [],
+      "evidenceOwners": [
+        {
+          "evidence": "compatibility",
+          "laneIds": ["support.matrix", "next.surface", "next.drift", "fixture.stable.matrix"]
+        },
+        {
+          "evidence": "package-drift",
+          "laneIds": ["next.surface", "next.bindings", "next.drift", "integrations.inventory", "integrations.runtime"]
+        },
+        {
+          "evidence": "strict-typescript",
+          "laneIds": ["next.core.navigation", "next.components", "next.server", "integrations.runtime", "package.shape", "compiler.gaps", "fixture.stable.primary", "fixture.stable.matrix"]
+        },
+        {
+          "evidence": "next-build",
+          "laneIds": ["fixture.stable.primary", "fixture.stable.matrix"]
+        },
+        {
+          "evidence": "runtime",
+          "laneIds": ["next.server", "integrations.runtime", "package.shape", "compiler.gaps", "fixture.stable.primary", "fixture.stable.matrix"]
+        }
+      ],
+      "examples": [],
+      "adaptations": ["Stable cells are blocking; canary drift remains advisory and cannot advance support wording."],
+      "knownSkips": ["Canary drift is advisory and non-blocking.", "The repository remains foundation-only despite a verified stable package lane."],
+      "quarantines": [],
+      "lastCleanProof": null,
+      "residualRisks": ["Canary drift is advisory and non-blocking.", "The repository remains foundation-only despite a verified stable package lane."],
+      "profileOwners": [
+        {
+          "profile": "typescript/optimized",
+          "laneIds": ["support.matrix", "next.surface", "next.bindings", "next.drift", "next.core.navigation", "next.components", "next.server", "integrations.inventory", "integrations.runtime", "package.shape", "compiler.gaps", "fixture.stable.primary", "fixture.stable.matrix"]
+        },
+        {
+          "profile": "node-20.9.0",
+          "laneIds": ["support.matrix", "fixture.stable.matrix"]
+        },
+        {
+          "profile": "node-24.18.0",
+          "laneIds": ["support.matrix", "fixture.stable.matrix"]
+        },
+        {
+          "profile": "turbopack",
+          "laneIds": ["support.matrix", "fixture.stable.primary", "fixture.stable.matrix"]
+        },
+        {
+          "profile": "webpack",
+          "laneIds": ["support.matrix", "fixture.stable.matrix"]
+        }
+      ]
+    }
+  ],
+  "examples": [
+    {
+      "id": "showcase-ui",
+      "path": "examples/showcase-ui",
+      "tier": "capability-showcase",
+      "distinctiveClaims": ["Precise Haxe consumption of source-owned shadcn, Radix, cmdk, and Lucide component contracts"],
+      "supportedProfiles": ["typescript/optimized"],
+      "laneIds": ["showcase.ui"],
+      "advertisedEvidence": ["haxe-positive", "haxe-negative", "strict-typescript", "react-lint"],
+      "knownLimitations": ["This shared package is not itself a standalone browser application."],
+      "evidenceOwners": [
+        {
+          "evidence": "haxe-positive",
+          "laneIds": ["showcase.ui"]
+        },
+        {
+          "evidence": "haxe-negative",
+          "laneIds": ["showcase.ui"]
+        },
+        {
+          "evidence": "strict-typescript",
+          "laneIds": ["showcase.ui"]
+        },
+        {
+          "evidence": "react-lint",
+          "laneIds": ["showcase.ui"]
+        }
+      ]
+    },
+    {
+      "id": "mixed-adoption",
+      "path": "examples/mixed-adoption",
+      "tier": "capability-showcase",
+      "distinctiveClaims": ["Bidirectional Haxe and native TSX adoption preserves ownership, React identity, strict typing, production build, and browser behavior"],
+      "supportedProfiles": ["typescript/optimized"],
+      "laneIds": ["example.mixed.source", "example.mixed.full"],
+      "advertisedEvidence": ["haxe-negative", "cli", "ownership", "strict-typescript", "next-build", "browser"],
+      "knownLimitations": ["It does not prove the complete package or compatibility matrix."],
+      "evidenceOwners": [
+        {
+          "evidence": "haxe-negative",
+          "laneIds": ["example.mixed.full"]
+        },
+        {
+          "evidence": "cli",
+          "laneIds": ["example.mixed.full"]
+        },
+        {
+          "evidence": "ownership",
+          "laneIds": ["example.mixed.source", "example.mixed.full"]
+        },
+        {
+          "evidence": "strict-typescript",
+          "laneIds": ["example.mixed.full"]
+        },
+        {
+          "evidence": "next-build",
+          "laneIds": ["example.mixed.full"]
+        },
+        {
+          "evidence": "browser",
+          "laneIds": ["example.mixed.full"]
+        }
+      ]
+    },
+    {
+      "id": "showcase-landing",
+      "path": "examples/showcase-landing",
+      "tier": "capability-showcase",
+      "distinctiveClaims": ["A minimal Server page, Client Component, custom Hook, and hydration flow"],
+      "supportedProfiles": ["typescript/optimized"],
+      "laneIds": ["showcases.source", "showcase.landing", "showcases.all"],
+      "advertisedEvidence": ["haxe-positive", "determinism", "strict-typescript", "next-build", "browser"],
+      "knownLimitations": ["It does not claim Server Function, cache, or package-matrix coverage."],
+      "evidenceOwners": [
+        {
+          "evidence": "haxe-positive",
+          "laneIds": ["showcase.landing", "showcases.all"]
+        },
+        {
+          "evidence": "determinism",
+          "laneIds": ["showcase.landing", "showcases.all"]
+        },
+        {
+          "evidence": "strict-typescript",
+          "laneIds": ["showcases.source", "showcase.landing", "showcases.all"]
+        },
+        {
+          "evidence": "next-build",
+          "laneIds": ["showcase.landing", "showcases.all"]
+        },
+        {
+          "evidence": "browser",
+          "laneIds": ["showcase.landing", "showcases.all"]
+        }
+      ]
+    },
+    {
+      "id": "showcase-blog",
+      "path": "examples/showcase-blog",
+      "tier": "capability-showcase",
+      "distinctiveClaims": ["Static params, metadata, dynamic routes, typed links, and segment not-found behavior"],
+      "supportedProfiles": ["typescript/optimized"],
+      "laneIds": ["showcases.source", "showcase.blog", "showcases.all"],
+      "advertisedEvidence": ["haxe-positive", "determinism", "strict-typescript", "next-build", "browser"],
+      "knownLimitations": ["It does not claim package-export or full action/cache behavior."],
+      "evidenceOwners": [
+        {
+          "evidence": "haxe-positive",
+          "laneIds": ["showcase.blog", "showcases.all"]
+        },
+        {
+          "evidence": "determinism",
+          "laneIds": ["showcase.blog", "showcases.all"]
+        },
+        {
+          "evidence": "strict-typescript",
+          "laneIds": ["showcases.source", "showcase.blog", "showcases.all"]
+        },
+        {
+          "evidence": "next-build",
+          "laneIds": ["showcase.blog", "showcases.all"]
+        },
+        {
+          "evidence": "browser",
+          "laneIds": ["showcase.blog", "showcases.all"]
+        }
+      ]
+    },
+    {
+      "id": "showcase-commerce",
+      "path": "examples/showcase-commerce",
+      "tier": "capability-showcase",
+      "distinctiveClaims": ["A richer client graph with typed filters, cart Hooks, images, and source-owned shadcn components"],
+      "supportedProfiles": ["typescript/optimized"],
+      "laneIds": ["showcases.source", "showcase.commerce", "showcases.all"],
+      "advertisedEvidence": ["haxe-positive", "determinism", "strict-typescript", "next-build", "browser"],
+      "knownLimitations": ["It does not claim the Todo flagship's mutation, cache, or recovery matrix."],
+      "evidenceOwners": [
+        {
+          "evidence": "haxe-positive",
+          "laneIds": ["showcase.commerce", "showcases.all"]
+        },
+        {
+          "evidence": "determinism",
+          "laneIds": ["showcase.commerce", "showcases.all"]
+        },
+        {
+          "evidence": "strict-typescript",
+          "laneIds": ["showcases.source", "showcase.commerce", "showcases.all"]
+        },
+        {
+          "evidence": "next-build",
+          "laneIds": ["showcase.commerce", "showcases.all"]
+        },
+        {
+          "evidence": "browser",
+          "laneIds": ["showcase.commerce", "showcases.all"]
+        }
+      ]
+    },
+    {
+      "id": "showcase-field-atlas",
+      "path": "examples/showcase-field-atlas",
+      "tier": "capability-showcase",
+      "distinctiveClaims": ["Trusted MDX, decoded portable content, checked Recharts props, and distinctive browser rendering"],
+      "supportedProfiles": ["typescript/optimized"],
+      "laneIds": ["mdx.components", "showcases.source", "showcase.field-atlas", "showcases.all"],
+      "advertisedEvidence": ["haxe-positive", "haxe-negative", "determinism", "strict-typescript", "next-build", "browser"],
+      "knownLimitations": ["It does not advance unrelated Server Function or compatibility-matrix claims."],
+      "evidenceOwners": [
+        {
+          "evidence": "haxe-positive",
+          "laneIds": ["mdx.components", "showcase.field-atlas", "showcases.all"]
+        },
+        {
+          "evidence": "haxe-negative",
+          "laneIds": ["mdx.components", "showcases.all"]
+        },
+        {
+          "evidence": "determinism",
+          "laneIds": ["showcase.field-atlas", "showcases.all"]
+        },
+        {
+          "evidence": "strict-typescript",
+          "laneIds": ["mdx.components", "showcases.source", "showcase.field-atlas", "showcases.all"]
+        },
+        {
+          "evidence": "next-build",
+          "laneIds": ["showcase.field-atlas", "showcases.all"]
+        },
+        {
+          "evidence": "browser",
+          "laneIds": ["showcase.field-atlas", "showcases.all"]
+        }
+      ]
+    },
+    {
+      "id": "todoapp-next",
+      "path": "examples/todoapp-next",
+      "tier": "flagship-application",
+      "distinctiveClaims": ["Production-shaped actions, forms, typed routes, cache invalidation, package integration, failure recovery, and isolated user journeys"],
+      "supportedProfiles": ["typescript/optimized"],
+      "laneIds": ["todo.source", "todo.build", "todo.smoke", "todo.e2e"],
+      "advertisedEvidence": ["haxe-positive", "determinism", "cli", "ownership", "strict-typescript", "next-build", "runtime", "browser", "security"],
+      "knownLimitations": ["The flagship does not prove every showcase, package export, canary version, browser engine, or output profile."],
+      "evidenceOwners": [
+        {
+          "evidence": "haxe-positive",
+          "laneIds": ["todo.build"]
+        },
+        {
+          "evidence": "determinism",
+          "laneIds": ["todo.build"]
+        },
+        {
+          "evidence": "cli",
+          "laneIds": ["todo.build"]
+        },
+        {
+          "evidence": "ownership",
+          "laneIds": ["todo.source", "todo.build"]
+        },
+        {
+          "evidence": "strict-typescript",
+          "laneIds": ["todo.build"]
+        },
+        {
+          "evidence": "next-build",
+          "laneIds": ["todo.build"]
+        },
+        {
+          "evidence": "runtime",
+          "laneIds": ["todo.smoke", "todo.e2e"]
+        },
+        {
+          "evidence": "browser",
+          "laneIds": ["todo.e2e"]
+        },
+        {
+          "evidence": "security",
+          "laneIds": ["todo.source", "todo.smoke", "todo.e2e"]
+        }
+      ]
+    }
+  ],
   "lanes": [
     {
       "id": "loop.validate",
       "description": "Validate the lane manifest, selector contract, support linkage, and maintained-owner inventory.",
       "npmScript": "test:loop:validate",
       "owners": ["test topology"],
-      "paths": ["config/test-lanes.json", "schemas/test-lanes.schema.json", "scripts/testing/test-lanes.mjs", "docs/testing-strategy.md", "package.json", "package-lock.json", ".haxerc", "haxelib.json", "haxe_libraries/**"],
+      "paths": ["config/test-lanes.json", "schemas/test-lanes.schema.json", "scripts/testing/test-lanes.mjs", "scripts/testing/test-lanes.test.mjs", "docs/testing-strategy.md", "docs/testing-surfaces.md", "docs/testing-behavior-workflow.md", "docs/testing-v3-convergence-audit.md", "package.json", "package-lock.json", ".haxerc", "haxelib.json", "haxe_libraries/**"],
       "reverseDependencies": [],
       "evidence": ["test-topology", "governance"],
       "ring": "R0",
@@ -36,7 +822,9 @@
       "groups": ["main", "nightly", "release", "smoke"],
       "hook": true,
       "expansion": "full",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["repository-governance"],
+      "exampleIds": []
     },
     {
       "id": "loop.self",
@@ -61,7 +849,9 @@
       "groups": ["main", "nightly", "release", "smoke"],
       "hook": true,
       "expansion": "full",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["repository-governance"],
+      "exampleIds": []
     },
     {
       "id": "docs.general",
@@ -86,7 +876,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": true,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["repository-governance"],
+      "exampleIds": []
     },
     {
       "id": "seed.plan",
@@ -111,7 +903,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["repository-governance"],
+      "exampleIds": []
     },
     {
       "id": "support.matrix",
@@ -136,7 +930,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": true,
       "expansion": "full",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["compatibility-matrices"],
+      "exampleIds": []
     },
     {
       "id": "architecture",
@@ -161,7 +957,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": true,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["repository-governance"],
+      "exampleIds": []
     },
     {
       "id": "security.tooling",
@@ -186,7 +984,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": true,
       "expansion": "full",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["repository-governance"],
+      "exampleIds": []
     },
     {
       "id": "haxe.positive",
@@ -211,7 +1011,9 @@
       "groups": ["harness", "main", "nightly", "release", "smoke"],
       "hook": true,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation"],
+      "exampleIds": []
     },
     {
       "id": "haxe.negative",
@@ -236,7 +1038,9 @@
       "groups": ["harness", "main", "nightly", "release", "smoke"],
       "hook": true,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation"],
+      "exampleIds": []
     },
     {
       "id": "adapter.plan",
@@ -261,7 +1065,9 @@
       "groups": ["harness", "main", "nightly", "release", "smoke"],
       "hook": true,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation"],
+      "exampleIds": []
     },
     {
       "id": "route.patterns",
@@ -286,7 +1092,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": true,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation"],
+      "exampleIds": []
     },
     {
       "id": "page.layouts",
@@ -311,7 +1119,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation"],
+      "exampleIds": []
     },
     {
       "id": "metadata.segment",
@@ -336,7 +1146,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation"],
+      "exampleIds": []
     },
     {
       "id": "route.handlers",
@@ -361,7 +1173,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "next-runtime"],
+      "exampleIds": []
     },
     {
       "id": "special.files",
@@ -386,7 +1200,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation"],
+      "exampleIds": []
     },
     {
       "id": "proxy",
@@ -411,7 +1227,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation"],
+      "exampleIds": []
     },
     {
       "id": "route.hrefs",
@@ -436,7 +1254,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "next-runtime"],
+      "exampleIds": []
     },
     {
       "id": "environment.boundaries",
@@ -461,7 +1281,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "next-runtime", "react-next-semantics"],
+      "exampleIds": []
     },
     {
       "id": "clientification.boundaries",
@@ -486,7 +1308,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "next-runtime", "react-next-semantics"],
+      "exampleIds": []
     },
     {
       "id": "client.components",
@@ -511,7 +1335,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "next-runtime", "react-next-semantics", "browser-applications"],
+      "exampleIds": []
     },
     {
       "id": "mdx.components",
@@ -536,7 +1362,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "next-runtime", "react-next-semantics"],
+      "exampleIds": ["showcase-field-atlas"]
     },
     {
       "id": "content.blocks",
@@ -561,7 +1389,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "next-runtime", "react-next-semantics"],
+      "exampleIds": []
     },
     {
       "id": "server.functions",
@@ -586,7 +1416,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "next-runtime", "react-next-semantics", "browser-applications"],
+      "exampleIds": []
     },
     {
       "id": "cache.boundaries",
@@ -611,7 +1443,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "next-runtime", "react-next-semantics"],
+      "exampleIds": []
     },
     {
       "id": "codecs",
@@ -636,7 +1470,9 @@
       "groups": ["harness", "main", "nightly", "release", "smoke"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "next-runtime", "react-next-semantics"],
+      "exampleIds": []
     },
     {
       "id": "next.surface",
@@ -661,7 +1497,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": true,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["compatibility-matrices"],
+      "exampleIds": []
     },
     {
       "id": "next.bindings",
@@ -686,7 +1524,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": true,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "compatibility-matrices"],
+      "exampleIds": []
     },
     {
       "id": "next.drift",
@@ -711,7 +1551,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["compatibility-matrices"],
+      "exampleIds": []
     },
     {
       "id": "next.core.navigation",
@@ -736,7 +1578,9 @@
       "groups": ["harness", "main", "nightly", "release", "smoke"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "next-runtime", "compatibility-matrices"],
+      "exampleIds": []
     },
     {
       "id": "next.components",
@@ -761,7 +1605,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "next-runtime", "react-next-semantics", "compatibility-matrices"],
+      "exampleIds": []
     },
     {
       "id": "next.server",
@@ -786,7 +1632,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "next-runtime", "react-next-semantics", "compatibility-matrices"],
+      "exampleIds": []
     },
     {
       "id": "showcase.ui",
@@ -811,7 +1659,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "react-next-semantics", "maintained-examples"],
+      "exampleIds": ["showcase-ui"]
     },
     {
       "id": "integration.dnd-kit",
@@ -836,7 +1686,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "react-next-semantics"],
+      "exampleIds": []
     },
     {
       "id": "integration.recharts",
@@ -861,7 +1713,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "react-next-semantics"],
+      "exampleIds": []
     },
     {
       "id": "integrations.inventory",
@@ -886,7 +1740,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": true,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["compatibility-matrices"],
+      "exampleIds": []
     },
     {
       "id": "integrations.runtime",
@@ -911,7 +1767,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "next-runtime", "react-next-semantics", "compatibility-matrices"],
+      "exampleIds": []
     },
     {
       "id": "cli.preparation",
@@ -936,7 +1794,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "full",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["package-cli"],
+      "exampleIds": []
     },
     {
       "id": "cli.config",
@@ -961,7 +1821,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["package-cli"],
+      "exampleIds": []
     },
     {
       "id": "cli.ownership",
@@ -986,7 +1848,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["package-cli"],
+      "exampleIds": []
     },
     {
       "id": "cli.publication",
@@ -1011,7 +1875,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["package-cli"],
+      "exampleIds": []
     },
     {
       "id": "cli.commands",
@@ -1036,7 +1902,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["package-cli"],
+      "exampleIds": []
     },
     {
       "id": "cli.all",
@@ -1061,7 +1929,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["package-cli"],
+      "exampleIds": []
     },
     {
       "id": "cli.dev",
@@ -1086,7 +1956,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["package-cli", "browser-applications"],
+      "exampleIds": []
     },
     {
       "id": "snapshots",
@@ -1111,7 +1983,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": true,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation"],
+      "exampleIds": []
     },
     {
       "id": "package.shape",
@@ -1136,7 +2010,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": true,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["package-cli", "compatibility-matrices"],
+      "exampleIds": []
     },
     {
       "id": "compiler.gaps",
@@ -1161,7 +2037,9 @@
       "groups": ["harness", "main", "nightly", "release"],
       "hook": true,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "compatibility-matrices"],
+      "exampleIds": []
     },
     {
       "id": "example.mixed.source",
@@ -1186,7 +2064,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": true,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["package-cli", "maintained-examples"],
+      "exampleIds": ["mixed-adoption"]
     },
     {
       "id": "example.mixed.full",
@@ -1211,7 +2091,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["package-cli", "next-runtime", "react-next-semantics", "browser-applications", "maintained-examples"],
+      "exampleIds": ["mixed-adoption"]
     },
     {
       "id": "todo.source",
@@ -1236,7 +2118,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": true,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["maintained-examples"],
+      "exampleIds": ["todoapp-next"]
     },
     {
       "id": "todo.build",
@@ -1261,7 +2145,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["next-runtime", "maintained-examples"],
+      "exampleIds": ["todoapp-next"]
     },
     {
       "id": "todo.smoke",
@@ -1286,7 +2172,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["next-runtime", "maintained-examples"],
+      "exampleIds": ["todoapp-next"]
     },
     {
       "id": "todo.e2e",
@@ -1311,7 +2199,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["next-runtime", "react-next-semantics", "browser-applications", "maintained-examples"],
+      "exampleIds": ["todoapp-next"]
     },
     {
       "id": "showcases.source",
@@ -1336,7 +2226,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": true,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["maintained-examples"],
+      "exampleIds": ["showcase-landing", "showcase-blog", "showcase-commerce", "showcase-field-atlas"]
     },
     {
       "id": "showcase.landing",
@@ -1361,7 +2253,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["next-runtime", "browser-applications", "maintained-examples"],
+      "exampleIds": ["showcase-landing"]
     },
     {
       "id": "showcase.blog",
@@ -1386,7 +2280,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["next-runtime", "browser-applications", "maintained-examples"],
+      "exampleIds": ["showcase-blog"]
     },
     {
       "id": "showcase.commerce",
@@ -1411,7 +2307,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["next-runtime", "browser-applications", "maintained-examples"],
+      "exampleIds": ["showcase-commerce"]
     },
     {
       "id": "showcase.field-atlas",
@@ -1436,7 +2334,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["next-runtime", "browser-applications", "maintained-examples"],
+      "exampleIds": ["showcase-field-atlas"]
     },
     {
       "id": "showcases.all",
@@ -1461,7 +2361,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["next-runtime", "react-next-semantics", "browser-applications", "maintained-examples"],
+      "exampleIds": ["showcase-landing", "showcase-blog", "showcase-commerce", "showcase-field-atlas"]
     },
     {
       "id": "fixture.stable.primary",
@@ -1486,7 +2388,9 @@
       "groups": ["main", "nightly", "pr-primary", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["haxe-generation", "package-cli", "next-runtime", "react-next-semantics", "compatibility-matrices"],
+      "exampleIds": []
     },
     {
       "id": "fixture.stable.matrix",
@@ -1511,7 +2415,9 @@
       "groups": ["main", "nightly", "release"],
       "hook": false,
       "expansion": "none",
-      "quarantine": null
+      "quarantine": null,
+      "surfaceIds": ["package-cli", "next-runtime", "compatibility-matrices"],
+      "exampleIds": []
     }
   ]
 }

@@ -1930,6 +1930,8 @@ def validate_test_lane_topology() -> None:
         raise SecurityToolingFailure("test-lane schema identity drifted")
 
     manifest = read_json(TEST_LANES)
+    if manifest.get("schemaVersion") != 2:
+        raise SecurityToolingFailure("test-lane manifest must use scorecard schema v2")
     if manifest.get("selectionMode") != "observation":
         raise SecurityToolingFailure(
             "affected test selection must remain observational until its confidence gate passes"
@@ -1988,6 +1990,57 @@ def validate_test_lane_topology() -> None:
             "test-lane manifest lost required semantic owners: " + ", ".join(missing)
         )
 
+    surfaces = manifest.get("productSurfaces")
+    if not isinstance(surfaces, list):
+        raise SecurityToolingFailure("test-lane manifest must contain product scorecards")
+    surface_by_id = {
+        surface.get("id"): surface
+        for surface in surfaces
+        if isinstance(surface, dict)
+    }
+    required_surfaces = {
+        "repository-governance",
+        "haxe-generation",
+        "package-cli",
+        "next-runtime",
+        "react-next-semantics",
+        "browser-applications",
+        "maintained-examples",
+        "compatibility-matrices",
+    }
+    if set(surface_by_id) != required_surfaces:
+        raise SecurityToolingFailure(
+            "test-lane manifest lost independent product-surface scorecards"
+        )
+    scored_lane_ids = {
+        lane_id
+        for surface in surfaces
+        for lane_id in surface.get("laneIds", [])
+    }
+    if scored_lane_ids != set(lane_by_id):
+        raise SecurityToolingFailure(
+            "every test lane must belong to an independent product-surface scorecard"
+        )
+
+    examples = manifest.get("examples")
+    if not isinstance(examples, list):
+        raise SecurityToolingFailure("test-lane manifest must contain example tiers")
+    example_tiers = {
+        example.get("path"): example.get("tier")
+        for example in examples
+        if isinstance(example, dict)
+    }
+    expected_examples = {
+        "examples/mixed-adoption": "capability-showcase",
+        "examples/showcase-blog": "capability-showcase",
+        "examples/showcase-commerce": "capability-showcase",
+        "examples/showcase-field-atlas": "capability-showcase",
+        "examples/showcase-landing": "capability-showcase",
+        "examples/showcase-ui": "capability-showcase",
+        "examples/todoapp-next": "flagship-application",
+    }
+    if example_tiers != expected_examples:
+        raise SecurityToolingFailure("maintained example tiers drifted")
     for lane_id, lane in lane_by_id.items():
         groups = set(lane.get("groups", []))
         if lane.get("claimStatus") == "required":

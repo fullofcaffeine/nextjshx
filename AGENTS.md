@@ -396,6 +396,33 @@ bd prime                # Refresh Beads context
   workflow, security, support, lockfile, and core publication/process changes
   expand to full validation. Affected selection remains observation-only until
   the documented confidence window passes without unexplained misses.
+- For meaningful behavior work, record the preconditions, action or compile
+  path, observable result, edge behavior, owning product surface, and protected
+  claim before broad automation. Use the lowest faithful test for the inner
+  loop and record its expected pre-fix failure command and concise output; a
+  separate red commit is optional, but a test never shown sensitive is weak
+  regression evidence.
+- Name an independent oracle for each new or materially changed expectation:
+  a specification, manually authored result, pinned differential reference,
+  invariant, reviewed golden with provenance, or real consumer. Do not let the
+  implementation under test generate its own expectation or refresh a snapshot
+  without semantic review.
+- Start each new framework capability with one real Haxe → Genes → strict
+  TypeScript → production Next build/start → runtime/browser tracer bullet,
+  stopping at the lowest observer that can prove the behavior. When a browser
+  or production build reveals a stable compiler/generator defect, add a focused
+  deterministic regression and retain the representative real-boundary proof.
+- Keep product-surface scorecards independent. Todo, a showcase, a package
+  consumer, a stable Next cell, and a Genes compiler lane may not lend their
+  green result to one another. NextJsHx does not own an official Haxe
+  target-suite claim. Use the example tiers and surface IDs in
+  `config/test-lanes.json` and the explanation in `docs/testing-surfaces.md`.
+- For compiler representation, runtime, publication, security, migration,
+  ownership, or compatibility-claim changes, perform a verification pass
+  distinct from implementation. Challenge red-state sensitivity, oracle
+  independence, missing negatives, mocked boundaries, selector omissions,
+  scorecard borrowing, and overbroad claims, then record findings and
+  dispositions in Beads or the pull request.
 - Make pull request descriptions as specific and reproducible as possible.
   State where the problem was discovered and why the change was needed, explain
   the exact solution and its intended limits, include a positive example of the
