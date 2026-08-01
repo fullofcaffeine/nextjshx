@@ -14,9 +14,9 @@ function render(_:PageProps<NoParams, SearchParams>):Element {
 /**
  * Becomes Next's ordinary `export const metadata` without a static shell class.
  *
- * NextJsHx validates the exact public Metadata type and derives Genes' generic
- * direct-module-value marker. The marker changes only emitted ESM shape; Next
- * remains the metadata type/runtime oracle.
+ * NextJsHx checks this value against Next's public Metadata type, then asks
+ * Genes to emit a normal JavaScript `export const`. Next still controls how the
+ * metadata affects the rendered page.
  */
 final metadata:Metadata = {
 	title: "Direct module metadata"
