@@ -371,16 +371,14 @@ bd prime                # Refresh Beads context
   question benefits from deeper independent reasoning; do not use Oracle as a
   substitute for ordinary repository inspection or tests.
 - Prepare a self-contained review package for the user when recommending that
-  escalation. Include a detailed prompt that states the exact decision or bug,
-  relevant constraints and invariants, attempted approaches, observed evidence,
-  competing hypotheses, and the requested review output. Add every required
-  source file—or the smallest sufficient file portions—to a Repomix bundle and
-  package the prompt plus Repomix output in one ZIP for upload.
-- Minimize and sanitize the bundle before handing it off: exclude dependencies,
-  generated bulk, credentials, private data, machine-local paths, and unrelated
-  repository content; list the included files/portions and run the repository's
-  leak and path checks. Never upload or submit the bundle without explicit user
-  authorization.
+  escalation. Use the globally installed `$oracle-review` skill for the detailed
+  prompt, sanitized selective or whole-repository Repomix bundles, checked ZIP,
+  pending-request check, and archive lifecycle under `/tmp/oracle`. Apply this
+  repository's exact decision, invariants, attempted approaches, evidence,
+  competing hypotheses, leak checks, and path checks to that package. The human
+  performs the handoff and pastes the response back; never upload or submit it
+  automatically. Public source and install instructions:
+  https://github.com/fullofcaffeine/caf-skills/tree/main/skills/oracle-review
 
 ### Repository workflow and publication safety
 
