@@ -150,10 +150,11 @@ behavior is part of the claim. Lane counts and durations are measured for
 cost, balance, and failure yield, but are not treated as a quality score.
 
 TDD and BDD describe how contributors use this evidence rather than competing
-suite shapes. For TDD, reproduce a failure in the smallest named owner,
-implement the change, then climb through smoke and the affected integrations.
-For behavior-driven work, the production HTTP or Playwright journey is the
-executable behavior specification; Gherkin syntax is not required.
+suite shapes. BDD means formulating the externally meaningful behavior before
+automation; it does not require Gherkin and it does not make every scenario a
+browser test. TDD then starts at the cheapest layer that can still observe the
+failure, records that the new owner is red for the intended reason, implements
+the change, and climbs through smoke and the affected integrations.
 
 Maintained examples are QA products. Every example must compile from Haxe,
 strictly check its generated TS/TSX, complete the appropriate Next production
@@ -162,6 +163,106 @@ zero-retry Playwright with page, console, hydration, request, and unexpected
 response failures treated as fatal. A changed showcase may use its focused PR
 owner, while all maintained examples remain full main/nightly/release
 evidence.
+
+## Behavior-first change workflow
+
+For meaningful new or changed behavior, record one concrete scenario in the
+Bead or pull request before broad automation:
+
+- the preconditions and input;
+- the action, compilation path, or request;
+- the observable result and important error or edge behavior;
+- the product surface that owns the promise;
+- the exact claim protected by the test.
+
+Then use the inner red/green/refactor loop:
+
+1. Choose the lowest faithful owner—the cheapest test that still contains the
+   defect class.
+2. Run the new or existing regression against the missing behavior and record
+   the command plus the concise expected failure. A separate red commit is not
+   required, but an unrelated setup failure is not useful red evidence.
+3. Name the independent oracle: a public specification, manually authored
+   expectation, pinned differential implementation, invariant, reviewed golden
+   with provenance, or real consumer behavior. The implementation under test
+   must not manufacture its own expected result.
+4. Make the focused owner green and refactor.
+5. Run the next broader owner that crosses the real boundary.
+
+For a new framework capability, establish one narrow tracer bullet before
+multiplying fixtures:
+
+```text
+Haxe/HXX source
+  -> pinned Genes output
+  -> strict TypeScript
+  -> Next production build and next start
+  -> HTTP or browser observation when that behavior requires it
+```
+
+The last observer is chosen by behavior, not ceremony. A generated signature
+may stop at strict TypeScript and a production Next build; hydration,
+navigation, Server Function transport, visible cache invalidation, and recovery
+need a running application or browser.
+
+When a production build or browser journey discovers a stable compiler,
+generator, codec, or selector defect, keep a double lock: add a focused
+deterministic regression at the semantic owner and retain the representative
+real-boundary proof. They answer different questions—whether the local rule is
+diagnosable and whether the complete product still crosses the boundary.
+
+[The behavior-first workflow](testing-behavior-workflow.md) gives a completed
+red/green/oracle example and the record expected in future Beads and pull
+requests.
+
+## Independent product-surface scorecards
+
+The lane manifest now contains separate scorecards for Haxe/Genes generation,
+the package and CLI, Next production runtime, React/Next server-client
+semantics, browser applications, maintained examples, compatibility matrices,
+and internal testing governance. Selector plans report these surface IDs for
+every selected and omitted lane.
+
+A scorecard is an evidence boundary, not another green badge. For example:
+
+- the Todo browser suite cannot establish showcase-specific package behavior;
+- all showcases passing cannot establish the packed CLI consumer contract;
+- the stable Node/Turbopack fixture cannot establish the webpack or current-Node
+  matrix cell;
+- focused NextJsHx Haxe fixtures do not make this repository an owner of the
+  official Haxe target-suite claim, which remains a Genes responsibility.
+
+The machine-readable schema-v2 scorecards and example tiers live in
+[`config/test-lanes.json`](../config/test-lanes.json); their readable map is in
+[testing surfaces and example tiers](testing-surfaces.md). The manifest checks
+that every lane belongs to at least one scorecard, that scorecard/example and
+lane ownership agree in both directions, and that every claimed evidence kind
+names a concrete lane which executes it. It also records focused, vertical,
+runtime, and browser owners separately, plus profiles, examples, skips,
+quarantines, clean-proof state, and residual risks. The actual command result
+remains the proof: metadata consistency never substitutes for running Haxe,
+strict TypeScript, Next, the runtime, or Playwright.
+
+Portfolio ranges remain diagnostic guardrails, not quotas. For each
+browser-capable product surface, review roughly 50–60% focused deterministic
+owners, 30–40% real vertical integration/runtime owners, and 5–10% browser E2E
+scenarios. Static typing, formatting, schemas, freshness, workflow policy, and
+security checks stay outside the denominator. Count stable behavior owners or
+scenarios—not assertions, parameter rows, files, or CI minutes. Current lanes
+often combine several evidence layers, so lane count alone is not a valid
+portfolio measurement.
+
+## Distinct verification for high-risk changes
+
+Compiler representation, runtime, package publication, security, migration,
+compatibility-claim, and generated-ownership changes require a review pass
+separate from implementation. That pass challenges whether the regression was
+actually red, the oracle is independent, negative cases are missing, a mock
+removed the claimed boundary, the selector omitted a consumer, one scorecard
+borrowed another's result, or the resulting claim is broader than the executed
+evidence. Record findings and their dispositions in the Bead or pull request.
+The reviewer may be another agent or person, or a clearly separated structured
+self-review when independent review is unavailable.
 
 ## Local and hosted gates
 

@@ -18,6 +18,12 @@ layer. Choose the shortest path below for the work you are doing.
 - [Testing feedback loop](testing-feedback-loop.md): focused commands,
   affected-owner explanations, timing records, and the observation-only
   selector rollout.
+- [Testing surfaces and example tiers](testing-surfaces.md): independent claim
+  scorecards and the evidence each maintained example may advertise.
+- [Behavior-first testing workflow](testing-behavior-workflow.md): scenario,
+  red-state, independent-oracle, tracer-bullet, and high-risk review records.
+- [Consolidated testing v3 audit](testing-v3-convergence-audit.md): what the
+  prior refactor already satisfied, the incremental gaps, and claim impact.
 
 ## Build an application
 

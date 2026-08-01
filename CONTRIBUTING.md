@@ -175,6 +175,41 @@ generated TSX, ownership publication, TypeScript, and Next disagree.
 Maintained examples remain QA: they must compile, strictly check, production
 build, and run the behavior they teach.
 
+For meaningful behavior changes, write the scenario before broad automation:
+preconditions, action or compile path, observable result, important error or
+edge behavior, owning product surface, and protected claim. Then record the
+smallest faithful test command failing for the intended reason before the fix.
+A separate red commit is optional; a setup failure is not red evidence.
+
+Name the source of the expectation as well. Use a public specification,
+manually authored result, pinned differential implementation, invariant,
+reviewed golden with provenance, or real consumer behavior. Do not derive both
+actual and expected values from the implementation being tested, and do not
+refresh snapshots without semantic review.
+
+New framework capabilities start with one representative Haxe → Genes → strict
+TypeScript → production Next build/start → runtime or browser tracer bullet.
+After that path works, add focused permutations and only the system or browser
+owners that protect distinct behavior. If a high-level build or browser test
+finds a stable lower-level defect, keep both the focused regression and the
+representative real-boundary proof.
+
+Use the product surfaces and example tiers in `config/test-lanes.json` when
+describing evidence. A green Todo journey cannot advance showcase, package,
+canary, profile, or compatibility-matrix claims. Review portfolio shape per
+surface using the diagnostic ranges in `docs/testing-surfaces.md`; never turn
+those ranges into quotas or count assertions, parameter rows, or CI minutes.
+
+Compiler representation, runtime, publication, security, migration,
+ownership, or compatibility-claim changes require a verification pass distinct
+from implementation. Record whether the test was genuinely sensitive, its
+oracle was independent, negative cases or real consumers are missing, a mock
+removed the claimed boundary, the selector omitted a surface, or the wording
+exceeds the evidence.
+
+See [the behavior-first workflow](docs/testing-behavior-workflow.md) for the
+compact record and a completed red/green example.
+
 ## Before closing work
 
 Run the issue-owned lanes first. Before exposing a branch or closing completed

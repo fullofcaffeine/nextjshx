@@ -70,6 +70,17 @@ publication preflight. Affected selection is observation-only until its
 documented confidence window passes, and unknown or cross-cutting paths must
 expand to full validation.
 
+For meaningful behavior changes, record the concrete scenario, owning product
+surface, expected red command and failure, independent source of the expected
+result, and next broader proof. New framework capabilities begin with one real
+Haxe → Genes → strict TypeScript → production Next → runtime/browser tracer
+bullet before broad fixture expansion. Keep focused and real-boundary evidence
+when they protect different failure modes, and do not use Todo, showcases,
+packages, compatibility cells, or Genes evidence to advance another surface's
+claim. High-risk compiler/runtime/publication/security/migration/claim changes
+receive a separate verification pass. The full workflow and scorecards are in
+`docs/testing-behavior-workflow.md` and `docs/testing-surfaces.md`.
+
 ## Architecture Overview
 
 NextJsHx compiles typed Haxe through `genes-ts`, then generates narrow,

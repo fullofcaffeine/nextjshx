@@ -37,11 +37,64 @@ function formatAjvErrors(errors) {
     .join("; ");
 }
 
+function sameMembers(left, right) {
+  const sortedLeft = [...left].sort();
+  const sortedRight = [...right].sort();
+  return sortedLeft.length === sortedRight.length &&
+    sortedLeft.every((value, index) => value === sortedRight[index]);
+}
+
+function requireSameMembers(actual, expected, label) {
+  if (!sameMembers(actual, expected)) {
+    throw new TestLaneFailure(
+      `${label} must match exactly; expected ${[...expected].sort().join(", ") || "none"}, got ${[...actual].sort().join(", ") || "none"}`,
+    );
+  }
+}
+
+function laneOwnsProfile(lane, profile, stableVersions) {
+  if (profile === "repository-internal") {
+    return true;
+  }
+  if (profile === "typescript/optimized") {
+    return lane.environments.some((environment) => environment.profile.includes(profile));
+  }
+  if (profile === "node/turbopack" || profile === "node/webpack") {
+    return lane.environments.some((environment) => environment.bundler.includes(profile.slice(5)));
+  }
+  if (profile.startsWith("node-")) {
+    const version = profile.slice(5);
+    return stableVersions.node.includes(version) &&
+      lane.environments.some((environment) => environment.node.includes(version));
+  }
+  if (profile === "turbopack" || profile === "webpack") {
+    return stableVersions.bundlers.includes(profile) &&
+      lane.environments.some((environment) => environment.bundler.includes(profile));
+  }
+  if (profile === "chromium/production") {
+    return lane.evidence.includes("browser");
+  }
+  if (profile === "react-19") {
+    return stableVersions.react.startsWith("19.") &&
+      lane.evidence.some((evidence) => ["react-lint", "runtime", "browser"].includes(evidence));
+  }
+  if (profile === "next-app-router") {
+    return stableVersions.next.length > 0 &&
+      lane.evidence.some((evidence) => ["next-build", "runtime", "browser"].includes(evidence));
+  }
+  return false;
+}
+
 export function validateManifestValue(manifest, packageValue = readJson(PACKAGE_PATH)) {
   const schema = readJson(SCHEMA_PATH);
   const validate = new Ajv2020({ allErrors: true, strict: true }).compile(schema);
   if (!validate(manifest)) {
     throw new TestLaneFailure(`test-lane manifest violates its schema: ${formatAjvErrors(validate.errors)}`);
+  }
+  const support = readJson(SUPPORT_PATH);
+  const stable = support.lanes.find((lane) => lane.id === "stable-package");
+  if (stable === undefined) {
+    throw new TestLaneFailure("support matrix has no stable-package lane");
   }
 
   const ids = manifest.lanes.map((lane) => lane.id);
@@ -70,6 +123,141 @@ export function validateManifestValue(manifest, packageValue = readJson(PACKAGE_
     }
   }
 
+  const surfaceIds = manifest.productSurfaces.map((surface) => surface.id);
+  const declaredExampleIds = manifest.examples.map((example) => example.id);
+  if (new Set(surfaceIds).size !== surfaceIds.length) {
+    throw new TestLaneFailure("product-surface IDs must be unique");
+  }
+  const lanesWithSurface = new Set();
+  for (const surface of manifest.productSurfaces) {
+    const layerOwners = [
+      ...surface.focusedOwners,
+      ...surface.verticalIntegrationOwners,
+      ...surface.realRuntimeOrSystemOwners,
+      ...surface.browserE2EOwners,
+    ];
+    for (const laneId of surface.laneIds) {
+      if (!idSet.has(laneId)) {
+        throw new TestLaneFailure(`${surface.id} references unknown lane ${laneId}`);
+      }
+      const lane = manifest.lanes.find((candidate) => candidate.id === laneId);
+      if (!lane.surfaceIds.includes(surface.id)) {
+        throw new TestLaneFailure(
+          `${surface.id} borrows ${laneId}, but that lane does not name the surface as an owner`,
+        );
+      }
+      lanesWithSurface.add(laneId);
+    }
+    if (new Set(layerOwners).size !== layerOwners.length) {
+      throw new TestLaneFailure(`${surface.id} assigns one lane to more than one evidence layer`);
+    }
+    requireSameMembers(layerOwners, surface.laneIds, `${surface.id} layer owners`);
+    const evidenceKinds = surface.evidenceOwners.map((owner) => owner.evidence);
+    requireSameMembers(evidenceKinds, surface.requiredEvidence, `${surface.id} evidence owners`);
+    for (const owner of surface.evidenceOwners) {
+      for (const laneId of owner.laneIds) {
+        if (!surface.laneIds.includes(laneId)) {
+          throw new TestLaneFailure(`${surface.id} assigns ${owner.evidence} to undeclared lane ${laneId}`);
+        }
+        const lane = manifest.lanes.find((candidate) => candidate.id === laneId);
+        if (!lane.evidence.includes(owner.evidence)) {
+          throw new TestLaneFailure(`${surface.id} assigns ${owner.evidence} to ${laneId}, which does not execute it`);
+        }
+      }
+    }
+    for (const profile of surface.testedProfiles) {
+      if (!surface.supportedProfiles.includes(profile)) {
+        throw new TestLaneFailure(`${surface.id} tests undeclared profile ${profile}`);
+      }
+    }
+    const profileKinds = surface.profileOwners.map((owner) => owner.profile);
+    requireSameMembers(profileKinds, surface.testedProfiles, `${surface.id} profile owners`);
+    for (const owner of surface.profileOwners) {
+      for (const laneId of owner.laneIds) {
+        if (!surface.laneIds.includes(laneId)) {
+          throw new TestLaneFailure(`${surface.id} assigns profile ${owner.profile} to undeclared lane ${laneId}`);
+        }
+        const lane = manifest.lanes.find((candidate) => candidate.id === laneId);
+        if (!laneOwnsProfile(lane, owner.profile, stable.versions)) {
+          throw new TestLaneFailure(`${surface.id} assigns profile ${owner.profile} to ${laneId}, which does not execute that cell`);
+        }
+      }
+    }
+    const expectedQuarantines = surface.laneIds.filter(
+      (laneId) => manifest.lanes.find((candidate) => candidate.id === laneId).quarantine !== null,
+    );
+    requireSameMembers(surface.quarantines, expectedQuarantines, `${surface.id} quarantines`);
+  }
+  const unscoredLanes = ids.filter((id) => !lanesWithSurface.has(id));
+  if (unscoredLanes.length > 0) {
+    throw new TestLaneFailure(
+      `test lanes have no product-surface scorecard: ${unscoredLanes.join(", ")}`,
+    );
+  }
+
+  const exampleIds = declaredExampleIds;
+  const examplePaths = manifest.examples.map((example) => example.path);
+  if (new Set(exampleIds).size !== exampleIds.length) {
+    throw new TestLaneFailure("example IDs must be unique");
+  }
+  if (new Set(examplePaths).size !== examplePaths.length) {
+    throw new TestLaneFailure("example paths must be unique");
+  }
+  for (const example of manifest.examples) {
+    for (const laneId of example.laneIds) {
+      if (!idSet.has(laneId)) {
+        throw new TestLaneFailure(`${example.id} references unknown lane ${laneId}`);
+      }
+      const lane = manifest.lanes.find((candidate) => candidate.id === laneId);
+      if (!lane.exampleIds.includes(example.id)) {
+        throw new TestLaneFailure(
+          `${example.id} borrows ${laneId}, but that lane does not name the example as an owner`,
+        );
+      }
+    }
+    const evidenceKinds = example.evidenceOwners.map((owner) => owner.evidence);
+    requireSameMembers(evidenceKinds, example.advertisedEvidence, `${example.id} evidence owners`);
+    for (const owner of example.evidenceOwners) {
+      for (const laneId of owner.laneIds) {
+        if (!example.laneIds.includes(laneId)) {
+          throw new TestLaneFailure(`${example.id} assigns ${owner.evidence} to undeclared lane ${laneId}`);
+        }
+        const lane = manifest.lanes.find((candidate) => candidate.id === laneId);
+        if (!lane.evidence.includes(owner.evidence)) {
+          throw new TestLaneFailure(`${example.id} assigns ${owner.evidence} to ${laneId}, which does not execute it`);
+        }
+      }
+    }
+    if (example.tier === "flagship-application") {
+      for (const evidence of ["next-build", "runtime", "browser"]) {
+        if (!example.advertisedEvidence.includes(evidence)) {
+          throw new TestLaneFailure(`${example.id} flagship tier must advertise ${evidence}`);
+        }
+      }
+    }
+    if (
+      example.tier === "compile-only-snippet" &&
+      example.advertisedEvidence.some((evidence) => ["next-build", "runtime", "browser"].includes(evidence))
+    ) {
+      throw new TestLaneFailure(`${example.id} compile-only tier cannot advertise runtime evidence`);
+    }
+  }
+
+  for (const lane of manifest.lanes) {
+    for (const surfaceId of lane.surfaceIds) {
+      const surface = manifest.productSurfaces.find((candidate) => candidate.id === surfaceId);
+      if (surface === undefined || !surface.laneIds.includes(lane.id)) {
+        throw new TestLaneFailure(`${lane.id} names unreciprocated product surface ${surfaceId}`);
+      }
+    }
+    for (const exampleId of lane.exampleIds) {
+      const example = manifest.examples.find((candidate) => candidate.id === exampleId);
+      if (example === undefined || !example.laneIds.includes(lane.id)) {
+        throw new TestLaneFailure(`${lane.id} names unreciprocated example ${exampleId}`);
+      }
+    }
+  }
+
   const requiredGroups = ["main", "nightly", "release"];
   for (const group of requiredGroups) {
     if (!manifest.lanes.some((lane) => lane.groups.includes(group))) {
@@ -77,8 +265,6 @@ export function validateManifestValue(manifest, packageValue = readJson(PACKAGE_
     }
   }
 
-  const support = readJson(SUPPORT_PATH);
-  const stable = support.lanes.find((lane) => lane.id === "stable-package");
   const matrixLane = manifest.lanes.find((lane) => lane.id === "fixture.stable.matrix");
   if (stable === undefined || matrixLane === undefined) {
     throw new TestLaneFailure("stable support claim requires fixture.stable.matrix");
@@ -103,6 +289,20 @@ export function validateManifestValue(manifest, packageValue = readJson(PACKAGE_
     if (!manifest.lanes.some((lane) => lane.paths.some((pattern) => pattern.startsWith(`${workspace}/`)))) {
       throw new TestLaneFailure(`maintained workspace ${workspace} has no test-lane owner`);
     }
+    if (!examplePaths.includes(workspace)) {
+      throw new TestLaneFailure(`maintained workspace ${workspace} has no declared example tier`);
+    }
+  }
+  for (const surface of manifest.productSurfaces) {
+    for (const exampleId of surface.examples) {
+      if (!declaredExampleIds.includes(exampleId)) {
+        throw new TestLaneFailure(`${surface.id} references unknown example ${exampleId}`);
+      }
+    }
+    const expectedExamples = manifest.examples
+      .filter((example) => example.laneIds.some((laneId) => surface.laneIds.includes(laneId)))
+      .map((example) => example.id);
+    requireSameMembers(surface.examples, expectedExamples, `${surface.id} examples`);
   }
   return manifest;
 }
@@ -280,7 +480,11 @@ function changedPathsFromArguments(args) {
   throw new TestLaneFailure("select changed paths with --staged, --base REV [--head REV], or --path FILE");
 }
 
-function planValue(selection, hookOnly = false) {
+export function surfaceIdsForLane(manifest, laneId) {
+  return manifest.lanes.find((lane) => lane.id === laneId).surfaceIds;
+}
+
+export function planValue(manifest, selection, hookOnly = false) {
   return {
     schemaVersion: 1,
     selectionMode: "observation",
@@ -294,18 +498,20 @@ function planValue(selection, hookOnly = false) {
       hookEligible: lane.hook,
       executeNow: !hookOnly || lane.hook,
       reasons,
+      productSurfaces: surfaceIdsForLane(manifest, lane.id),
       environments: lane.environments,
       reproduction: lane.reproduction,
     })),
     omitted: selection.omittedLanes.map(({ lane, reason }) => ({
       id: lane.id,
       reason,
+      productSurfaces: surfaceIdsForLane(manifest, lane.id),
       reproduction: lane.reproduction,
     })),
   };
 }
 
-function printPlan(plan) {
+export function printPlan(plan) {
   console.log(`[test-loop] observation plan for ${plan.changedPaths.length} changed path(s)`);
   if (plan.changedPaths.length === 0) {
     console.log("  changed: none");
@@ -321,6 +527,7 @@ function printPlan(plan) {
   for (const selected of plan.selected) {
     const hook = selected.executeNow ? "" : " [remote/explicit; not run by pre-commit]";
     console.log(`    - ${selected.id} (${selected.ring}, ${selected.claimStatus})${hook}`);
+    console.log(`      surfaces: ${selected.productSurfaces.join(", ")}`);
     for (const reason of selected.reasons) {
       console.log(`      because: ${reason}`);
     }
@@ -329,6 +536,7 @@ function printPlan(plan) {
   console.log("  omitted:");
   for (const omitted of plan.omitted) {
     console.log(`    - ${omitted.id}: ${omitted.reason}`);
+    console.log(`      surfaces: ${omitted.productSurfaces.join(", ")}`);
   }
 }
 
@@ -576,7 +784,7 @@ async function main() {
   if (command === "explain" || command === "changed") {
     const selection = selectLanes(manifest, changedPathsFromArguments(args));
     const hookOnly = args.includes("--hook");
-    const plan = planValue(selection, hookOnly);
+    const plan = planValue(manifest, selection, hookOnly);
     const output = parseOption(args, "--output");
     if (output) {
       const absolute = path.resolve(ROOT, output);

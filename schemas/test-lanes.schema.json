@@ -10,6 +10,8 @@
     "selectionMode",
     "confidenceWindow",
     "fullBackstops",
+    "productSurfaces",
+    "examples",
     "lanes"
   ],
   "properties": {
@@ -17,7 +19,7 @@
       "const": "https://nextjshx.dev/schemas/test-lanes.schema.json"
     },
     "schemaVersion": {
-      "const": 1
+      "const": 2
     },
     "selectionMode": {
       "const": "observation"
@@ -64,6 +66,19 @@
         }
       }
     },
+    "productSurfaces": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/productSurface"
+      }
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/example"
+      }
+    },
     "lanes": {
       "type": "array",
       "minItems": 1,
@@ -73,6 +88,345 @@
     }
   },
   "$defs": {
+    "evidence": {
+      "enum": [
+        "architecture",
+        "browser",
+        "clean-consumer",
+        "cli",
+        "compatibility",
+        "determinism",
+        "governance",
+        "haxe-negative",
+        "haxe-positive",
+        "next-build",
+        "ownership",
+        "package-drift",
+        "react-lint",
+        "runtime",
+        "security",
+        "snapshot",
+        "strict-typescript",
+        "test-topology"
+      ]
+    },
+    "laneIds": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "pattern": "^[a-z][a-z0-9.-]*$"},
+      "uniqueItems": true
+    },
+    "evidenceOwner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence", "laneIds"],
+      "properties": {
+        "evidence": {"$ref": "#/$defs/evidence"},
+        "laneIds": {"$ref": "#/$defs/laneIds"}
+      }
+    },
+    "profileOwner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile", "laneIds"],
+      "properties": {
+        "profile": {"type": "string", "minLength": 1},
+        "laneIds": {"$ref": "#/$defs/laneIds"}
+      }
+    },
+    "lastCleanProof": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["commit", "runId", "command", "completedAt", "resultArtifact", "resultDigest"],
+          "properties": {
+            "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+            "runId": {"type": "string", "minLength": 1},
+            "command": {"type": "string", "pattern": "^npm run "},
+            "completedAt": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$"},
+            "resultArtifact": {"type": "string", "minLength": 1},
+            "resultDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+          }
+        }
+      ]
+    },
+    "oracle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source",
+        "pin"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "specification",
+            "manual-expectation",
+            "pinned-differential",
+            "invariant",
+            "reviewed-golden",
+            "real-consumer"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pin": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "productSurface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "owner",
+        "archetype",
+        "status",
+        "claims",
+        "authoredInputs",
+        "producedOutputs",
+        "supportedProfiles",
+        "testedProfiles",
+        "profileOwners",
+        "requiredEvidence",
+        "evidenceOwners",
+        "laneIds",
+        "focusedOwners",
+        "verticalIntegrationOwners",
+        "realRuntimeOrSystemOwners",
+        "browserE2EOwners",
+        "examples",
+        "oracles",
+        "adaptations",
+        "knownSkips",
+        "quarantines",
+        "selectorOwnership",
+        "fullBackstopCommand",
+        "releaseCommand",
+        "lastCleanProof",
+        "residualRisks",
+        "knownLimitations"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9.-]*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "archetype": {
+          "enum": [
+            "compiler",
+            "native-metal",
+            "runtime-stdlib",
+            "framework",
+            "browser-app",
+            "package-cli",
+            "migration",
+            "bootstrap",
+            "diagnostics",
+            "security",
+            "performance",
+            "portability"
+          ]
+        },
+        "status": {
+          "enum": ["experimental", "admitted-slice", "partial", "qualified", "release-claiming"]
+        },
+        "claims": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "authoredInputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "producedOutputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "supportedProfiles": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "testedProfiles": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "profileOwners": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/profileOwner"}
+        },
+        "requiredEvidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/evidence"},
+          "uniqueItems": true
+        },
+        "evidenceOwners": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/evidenceOwner"}
+        },
+        "laneIds": {
+          "$ref": "#/$defs/laneIds"
+        },
+        "focusedOwners": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[a-z][a-z0-9.-]*$"},
+          "uniqueItems": true
+        },
+        "verticalIntegrationOwners": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[a-z][a-z0-9.-]*$"},
+          "uniqueItems": true
+        },
+        "realRuntimeOrSystemOwners": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[a-z][a-z0-9.-]*$"},
+          "uniqueItems": true
+        },
+        "browserE2EOwners": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[a-z][a-z0-9.-]*$"},
+          "uniqueItems": true
+        },
+        "examples": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[a-z][a-z0-9.-]*$"},
+          "uniqueItems": true
+        },
+        "oracles": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/oracle"}
+        },
+        "adaptations": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "knownSkips": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "quarantines": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "selectorOwnership": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fullBackstopCommand": {
+          "type": "string",
+          "pattern": "^npm run "
+        },
+        "releaseCommand": {
+          "type": "string",
+          "pattern": "^npm run "
+        },
+        "lastCleanProof": {
+          "$ref": "#/$defs/lastCleanProof"
+        },
+        "residualRisks": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "knownLimitations": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        }
+      }
+    },
+    "example": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path",
+        "tier",
+        "distinctiveClaims",
+        "supportedProfiles",
+        "laneIds",
+        "advertisedEvidence",
+        "evidenceOwners",
+        "knownLimitations"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9.-]*$"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^examples/[A-Za-z0-9._-]+$"
+        },
+        "tier": {
+          "enum": ["flagship-application", "capability-showcase", "compile-only-snippet"]
+        },
+        "distinctiveClaims": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "supportedProfiles": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "laneIds": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "pattern": "^[a-z][a-z0-9.-]*$"},
+          "uniqueItems": true
+        },
+        "advertisedEvidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/evidence"},
+          "uniqueItems": true
+        },
+        "evidenceOwners": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/evidenceOwner"}
+        },
+        "knownLimitations": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        }
+      }
+    },
     "environment": {
       "type": "object",
       "additionalProperties": false,
@@ -154,6 +508,8 @@
         "paths",
         "reverseDependencies",
         "evidence",
+        "surfaceIds",
+        "exampleIds",
         "ring",
         "costClass",
         "alwaysRun",
@@ -213,28 +569,18 @@
         "evidence": {
           "type": "array",
           "minItems": 1,
-          "items": {
-            "enum": [
-              "architecture",
-              "browser",
-              "clean-consumer",
-              "cli",
-              "compatibility",
-              "determinism",
-              "governance",
-              "haxe-negative",
-              "haxe-positive",
-              "next-build",
-              "ownership",
-              "package-drift",
-              "react-lint",
-              "runtime",
-              "security",
-              "snapshot",
-              "strict-typescript",
-              "test-topology"
-            ]
-          },
+          "items": {"$ref": "#/$defs/evidence"},
+          "uniqueItems": true
+        },
+        "surfaceIds": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "pattern": "^[a-z][a-z0-9.-]*$"},
+          "uniqueItems": true
+        },
+        "exampleIds": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[a-z][a-z0-9.-]*$"},
           "uniqueItems": true
         },
         "ring": {
