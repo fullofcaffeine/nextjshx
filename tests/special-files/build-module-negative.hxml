@@ -1,0 +1,11 @@
+-lib genes-ts
+-cp src
+-cp tests/special-files/src
+-main special_files.NegativeRuntime
+-js tests/special-files/.tmp/rejected.js
+--no-output
+-D genes.ts
+-D genes.ts.no_extension
+-D nextjshx.app-root=tests/special-files/next-app/app
+-D nextjshx.generated-root=tests/special-files/.tmp/src-gen
+--macro special_files.SpecialFileFixture.install('tests/special-files/.tmp/rejected.json')

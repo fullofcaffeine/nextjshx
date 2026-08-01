@@ -9,8 +9,6 @@ typedef DefaultParams = {
 }
 
 @:next.default("proof/[id]/@sidebar")
-class DefaultView {
-	public static function render(props:DefaultProps<DefaultParams>):Promise<Element> {
-		return props.params.then(params -> <aside id="haxe-default-parameterized">Fallback for {params.id}</aside>);
-	}
+function render(props:DefaultProps<DefaultParams>):Promise<Element> {
+	return props.params.then(params -> <aside id="haxe-default-parameterized">Fallback for {params.id}</aside>);
 }

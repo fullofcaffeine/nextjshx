@@ -1,4 +1,4 @@
-# Loading, error, and not-found declarations
+# Loading, error, not-found, and slot-default declarations
 
 NextJsHx models four App Router special files as typed Haxe declarations while
 leaving their runtime behavior entirely to Next.js. The declaration macro
@@ -28,10 +28,11 @@ App Router root. The same fail-closed path grammar used by pages, layouts, and
 Route Handlers rejects traversal, backslashes, malformed dynamic segments, and
 malformed group, slot, or interception syntax.
 
-Each declaration is a non-generic class with exactly one boundary annotation
-and exactly one public static, non-generic `render` function. Additional public
-fields are rejected because these special files currently have only a default
-component export. Private implementation helpers remain ordinary Haxe.
+The recommended form places exactly one boundary annotation on a public,
+non-generic module-level `render` function. A non-generic class with one public
+static `render` remains supported for compatibility when class identity is
+useful. Additional public fields are rejected because these special files have
+only a default component export. Private helpers remain ordinary Haxe.
 
 ## Loading and not-found
 
@@ -43,15 +44,13 @@ package app.shop;
 import genes.react.Element;
 
 @:next.loading("shop")
-class ShopLoading {
-  public static function render():Element {
-    return <main aria-busy>Loading shop…</main>;
-  }
+function render():Element {
+  return <main aria-busy>Loading shop…</main>;
 }
 ```
 
 The generated adapter targets exactly `app/shop/loading.tsx`, stays a Server
-Component, and default-exports a typed reference to `ShopLoading.render`.
+Component, and default-exports a typed reference to the module's `render`.
 Returning `Promise<Element>` is also supported for server-owned loading and
 not-found components.
 
@@ -64,10 +63,8 @@ package app.shop;
 import genes.react.Element;
 
 @:next.notFound("shop")
-class ShopNotFound {
-  public static function render():Element {
-    return <main>That product does not exist.</main>;
-  }
+function render():Element {
+  return <main>That product does not exist.</main>;
 }
 ```
 
@@ -87,10 +84,8 @@ package app;
 import genes.react.Element;
 
 @:next.default("@modal")
-class ModalDefault {
-  public static function render():Element {
-    return <span id="modal-default">No active modal</span>;
-  }
+function render():Element {
+  return <span id="modal-default">No active modal</span>;
 }
 ```
 
@@ -106,14 +101,12 @@ typedef WorkspaceParams = {
 }
 
 @:next.default("workspace/[id]/@sidebar")
-class SidebarDefault {
-  public static function render(
-    props:DefaultProps<WorkspaceParams>
-  ):Promise<Element> {
-    return props.params.then(params ->
-      <aside>Fallback for workspace {params.id}</aside>
-    );
-  }
+function render(
+  props:DefaultProps<WorkspaceParams>
+):Promise<Element> {
+  return props.params.then(params ->
+    <aside>Fallback for workspace {params.id}</aside>
+  );
 }
 ```
 
@@ -136,13 +129,11 @@ import genes.react.Element;
 import nextjs.app.ErrorProps;
 
 @:next.error("shop")
-class ShopError {
-  public static function render(props:ErrorProps):Element {
-    return <main>
-      <p>{props.error.message}</p>
-      <button onClick={props.reset}>Try again</button>
-    </main>;
-  }
+function render(props:ErrorProps):Element {
+  return <main>
+    <p>{props.error.message}</p>
+    <button onClick={props.reset}>Try again</button>
+  </main>;
 }
 ```
 
@@ -184,10 +175,8 @@ typedef UnsafeErrorProps = {
 }
 
 @:next.error("shop")
-class UnsafeError {
-  public static function render(props:UnsafeErrorProps):Element {
-    return <button onClick={() -> props.reset("retry")}>Retry</button>;
-  }
+function render(props:UnsafeErrorProps):Element {
+  return <button onClick={() -> props.reset("retry")}>Retry</button>;
 }
 ```
 
@@ -208,9 +197,9 @@ Other failures are source-positioned and stable:
 - multiple boundary annotations or unsafe paths:
   `NXHX-SPECIAL-BOUNDARY-0001` / `NXHX-SPECIAL-PATH-0002`.
 
-The CLI renderer independently rejects a changed special-file target, missing
-error directive, unexpected special-file directive, non-default export, or
-noncanonical signature before publication.
+Before writing generated files, the CLI independently rejects a changed target,
+a missing or unexpected directive, a non-default export, or a noncanonical
+signature.
 
 ## Evidence
 
@@ -221,7 +210,7 @@ npm run test:special-files
 ```
 
 It checks exact plan bytes, schema validity, React's module-owned JSX import,
-strict generated TypeScript, precise `Error`/`reset` output, nine isolated
+strict generated TypeScript, precise `Error`/`reset` output, twelve isolated
 macro diagnostics, and a direct Haxe reset-arity control. The stable Next
 16.2.12 fixture then publishes all four special-file kinds among twelve owned
 adapters, runs typegen and strict TypeScript, completes a Turbopack production
