@@ -9,15 +9,11 @@ import nextjs.components.NextLink;
  * Next's native `notFound()` control flow from a child page selects this UI;
  * NextJsHx adds signature and ownership checks, not another error mechanism.
  *
- * This remains an all-static class only because the current special-file macro
- * still discovers a Haxe type owner. The page/layout API no longer needs that
- * shell; `nxhx-f34.9.9.2` tracks the equivalent module-level source shape
- * without changing Next's conventional default export.
+ * The annotation lives directly on the module function, matching the ordinary
+ * TypeScript pattern of exporting one component from `not-found.tsx`.
  */
 @:next.notFound("journal")
-class JournalNotFound {
-	public static function render():Element {
-		return
-			<main className="missing-dispatch"><span>404 / FIELD NOTE LOST</span><h1>The cairn ends here.</h1><p>This dispatch is not part of the current deterministic field journal.</p><NextLink href={JournalPage.href()}>Return to the trail index</NextLink></main>;
-	}
+function render():Element {
+	return
+		<main className="missing-dispatch"><span>404 / FIELD NOTE LOST</span><h1>The cairn ends here.</h1><p>This dispatch is not part of the current deterministic field journal.</p><NextLink href={JournalPage.href()}>Return to the trail index</NextLink></main>;
 }
