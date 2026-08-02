@@ -3085,11 +3085,11 @@ def validate_test_harness() -> None:
 def validate_docs_and_modes() -> None:
     agent_instructions = read_text(ROOT / "AGENTS.md")
     for fragment in (
-        "Oracle second-opinion review with GPT-5.6 Pro",
-        "detailed prompt",
-        "Repomix bundle",
-        "one ZIP for upload",
-        "Never upload or submit the bundle without explicit user",
+        "genuinely critical",
+        "undefined after local reduction",
+        "$oracle-review",
+        "caf-oracle",
+        "$show-me-your-work",
     ):
         if fragment not in agent_instructions:
             raise SecurityToolingFailure(
