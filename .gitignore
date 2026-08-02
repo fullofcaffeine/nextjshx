@@ -3,6 +3,7 @@
 .dolt/
 *.db
 .beads-credential-key
+.beads.gate.lock
 
 # Node, Next.js, Haxe, and generated development output
 node_modules/
