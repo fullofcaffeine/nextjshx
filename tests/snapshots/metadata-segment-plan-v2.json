@@ -1,6 +1,6 @@
 {
   "$schema": "https://nextjshx.dev/schemas/adapter-plan.schema.json",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "toolchain": {
     "nextjshx": "0.0.0-development",
     "haxe": "4.3.7",
@@ -41,6 +41,7 @@
         "modulePath": "../../../../../.tmp/src-gen/metadata_segment/positive/GeneratedMetadataLayout",
         "symbol": "GeneratedMetadataLayout"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../../.tmp/src-gen/metadata_segment/positive/GeneratedMetadataLayout",
@@ -145,6 +146,7 @@
         "modulePath": "../../../../../.tmp/src-gen/metadata_segment/positive/GeneratedMetadataPage",
         "symbol": "GeneratedMetadataPage"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../../.tmp/src-gen/metadata_segment/positive/GeneratedMetadataPage",
@@ -256,6 +258,7 @@
         "modulePath": "../../../../.tmp/src-gen/metadata_segment/positive/StaticMetadataPage",
         "symbol": "StaticMetadataPage"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../.tmp/src-gen/metadata_segment/positive/StaticMetadataPage",

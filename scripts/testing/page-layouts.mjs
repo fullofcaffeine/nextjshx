@@ -15,7 +15,7 @@ const OUTPUT_ROOT = path.join(FIXTURE_ROOT, ".tmp");
 const PLAN_PATH = path.join(OUTPUT_ROOT, "plan.json");
 const REJECTED_PATH = path.join(OUTPUT_ROOT, "rejected.json");
 const APPLICATION_PATH = path.join(OUTPUT_ROOT, "application.js");
-const SNAPSHOT_PATH = path.join(ROOT, "tests/snapshots/page-layout-plan-v1.json");
+const SNAPSHOT_PATH = path.join(ROOT, "tests/snapshots/page-layout-plan-v2.json");
 const SCHEMA_PATH = path.join(ROOT, "schemas/adapter-plan.schema.json");
 const TYPESCRIPT_ROOT = path.join(OUTPUT_ROOT, "typescript");
 const TSC_BIN = path.join(ROOT, "node_modules/typescript/bin/tsc6");
@@ -26,6 +26,51 @@ const LINE_DIAGNOSTIC = /^(.*):(\d+): lines (\d+)-(\d+) : \[([A-Z0-9-]+)\] (.+)$
 const MODE = process.argv[2] ?? "verify";
 
 const NEGATIVE_CASES = [
+  {
+    id: "css-page",
+    file: "tests/page-layouts/src/page_layouts/negative/CssOnPage.hx",
+    line: 10,
+    range: { kind: "characters", start: 1, end: 11 },
+    code: "NXHX-PAGE-LAYOUT-CSS-0012",
+    message:
+      "@:next.css is layout-only so global styles have one predictable Next.js owner; attach the import to the nearest @:next.layout.",
+  },
+  {
+    id: "css-nonliteral",
+    file: "tests/page-layouts/src/page_layouts/negative/NonliteralCss.hx",
+    line: 9,
+    range: { kind: "characters", start: 12, end: 30 },
+    code: "NXHX-PAGE-LAYOUT-CSS-0013",
+    message:
+      "@:next.css requires a compile-time string literal; expressions are not evaluated.",
+  },
+  {
+    id: "css-missing",
+    file: "tests/page-layouts/src/page_layouts/negative/MissingCss.hx",
+    line: 9,
+    range: { kind: "characters", start: 12, end: 27 },
+    code: "NXHX-PAGE-LAYOUT-CSS-0014",
+    message:
+      'CSS request "./missing.css" must name an existing file beside the generated layout adapter.',
+  },
+  {
+    id: "css-escape",
+    file: "tests/page-layouts/src/page_layouts/negative/EscapingCss.hx",
+    line: 9,
+    range: { kind: "characters", start: 12, end: 28 },
+    code: "NXHX-PAGE-LAYOUT-CSS-0013",
+    message:
+      'CSS request "../globals.css" must not escape the generated layout directory; use a co-located ./ file or a package CSS specifier.',
+  },
+  {
+    id: "css-duplicate",
+    file: "tests/page-layouts/src/page_layouts/negative/DuplicateCss.hx",
+    line: 10,
+    range: { kind: "characters", start: 1, end: 11 },
+    code: "NXHX-PAGE-LAYOUT-CSS-0015",
+    message:
+      'CSS request "design-system/theme.css" is duplicated; keep one import at its intended cascade position.',
+  },
   {
     id: "missing-render",
     file: "tests/page-layouts/src/page_layouts/negative/MissingRender.hx",
@@ -223,7 +268,7 @@ function validatePlan() {
   const plan = JSON.parse(encoded);
   const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
   const validate = new Ajv2020({ allErrors: true, strict: true }).compile(schema);
-  assert(validate(plan), `Page/layout plan violates schema v1:\n${JSON.stringify(validate.errors, null, 2)}`);
+  assert(validate(plan), `Page/layout plan violates schema v2:\n${JSON.stringify(validate.errors, null, 2)}`);
   if (MODE === "update") {
     fs.writeFileSync(SNAPSHOT_PATH, encoded, "utf8");
   } else {
@@ -270,6 +315,11 @@ function validatePlan() {
   assert.equal(
     plan.intents[6].exports[0].signature,
     '(props: LayoutProps<"/module-shell">) => JSX.Element',
+  );
+  assert.deepEqual(
+    plan.intents[6].sideEffectImports,
+    ["./shell.css", "design-system/theme.css"],
+    "module layout lost its ordered native CSS import request",
   );
   assert.equal(
     plan.intents[4].exports[0].signature,

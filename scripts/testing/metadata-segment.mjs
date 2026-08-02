@@ -16,7 +16,7 @@ const PLAN_PATH = path.join(OUTPUT_ROOT, "plan.json");
 const TYPESCRIPT_PLAN_PATH = path.join(OUTPUT_ROOT, "typescript-plan.json");
 const REJECTED_PATH = path.join(OUTPUT_ROOT, "rejected.json");
 const APPLICATION_PATH = path.join(OUTPUT_ROOT, "application.js");
-const SNAPSHOT_PATH = path.join(ROOT, "tests/snapshots/metadata-segment-plan-v1.json");
+const SNAPSHOT_PATH = path.join(ROOT, "tests/snapshots/metadata-segment-plan-v2.json");
 const SCHEMA_PATH = path.join(ROOT, "schemas/adapter-plan.schema.json");
 const TYPESCRIPT_ROOT = path.join(OUTPUT_ROOT, "typescript");
 const ADAPTER_ROOT = path.join(OUTPUT_ROOT, "app");
@@ -242,7 +242,7 @@ function validatePlan() {
   const plan = JSON.parse(encoded);
   const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
   const validate = new Ajv2020({ allErrors: true, strict: true }).compile(schema);
-  assert(validate(plan), `Metadata/segment plan violates schema v1:\n${JSON.stringify(validate.errors, null, 2)}`);
+  assert(validate(plan), `Metadata/segment plan violates schema v2:\n${JSON.stringify(validate.errors, null, 2)}`);
   assert.equal(
     encoded,
     fs.readFileSync(SNAPSHOT_PATH, "utf8"),
