@@ -366,19 +366,21 @@ bd prime                # Refresh Beads context
 ### Deep-review escalation
 
 - When a compiler, macro, type-boundary, framework-integration, or architecture
-  issue remains genuinely tricky after local reduction and executable evidence,
-  suggest an Oracle second-opinion review with GPT-5.6 Pro. Explain why the
-  question benefits from deeper independent reasoning; do not use Oracle as a
-  substitute for ordinary repository inspection or tests.
-- Prepare a self-contained review package for the user when recommending that
-  escalation. Use the globally installed `$oracle-review` skill for the detailed
-  prompt, sanitized selective or whole-repository Repomix bundles, checked ZIP,
-  pending-request check, and archive lifecycle under `/tmp/oracle`. Apply this
+  issue is genuinely critical and remains unusually hard or materially
+  undefined after local reduction and executable evidence, suggest Oracle
+  planning or review. Competing hard-to-reverse paths, non-convergence, or a
+  critical result needing a higher-quality challenge qualify; size,
+  unfamiliarity, and generic extra confidence do not. Explain why the question
+  benefits from deeper independent reasoning; Oracle does not replace ordinary
+  repository inspection or tests.
+- Invoke the globally installed `$oracle-review` skill. Let its caf-oracle
+  facade own the ledger, agent provenance, checked evidence bundle, dedicated
+  browser dispatch, recovery, response capture, disposition, and archive. Apply this
   repository's exact decision, invariants, attempted approaches, evidence,
-  competing hypotheses, leak checks, and path checks to that package. The human
-  performs the handoff and pastes the response back; never upload or submit it
-  automatically. Public source and install instructions:
-  https://github.com/fullofcaffeine/caf-skills/tree/main/skills/oracle-review
+  competing hypotheses, leak checks, and path checks to the request. Do not
+  maintain a parallel `/tmp/oracle` queue or manually upload and paste when the
+  tool is available. If `$show-me-your-work` is active, link its concise trail
+  to the caf-oracle request rather than duplicating artifacts.
 
 ### Repository workflow and publication safety
 
