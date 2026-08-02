@@ -332,10 +332,11 @@ layer without adding useful runtime flexibility.
 The amendment therefore accepts three narrow declarations:
 
 - `@:next.loading(path)` and `@:next.notFound(path)` each require a public
-  static zero-argument `render` returning `Element` or `Promise<Element>` and
-  remain Server Components;
-- `@:next.error(path)` requires a synchronous public static `render` accepting
-  semantic `nextjs.app.ErrorProps` and returning `Element`; and
+  zero-argument module `render`, or the compatible static class form, returning
+  `Element` or `Promise<Element>`; both remain Server Components;
+- `@:next.error(path)` requires a synchronous public module `render`, or the
+  compatible static class form, accepting semantic `nextjs.app.ErrorProps` and
+  returning `Element`; and
 - the renderer derives the exact filename and one default export, while the
   error adapter automatically begins with `"use client"`.
 
@@ -347,6 +348,29 @@ unexpected public export, wrong result, edited target, or missing directive
 fails before publication. The full positive and negative examples are in the
 [special-file reference](../special-files.md), and the production fixture
 proves streamed loading, a hydrated HTTP 404, and browser-driven error reset.
+
+### Module-level special-file owner amendment
+
+On 2026-08-01, `nxhx-f34.9.9.2` removed the remaining namespace-only class from
+the normal special-file authoring path. A public, non-generic module-level
+`render` may now carry `@:next.loading`, `@:next.error`, `@:next.notFound`, or
+`@:next.default`. This matches the familiar JavaScript/TypeScript pattern: the
+source module exports a component function, and no runtime class exists unless
+the application actually needs class identity.
+
+NextJsHx validates the Next-specific path, props, result, and client/server
+rules first, then asks Genes to emit the already-checked Haxe function as a
+direct ES module export. The generated Next adapter imports that function and
+keeps the same canonical default export. In particular, an error adapter still
+starts with `"use client"`; using a module function does not change Next's
+browser boundary or recovery behavior.
+
+The original one-static-method class form remains supported for compatibility
+and for the unusual case where a class has real meaning. Directly adding the
+lower-level Genes export marker is rejected here because it could bypass the
+special-file checks. Focused exact-error tests protect that rule, while the
+maintained blog, commerce, and Todo applications prove real Next builds,
+not-found responses, streamed loading, and browser error recovery.
 
 ### Route Handler declaration
 

@@ -31,6 +31,7 @@ private enum SpecialFileKind {
 private typedef SpecialFileDeclaration = {
 	final kind:SpecialFileKind;
 	final metadata:MetadataEntry;
+	final ownerField:Null<Field>;
 }
 
 private typedef SpecialRenderMethod = {
@@ -45,6 +46,7 @@ class SpecialFileMacro {
 	#if macro
 	public static inline final APP_ROOT_DEFINE:String = "nextjshx.app-root";
 	public static inline final GENERATED_ROOT_DEFINE:String = "nextjshx.generated-root";
+	static inline final MODULE_FUNCTION_METADATA:String = ":genes.moduleFunction";
 
 	static final BOUNDARY_METADATA = [
 		":next.page",
@@ -68,6 +70,23 @@ class SpecialFileMacro {
 		return type.pack.concat([type.name]).join(".");
 	}
 
+	static function isModuleOwner(type:ClassType):Bool {
+		return switch type.kind {
+			#if (haxe_ver >= 4.2)
+			case KModuleFields(_): true;
+			#end
+			case _: false;
+		};
+	}
+
+	static function ownerName(type:ClassType):String {
+		return isModuleOwner(type) ? type.module : fullTypeName(type);
+	}
+
+	static function fieldMetadata(field:Field, name:String):Array<MetadataEntry> {
+		return field.meta == null ? [] : field.meta.filter(entry -> entry.name == name);
+	}
+
 	static function kindName(kind:SpecialFileKind):String {
 		return switch kind {
 			case Loading: "Loading";
@@ -86,18 +105,50 @@ class SpecialFileMacro {
 		};
 	}
 
-	static function declaration(type:ClassType):Null<SpecialFileDeclaration> {
+	static function declaration(type:ClassType, fields:Array<Field>):Null<SpecialFileDeclaration> {
+		if (isModuleOwner(type)) {
+			final declarations:Array<SpecialFileDeclaration> = [];
+			final boundaries = [];
+			for (field in fields) {
+				for (name in BOUNDARY_METADATA) {
+					for (entry in fieldMetadata(field, name)) {
+						boundaries.push({field: field, metadata: entry});
+						switch name {
+							case ":next.loading":
+								declarations.push({kind: Loading, metadata: entry, ownerField: field});
+							case ":next.error":
+								declarations.push({kind: ErrorBoundary, metadata: entry, ownerField: field});
+							case ":next.notFound":
+								declarations.push({kind: NotFound, metadata: entry, ownerField: field});
+							case ":next.default":
+								declarations.push({kind: DefaultFallback, metadata: entry, ownerField: field});
+							case _:
+						}
+					}
+				}
+			}
+			if (declarations.length == 0) {
+				return null;
+			}
+			if (boundaries.length != 1 || declarations.length != 1) {
+				final position = boundaries.length > 1 ? boundaries[1].metadata.pos : declarations[1].metadata.pos;
+				fail("NXHX-SPECIAL-BOUNDARY-0001",
+					'Module ${ownerName(type)} must declare exactly one App Router boundary annotation on one module-level render function; found ${boundaries.length}.',
+					position);
+			}
+			return declarations[0];
+		}
 		final declarations:Array<SpecialFileDeclaration> = [];
 		for (entry in type.meta.get()) {
 			switch entry.name {
 				case ":next.loading":
-					declarations.push({kind: Loading, metadata: entry});
+					declarations.push({kind: Loading, metadata: entry, ownerField: null});
 				case ":next.error":
-					declarations.push({kind: ErrorBoundary, metadata: entry});
+					declarations.push({kind: ErrorBoundary, metadata: entry, ownerField: null});
 				case ":next.notFound":
-					declarations.push({kind: NotFound, metadata: entry});
+					declarations.push({kind: NotFound, metadata: entry, ownerField: null});
 				case ":next.default":
-					declarations.push({kind: DefaultFallback, metadata: entry});
+					declarations.push({kind: DefaultFallback, metadata: entry, ownerField: null});
 				case _:
 			}
 		}
@@ -107,7 +158,7 @@ class SpecialFileMacro {
 		final boundaries = type.meta.get().filter(entry -> BOUNDARY_METADATA.contains(entry.name));
 		if (boundaries.length != 1 || declarations.length != 1) {
 			final position = boundaries.length > 1 ? boundaries[1].pos : declarations[1].metadata.pos;
-			fail("NXHX-SPECIAL-BOUNDARY-0001", '${fullTypeName(type)} must declare exactly one App Router boundary annotation; found ${boundaries.length}.',
+			fail("NXHX-SPECIAL-BOUNDARY-0001", '${ownerName(type)} must declare exactly one App Router boundary annotation; found ${boundaries.length}.',
 				position);
 		}
 		return declarations[0];
@@ -116,20 +167,43 @@ class SpecialFileMacro {
 	static function declarationPath(type:ClassType, value:SpecialFileDeclaration):String {
 		final annotation = annotationName(value.kind);
 		if (value.metadata.params.length != 1) {
-			return fail("NXHX-SPECIAL-PATH-0002", '@:next.$annotation on ${fullTypeName(type)} requires exactly one App-Router-root-relative string literal.',
+			return fail("NXHX-SPECIAL-PATH-0002", '@:next.$annotation on ${ownerName(type)} requires exactly one App-Router-root-relative string literal.',
 				value.metadata.pos);
 		}
 		return switch value.metadata.params[0].expr {
 			case EConst(CString(path, _)): path;
 			case _:
 				fail("NXHX-SPECIAL-PATH-0002",
-					'@:next.$annotation on ${fullTypeName(type)} requires a compile-time string literal; expressions are not evaluated.',
+					'@:next.$annotation on ${ownerName(type)} requires a compile-time string literal; expressions are not evaluated.',
 					value.metadata.params[0].pos);
 		};
 	}
 
 	static function hasAccess(field:Field, access:Access):Bool {
 		return field.access != null && field.access.contains(access);
+	}
+
+	static function isPublicField(type:ClassType, field:Field):Bool {
+		return isModuleOwner(type) ? !hasAccess(field, APrivate) : hasAccess(field, APublic);
+	}
+
+	static function isStaticField(type:ClassType, field:Field):Bool {
+		return isModuleOwner(type) || hasAccess(field, AStatic);
+	}
+
+	static function markModuleFunction(field:Field):Void {
+		final metadata = field.meta == null ? [] : field.meta;
+		if (metadata.exists(entry -> entry.name == MODULE_FUNCTION_METADATA)) {
+			fail("NXHX-SPECIAL-MODULE-0010",
+				'${field.name} must not declare @:genes.moduleFunction directly; NextJsHx derives the native export from the special-file annotation.',
+				field.pos);
+		}
+		metadata.push({
+			name: MODULE_FUNCTION_METADATA,
+			params: [{expr: EConst(CString(field.name, DoubleQuotes)), pos: field.pos}],
+			pos: field.pos
+		});
+		field.meta = metadata;
 	}
 
 	static function resolveAliases(type:Type):Type {
@@ -197,29 +271,35 @@ class SpecialFileMacro {
 		return Context.resolveType(type, position);
 	}
 
-	static function renderField(type:ClassType, kind:SpecialFileKind, fields:Array<Field>):SpecialRenderMethod {
+	static function renderField(type:ClassType, declaration:SpecialFileDeclaration, fields:Array<Field>):SpecialRenderMethod {
+		final kind = declaration.kind;
 		final label = kindName(kind);
-		final renders = fields.filter(field -> field.name == "render");
+		final renders = declaration.ownerField == null ? fields.filter(field -> field.name == "render") : [declaration.ownerField];
 		if (renders.length != 1) {
 			return fail("NXHX-SPECIAL-RENDER-0004",
-				'$label declaration ${fullTypeName(type)} must expose exactly one public static render function; found ${renders.length}.', type.pos);
+				'$label declaration ${ownerName(type)} must expose exactly one public static render function; found ${renders.length}.', type.pos);
 		}
 		final field = renders[0];
-		if (!hasAccess(field, APublic) || !hasAccess(field, AStatic)) {
-			return fail("NXHX-SPECIAL-RENDER-0004", '$label render ${fullTypeName(type)}.render must be public static.', field.pos);
+		if (declaration.ownerField != null && field.name != "render") {
+			return fail("NXHX-SPECIAL-RENDER-0004",
+				'@:next.${annotationName(kind)} must annotate the module-level render function; found ${ownerName(type)}.${field.name}.', field.pos);
+		}
+		if (!isPublicField(type, field) || !isStaticField(type, field)) {
+			return fail("NXHX-SPECIAL-RENDER-0004", '$label render ${ownerName(type)}.render must be public static or a public module-level function.',
+				field.pos);
 		}
 		final method = switch field.kind {
 			case FFun(value): value;
 			case _:
-				return fail("NXHX-SPECIAL-RENDER-0004", '$label field ${fullTypeName(type)}.render must be a function.', field.pos);
+				return fail("NXHX-SPECIAL-RENDER-0004", '$label field ${ownerName(type)}.render must be a function.', field.pos);
 		};
 		if (method.params.length != 0) {
-			fail("NXHX-SPECIAL-RENDER-0004", '$label render ${fullTypeName(type)}.render must be non-generic.', field.pos);
+			fail("NXHX-SPECIAL-RENDER-0004", '$label render ${ownerName(type)}.render must be non-generic.', field.pos);
 		}
 		final expectedArguments = kind == ErrorBoundary ? 1 : 0;
 		if ((kind == DefaultFallback && method.args.length > 1) || (kind != DefaultFallback && method.args.length != expectedArguments)) {
 			final expectation = kind == DefaultFallback ? "zero arguments or one nextjs.app.DefaultProps<Params> argument" : '$expectedArguments argument${expectedArguments == 1 ? "" : "s"}';
-			fail("NXHX-SPECIAL-RENDER-0004", '$label render ${fullTypeName(type)}.render requires $expectation; found ${method.args.length}.', field.pos);
+			fail("NXHX-SPECIAL-RENDER-0004", '$label render ${ownerName(type)}.render requires $expectation; found ${method.args.length}.', field.pos);
 		}
 		var paramsType:Null<Type> = null;
 		if (kind == ErrorBoundary) {
@@ -258,7 +338,7 @@ class SpecialFileMacro {
 				field.pos);
 		}
 		if (kind == ErrorBoundary && asynchronous) {
-			fail("NXHX-SPECIAL-ERROR-ASYNC-0007", 'Error render ${fullTypeName(type)}.render must be synchronous because error.tsx is a Client Component.',
+			fail("NXHX-SPECIAL-ERROR-ASYNC-0007", 'Error render ${ownerName(type)}.render must be synchronous because error.tsx is a Client Component.',
 				field.pos);
 		}
 		return {field: field, asynchronous: asynchronous, paramsType: paramsType};
@@ -267,11 +347,11 @@ class SpecialFileMacro {
 	static function validatePublicFields(type:ClassType, kind:SpecialFileKind, fields:Array<Field>):Void {
 		final label = kindName(kind);
 		for (field in fields) {
-			if (field.name == "render" || !hasAccess(field, APublic)) {
+			if (field.name == "render" || !isPublicField(type, field)) {
 				continue;
 			}
 			fail("NXHX-SPECIAL-FIELD-0003",
-				'Public $label field ${fullTypeName(type)}.${field.name} has no reviewed special-file export mapping; make helpers private.', field.pos);
+				'Public $label field ${ownerName(type)}.${field.name} has no reviewed special-file export mapping; make helpers private.', field.pos);
 		}
 	}
 
@@ -305,16 +385,16 @@ class SpecialFileMacro {
 		return relative.startsWith(".") ? relative : './$relative';
 	}
 
-	static function implementationAlias(type:ClassType, kind:SpecialFileKind, asynchronous:Bool):Null<String> {
+	static function implementationAlias(symbol:String, kind:SpecialFileKind, asynchronous:Bool):Null<String> {
 		final reserved = ["JSX", "Error"];
 		if (asynchronous) {
 			reserved.push("Promise");
 		}
-		if (!reserved.contains(type.name)) {
+		if (!reserved.contains(symbol)) {
 			return null;
 		}
 		var alias = 'NextJsHx${kindName(kind).split("-").join("")}Implementation';
-		while (reserved.contains(alias) || alias == type.name) {
+		while (reserved.contains(alias) || alias == symbol) {
 			alias += "Type";
 		}
 		return alias;
@@ -355,12 +435,12 @@ class SpecialFileMacro {
 			return fields;
 		}
 		final type = localClass.get();
-		final value = declaration(type);
+		final value = declaration(type, fields);
 		if (value == null) {
 			return fields;
 		}
 		if (type.params.length != 0) {
-			fail("NXHX-SPECIAL-RENDER-0004", '${kindName(value.kind)} declaration ${fullTypeName(type)} must be non-generic.', type.pos);
+			fail("NXHX-SPECIAL-RENDER-0004", '${kindName(value.kind)} declaration ${ownerName(type)} must be non-generic.', type.pos);
 		}
 		final path = declarationPath(type, value);
 		final pattern = RoutePatternMacro.parse(path, value.metadata.pos);
@@ -372,16 +452,26 @@ class SpecialFileMacro {
 					'@:next.default must target the root of one named parallel slot such as "dashboard/@modal"; found "$path".', value.metadata.pos);
 			}
 		}
+		final render = renderField(type, value, fields);
 		validatePublicFields(type, value.kind, fields);
-		final render = renderField(type, value.kind, fields);
 		if (render.paramsType != null) {
 			RouteParameterValidator.validate(pattern, render.paramsType, render.field.pos);
 		}
-		if (!type.meta.has(":keep")) {
-			type.meta.add(":keep", [], value.metadata.pos);
+		if (value.ownerField == null) {
+			if (!type.meta.has(":keep")) {
+				type.meta.add(":keep", [], value.metadata.pos);
+			}
+		} else {
+			final metadata = render.field.meta == null ? [] : render.field.meta;
+			if (!metadata.exists(entry -> entry.name == ":keep")) {
+				metadata.push({name: ":keep", params: [], pos: value.metadata.pos});
+				render.field.meta = metadata;
+			}
+			markModuleFunction(render.field);
 		}
 		final modulePath = implementationModule(type, pattern, value.metadata.pos);
-		final alias = implementationAlias(type, value.kind, render.asynchronous);
+		final implementationSymbol = value.ownerField == null ? type.name : render.field.name;
+		final alias = implementationAlias(implementationSymbol, value.kind, render.asynchronous);
 		final file = convention(value.kind);
 		final result = '${render.asynchronous ? "Promise<" : ""}JSX.Element${render.asynchronous ? ">" : ""}';
 		final signature = switch value.kind {
@@ -391,16 +481,16 @@ class SpecialFileMacro {
 		};
 		AdapterPlanRegistry.register({
 			kind: adapterKind(value.kind),
-			sourceType: fullTypeName(type),
+			sourceType: ownerName(type),
 			sourceField: render.field.name,
-			typePosition: type.pos,
+			typePosition: value.ownerField == null ? type.pos : render.field.pos,
 			fieldPosition: render.field.pos,
 			metadataPosition: value.metadata.pos,
 			segmentPath: pattern.filesystemPath,
 			targetPath: pattern.filesystemPath == "" ? file : '${pattern.filesystemPath}/$file',
-			implementation: new AdapterImplementation(modulePath, type.name),
+			implementation: new AdapterImplementation(modulePath, implementationSymbol),
 			imports: [
-				new AdapterImport(modulePath, type.name, alias),
+				new AdapterImport(modulePath, implementationSymbol, alias),
 				new AdapterImport("react", "JSX", null, true)
 			],
 			directives: value.kind == ErrorBoundary ? ["use client"] : [],

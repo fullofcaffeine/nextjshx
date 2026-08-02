@@ -12,7 +12,7 @@ The machine-readable contract is
 [adapter-plan.schema.json](../schemas/adapter-plan.schema.json). Plans identify
 that schema with
 `https://nextjshx.dev/schemas/adapter-plan.schema.json` and currently require
-`schemaVersion: 1`. A consumer must reject an unknown version rather than
+`schemaVersion: 2`. A consumer must reject an unknown version rather than
 guessing how to interpret it.
 
 ## Plan contents
@@ -25,11 +25,12 @@ a canonical array of adapter intents. Each intent contains:
 - repository-relative, slash-normalized type, field, and metadata ranges;
 - the App-Router-root-relative segment and target paths;
 - the implementation module and symbol;
+- ordered module requests that load CSS without creating a JavaScript value;
 - exact imports and ordered directive literals;
 - default or named exports with their validated signature strategy; and
 - tagged literal config values, never arbitrary TypeScript expressions.
 
-Schema v1 currently recognizes page, layout, loading, error, not-found, Route
+Schema v2 currently recognizes page, layout, loading, error, not-found, Route
 Handler, client-component, react-hook, server-function, cache-function, proxy,
 and mdx-components kinds.
 These are additive closed-enum extensions within the unreleased development
@@ -96,12 +97,20 @@ and requires async implementation exports. See the
 Source lines and characters use Haxe's one-based `PositionTools` locations.
 Absolute compiler-host paths are rejected and never serialized.
 
+Layout CSS requests are kept separate from named imports because their order
+can change which style wins. The page/layout macro accepts the request only on
+an owning layout, checks a relative stylesheet before publishing the plan, and
+leaves package resolution to the real Next.js build. The renderer then emits a
+normal statement such as `import "./globals.css";`. The plan does not contain
+CSS bytes and NextJsHx does not add a CSS runtime or a second watcher.
+
 ## Canonicalization
 
 The registry applies these deterministic rules before encoding:
 
 - intents sort by target path, adapter kind, then Haxe source name;
 - imports sort by module, symbol, alias, then type-only status;
+- layout CSS requests preserve their authored order and reject duplicates;
 - default exports precede named exports, whose names sort bytewise;
 - config entries sort by name;
 - directive and string-array order is preserved because it can be semantic;

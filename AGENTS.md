@@ -341,6 +341,17 @@ bd prime                # Refresh Beads context
 
 ### Reference repositories and evidence
 
+- When authorized work moves into a sibling or upstream repository such as
+  `../genes`, first read and follow that repository's complete applicable
+  `AGENTS.md` hierarchy, scoped instructions, tracker workflow, test policy,
+  formatting rules, security checks, and publication protocol as if operating
+  as that repository's native agent. Those target-repository rules govern the
+  upstream implementation. Carry NextJsHx context into the work only as
+  downstream motivation, reusable requirements, and additional constraints
+  that do not conflict; never use this repository's conventions to bypass,
+  weaken, or replace the target repository's own rules. Re-check the target
+  instructions when changing worktrees, scopes, or task phase because a nested
+  `AGENTS.md` may add more specific requirements.
 - Treat sibling repositories such as `../genes`, `../nextjs`, `../next.js`,
   `../haxe.elixir.codex`, `../haxe.ruby`, and `../haxe.c` as read-only
   references unless the active issue and the user explicitly authorize work

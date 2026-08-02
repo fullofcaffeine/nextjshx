@@ -1,10 +1,10 @@
 {
   "$schema": "https://nextjshx.dev/schemas/adapter-plan.schema.json",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "toolchain": {
     "nextjshx": "0.0.0-development",
     "haxe": "4.3.7",
-    "genesTs": "1.41.0+1ead794285d4f43cbbc96078d4eac4a4d8bf6cce",
+    "genesTs": "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
     "next": "16.2.12"
   },
   "intents": [
@@ -41,6 +41,7 @@
         "modulePath": "../../../../../.tmp/src-gen/page_layouts/positive/GroupedPage",
         "symbol": "GroupedPage"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../../.tmp/src-gen/page_layouts/positive/GroupedPage",
@@ -99,6 +100,7 @@
         "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ParallelPage",
         "symbol": "ParallelPage"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ParallelPage",
@@ -157,6 +159,7 @@
         "modulePath": "../../../../../../.tmp/src-gen/page_layouts/positive/InterceptedPage",
         "symbol": "InterceptedPage"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../../../.tmp/src-gen/page_layouts/positive/InterceptedPage",
@@ -215,6 +218,7 @@
         "modulePath": "../../.tmp/src-gen/page_layouts/positive/RootLayout",
         "symbol": "RootLayout"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../.tmp/src-gen/page_layouts/positive/RootLayout",
@@ -236,6 +240,213 @@
           "name": "default",
           "sourceField": "render",
           "signature": "(props: LayoutProps<\"/\">) => JSX.Element"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "page",
+      "source": {
+        "typeName": "page_layouts.positive.ModuleStaticMetadata",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/ModuleStaticMetadata.hx",
+          "startLine": 10,
+          "startCharacter": 1,
+          "endLine": 12,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/ModuleStaticMetadata.hx",
+          "startLine": 10,
+          "startCharacter": 1,
+          "endLine": 12,
+          "endCharacter": 2
+        },
+        "metadataPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/ModuleStaticMetadata.hx",
+          "startLine": 9,
+          "startCharacter": 1,
+          "endLine": 9,
+          "endCharacter": 12
+        }
+      },
+      "segmentPath": "module-metadata",
+      "targetPath": "module-metadata/page.tsx",
+      "implementation": {
+        "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ModuleStaticMetadata",
+        "symbol": "render"
+      },
+      "sideEffectImports": [],
+      "imports": [
+        {
+          "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ModuleStaticMetadata",
+          "symbol": "metadata",
+          "alias": "NextJsHxMetadataImplementation",
+          "typeOnly": false
+        },
+        {
+          "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ModuleStaticMetadata",
+          "symbol": "render",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "next",
+          "symbol": "Metadata",
+          "alias": null,
+          "typeOnly": true
+        },
+        {
+          "modulePath": "react",
+          "symbol": "JSX",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: PageProps<\"/module-metadata\">) => JSX.Element"
+        },
+        {
+          "kind": "named",
+          "name": "metadata",
+          "sourceField": "metadata",
+          "signature": "Metadata"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "page",
+      "source": {
+        "typeName": "page_layouts.positive.ModuleProductPage",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/ModuleProductPage.hx",
+          "startLine": 21,
+          "startCharacter": 1,
+          "endLine": 23,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/ModuleProductPage.hx",
+          "startLine": 21,
+          "startCharacter": 1,
+          "endLine": 23,
+          "endCharacter": 2
+        },
+        "metadataPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/ModuleProductPage.hx",
+          "startLine": 20,
+          "startCharacter": 1,
+          "endLine": 20,
+          "endCharacter": 12
+        }
+      },
+      "segmentPath": "module-products/[id]",
+      "targetPath": "module-products/[id]/page.tsx",
+      "implementation": {
+        "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/ModuleProductPage",
+        "symbol": "render"
+      },
+      "sideEffectImports": [],
+      "imports": [
+        {
+          "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/ModuleProductPage",
+          "symbol": "generateStaticParams",
+          "alias": "NextJsHxGenerateStaticParamsImplementation",
+          "typeOnly": false
+        },
+        {
+          "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/ModuleProductPage",
+          "symbol": "render",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "JSX",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: PageProps<\"/module-products/[id]\">) => Promise<JSX.Element>"
+        },
+        {
+          "kind": "named",
+          "name": "generateStaticParams",
+          "sourceField": "generateStaticParams",
+          "signature": "() => Array<Awaited<PageProps<\"/module-products/[id]\">[\"params\"]>>"
+        }
+      ],
+      "config": []
+    },
+    {
+      "kind": "layout",
+      "source": {
+        "typeName": "page_layouts.positive.ModuleRootLayout",
+        "fieldName": "render",
+        "typePosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/ModuleRootLayout.hx",
+          "startLine": 19,
+          "startCharacter": 1,
+          "endLine": 21,
+          "endCharacter": 2
+        },
+        "fieldPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/ModuleRootLayout.hx",
+          "startLine": 19,
+          "startCharacter": 1,
+          "endLine": 21,
+          "endCharacter": 2
+        },
+        "metadataPosition": {
+          "file": "tests/page-layouts/src/page_layouts/positive/ModuleRootLayout.hx",
+          "startLine": 16,
+          "startCharacter": 1,
+          "endLine": 16,
+          "endCharacter": 14
+        }
+      },
+      "segmentPath": "module-shell",
+      "targetPath": "module-shell/layout.tsx",
+      "implementation": {
+        "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ModuleRootLayout",
+        "symbol": "render"
+      },
+      "sideEffectImports": ["./shell.css", "design-system/theme.css"],
+      "imports": [
+        {
+          "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ModuleRootLayout",
+          "symbol": "render",
+          "alias": null,
+          "typeOnly": false
+        },
+        {
+          "modulePath": "react",
+          "symbol": "JSX",
+          "alias": null,
+          "typeOnly": true
+        }
+      ],
+      "directives": [],
+      "exports": [
+        {
+          "kind": "default",
+          "name": "default",
+          "sourceField": "render",
+          "signature": "(props: LayoutProps<\"/module-shell\">) => JSX.Element"
         }
       ],
       "config": []
@@ -273,6 +484,7 @@
         "modulePath": "../../.tmp/src-gen/page_layouts/positive/RootPage",
         "symbol": "RootPage"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../.tmp/src-gen/page_layouts/positive/RootPage",
@@ -331,6 +543,7 @@
         "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/NestedLayout",
         "symbol": "NestedLayout"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/NestedLayout",
@@ -389,6 +602,7 @@
         "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/DynamicPage",
         "symbol": "DynamicPage"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/DynamicPage",

@@ -21,6 +21,7 @@ WORKFLOW = WORKFLOW_ROOT / "governance.yml"
 DEPENDABOT = ROOT / ".github/dependabot.yml"
 INSTALLER = ROOT / "scripts/ci/install-gitleaks.sh"
 BEADS_INSTALLER = ROOT / "scripts/ci/install-beads.sh"
+BEADS_TOOLCHAIN_PIN = ROOT / ".beads-toolchain"
 GITLEAKS_CONFIG = ROOT / ".gitleaks.toml"
 PACKAGE = ROOT / "package.json"
 PACKAGE_LOCK = ROOT / "package-lock.json"
@@ -106,6 +107,11 @@ EXPECTED_ACTIONS = {
 EXPECTED_GITLEAKS_VERSION = "8.30.0"
 EXPECTED_BEADS_VERSION = "1.1.0"
 EXPECTED_BEADS_COMMIT = "7eb428cde13c6d2c4743a76533be8df2d418aff5"
+EXPECTED_BEADS_SCHEMA = "59"
+EXPECTED_BEADS_CLIENT = f"nextjshx-{EXPECTED_BEADS_COMMIT[:12]}"
+EXPECTED_BEADS_BINARY_SHA256 = (
+    "4be7d87bd0d347a43f2e57df8c9970841a451332fd9080bfe9616919646e5aa9"
+)
 EXPECTED_BEADS_ARCHIVE_SHA256 = (
     "c2903ff26ca0554a1edf0551094ec4ce30ccfd1595aa746944633995f2801ec6"
 )
@@ -139,7 +145,7 @@ EXPECTED_NODE_TYPES_VERSION = "20.19.24"
 EXPECTED_REACT_TYPES_VERSION = "19.2.17"
 EXPECTED_REACT_DOM_TYPES_VERSION = "19.2.3"
 EXPECTED_GENES_VERSION = "1.41.0"
-EXPECTED_GENES_COMMIT = "1ead794285d4f43cbbc96078d4eac4a4d8bf6cce"
+EXPECTED_GENES_COMMIT = "0b7a4ca9d10682baeeb6a457ac666a02b7dc2376"
 EXPECTED_HELDER_VERSION = "0.3.1"
 EXPECTED_LICENSE = "GPL-3.0-only"
 EXPECTED_LICENSE_SHA256 = (
@@ -172,6 +178,7 @@ REQUIRED_IGNORES = {
     "dist/",
     "coverage/",
     ".cache/",
+    ".beads.gate.lock",
     ".env",
     ".env.*",
     "!.env.example",
@@ -334,6 +341,39 @@ def validate_beads_installer() -> None:
             raise SecurityToolingFailure(
                 "tampered Beads source unexpectedly produced a binary"
             )
+
+
+def validate_beads_toolchain_pin() -> None:
+    entries: dict[str, str] = {}
+    for line_number, raw_line in enumerate(
+        read_text(BEADS_TOOLCHAIN_PIN).splitlines(), start=1
+    ):
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" not in line:
+            raise SecurityToolingFailure(
+                f".beads-toolchain:{line_number} must contain key=value"
+            )
+        key, value = line.split("=", 1)
+        if key in entries:
+            raise SecurityToolingFailure(f".beads-toolchain repeats {key}")
+        entries[key] = value
+
+    expected = {
+        "format": "1",
+        "client": EXPECTED_BEADS_CLIENT,
+        "schema": EXPECTED_BEADS_SCHEMA,
+        "sha256": EXPECTED_BEADS_BINARY_SHA256,
+        "identity": (
+            f"bd version {EXPECTED_BEADS_VERSION} "
+            f"(nextjshx-pinned: main@{EXPECTED_BEADS_COMMIT[:12]})"
+        ),
+    }
+    if entries != expected:
+        raise SecurityToolingFailure(
+            ".beads-toolchain must select the exact reviewed NextJsHx Beads client"
+        )
 
 
 def workflow_files() -> list[Path]:
@@ -3596,6 +3636,7 @@ def main() -> int:
     try:
         version, digest = validate_installer()
         validate_beads_installer()
+        validate_beads_toolchain_pin()
         action_count = validate_workflows()
         validate_gitleaks_config()
         validate_hook_wiring()
@@ -3609,7 +3650,8 @@ def main() -> int:
             f"Gitleaks {version} ({digest}), {action_count} commit-pinned Action uses, "
             f"{scanned_files} tracked text files checked for path leaks, "
             f"formatter {EXPECTED_FORMATTER_VERSION}, Git/Dolt/decoded-Beads gates, "
-            "credential ignores, exact stable-fixture pins, fail-closed test harness, "
+            "the repository Beads client pin, credential ignores, "
+            "exact stable-fixture pins, fail-closed test harness, "
             "dependency audit wiring, and disclosure policy"
         )
         return 0

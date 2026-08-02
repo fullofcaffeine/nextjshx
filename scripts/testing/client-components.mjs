@@ -28,7 +28,7 @@ const GENERATED_REACT_LINT_NEGATIVE_OUTPUT = path.join(
   ".tmp/client_components_react_lint_negative/GeneratedMissingDependency.tsx",
 );
 const MEMO_RUNTIME_OUTPUT = path.join(FIXTURE, ".tmp/memo-runtime");
-const SNAPSHOT = path.join(ROOT, "tests/snapshots/client-component-plan-v1.json");
+const SNAPSHOT = path.join(ROOT, "tests/snapshots/client-component-plan-v2.json");
 const SCHEMA = path.join(ROOT, "schemas/adapter-plan.schema.json");
 const CLI = path.join(ROOT, "tools/cli/.tmp/src/cli.js");
 const NEXT = path.join(ROOT, "node_modules/next/dist/bin/next");

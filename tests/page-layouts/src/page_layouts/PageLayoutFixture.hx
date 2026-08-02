@@ -8,7 +8,7 @@ import nextjshx.app.PageLayoutMacro;
 
 class PageLayoutFixture {
 	public static macro function install(outputPath:String):Expr {
-		AdapterPlanRegistry.install(outputPath, "0.0.0-development", "4.3.7", "1.41.0+1ead794285d4f43cbbc96078d4eac4a4d8bf6cce", "16.2.12");
+		AdapterPlanRegistry.install(outputPath, "0.0.0-development", "4.3.7", "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376", "16.2.12");
 		PageLayoutMacro.install();
 		return macro null;
 	}
@@ -18,7 +18,16 @@ class PageLayoutFixture {
 		if (name == null) {
 			Context.fatalError("The page_layout_case define is required by the negative page/layout fixture.", Context.currentPos());
 		}
+		if (name == "module-user-value-marker") {
+			Context.getModule("page_layouts.negative.ModuleUserValueMarker");
+			return macro null;
+		}
 		final typeName = switch name {
+			case "css-page": "CssOnPage";
+			case "css-nonliteral": "NonliteralCss";
+			case "css-missing": "MissingCss";
+			case "css-escape": "EscapingCss";
+			case "css-duplicate": "DuplicateCss";
 			case "missing-render": "MissingRender";
 			case "page-props": "StructuralPageProps";
 			case "layout-props": "StructuralLayoutProps";

@@ -32,11 +32,11 @@ function planValue(
 ): Record<string, unknown> {
   return {
     $schema: "https://nextjshx.dev/schemas/adapter-plan.schema.json",
-    schemaVersion: 1,
+    schemaVersion: 2,
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
-      genesTs: "1.41.0+1ead794285d4f43cbbc96078d4eac4a4d8bf6cce",
+      genesTs: "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
       next: "16.2.12",
     },
     intents: [
@@ -55,6 +55,7 @@ function planValue(
           modulePath: "../../../../src-gen/fixture/TodoPage",
           symbol: "TodoPage",
         },
+        sideEffectImports: [],
         imports: [
           {
             modulePath: "../../../../src-gen/fixture/TodoPage",
@@ -94,11 +95,11 @@ function proxyPlanValue(
 ): Record<string, unknown> {
   return {
     $schema: "https://nextjshx.dev/schemas/adapter-plan.schema.json",
-    schemaVersion: 1,
+    schemaVersion: 2,
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
-      genesTs: "1.41.0+1ead794285d4f43cbbc96078d4eac4a4d8bf6cce",
+      genesTs: "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
       next: "16.2.12",
     },
     intents: [
@@ -117,6 +118,7 @@ function proxyPlanValue(
           modulePath: "./src-gen/fixture/RequestProxy",
           symbol: "RequestProxy",
         },
+        sideEffectImports: [],
         imports: [
           {
             modulePath: "./src-gen/fixture/RequestProxy",
@@ -170,11 +172,11 @@ function proxyPlanValue(
 function clientComponentPlanValue(): Record<string, unknown> {
   return {
     $schema: "https://nextjshx.dev/schemas/adapter-plan.schema.json",
-    schemaVersion: 1,
+    schemaVersion: 2,
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
-      genesTs: "1.41.0+1ead794285d4f43cbbc96078d4eac4a4d8bf6cce",
+      genesTs: "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
       next: "16.2.12",
     },
     intents: [
@@ -193,6 +195,7 @@ function clientComponentPlanValue(): Record<string, unknown> {
           modulePath: "../../../src-gen/fixture/LikeButton",
           symbol: "LikeButton",
         },
+        sideEffectImports: [],
         imports: [
           {
             modulePath: "../../../src-gen/fixture/LikeButton",
@@ -225,11 +228,11 @@ function clientComponentPlanValue(): Record<string, unknown> {
 function reactHookPlanValue(): Record<string, unknown> {
   return {
     $schema: "https://nextjshx.dev/schemas/adapter-plan.schema.json",
-    schemaVersion: 1,
+    schemaVersion: 2,
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
-      genesTs: "1.41.0+1ead794285d4f43cbbc96078d4eac4a4d8bf6cce",
+      genesTs: "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
       next: "16.2.12",
     },
     intents: [
@@ -248,6 +251,7 @@ function reactHookPlanValue(): Record<string, unknown> {
           modulePath: "../../../../src-gen/fixture/SelectionHooks",
           symbol: "SelectionHooks",
         },
+        sideEffectImports: [],
         imports: [
           {
             modulePath: "../../../../src-gen/fixture/SelectionHooks",
@@ -274,11 +278,11 @@ function reactHookPlanValue(): Record<string, unknown> {
 function mdxComponentsPlanValue(): Record<string, unknown> {
   return {
     $schema: "https://nextjshx.dev/schemas/adapter-plan.schema.json",
-    schemaVersion: 1,
+    schemaVersion: 2,
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
-      genesTs: "1.41.0+1ead794285d4f43cbbc96078d4eac4a4d8bf6cce",
+      genesTs: "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
       next: "16.2.12",
     },
     intents: [
@@ -297,6 +301,7 @@ function mdxComponentsPlanValue(): Record<string, unknown> {
           modulePath: "./src-gen/fixture/AtlasMdxComponents",
           symbol: "AtlasMdxComponents",
         },
+        sideEffectImports: [],
         imports: [
           {
             modulePath: "./src-gen/fixture/AtlasMdxComponents",
@@ -323,11 +328,11 @@ function mdxComponentsPlanValue(): Record<string, unknown> {
 function serverFunctionPlanValue(): Record<string, unknown> {
   return {
     $schema: "https://nextjshx.dev/schemas/adapter-plan.schema.json",
-    schemaVersion: 1,
+    schemaVersion: 2,
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
-      genesTs: "1.41.0+1ead794285d4f43cbbc96078d4eac4a4d8bf6cce",
+      genesTs: "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
       next: "16.2.12",
     },
     intents: [
@@ -346,6 +351,7 @@ function serverFunctionPlanValue(): Record<string, unknown> {
           modulePath: "../../../src-gen/fixture/TodoActions",
           symbol: "TodoActions",
         },
+        sideEffectImports: [],
         imports: [
           {
             modulePath: "../../../src-gen/fixture/TodoActions",
@@ -382,11 +388,11 @@ function cacheFunctionPlanValue(
 ): Record<string, unknown> {
   return {
     $schema: "https://nextjshx.dev/schemas/adapter-plan.schema.json",
-    schemaVersion: 1,
+    schemaVersion: 2,
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
-      genesTs: "1.41.0+1ead794285d4f43cbbc96078d4eac4a4d8bf6cce",
+      genesTs: "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
       next: "16.2.12",
     },
     intents: [
@@ -405,6 +411,7 @@ function cacheFunctionPlanValue(
           modulePath: "../../../../src-gen/fixture/CachedCatalog",
           symbol: "CachedCatalog",
         },
+        sideEffectImports: [],
         imports: [
           {
             modulePath: "../../../../src-gen/fixture/CachedCatalog",
@@ -463,6 +470,187 @@ test("parses a closed canonical plan and renders only delegated adapter code", (
         "export const runtime = \"nodejs\";\n",
     },
   ]);
+});
+
+test("keeps layout CSS requests in authored order as ordinary ESM imports", () => {
+  const value = planValue();
+  const intent = (value.intents as Array<Record<string, unknown>>)[0];
+  assert(intent !== undefined);
+  intent.kind = "layout";
+  intent.segmentPath = "";
+  intent.targetPath = "layout.tsx";
+  intent.sideEffectImports = ["./globals.css", "design-system/theme.css"];
+  intent.exports = [
+    {
+      kind: "default",
+      name: "default",
+      sourceField: "render",
+      signature: '(props: LayoutProps<"/">) => JSX.Element',
+    },
+  ];
+  intent.config = [];
+
+  const [output] = renderAdapterPlan("src/app", parseAdapterPlan(value));
+  assert(output !== undefined);
+  assert.equal(
+    output.content,
+    "// Generated by NextJsHx from fixture.TodoPage.render.\n\n" +
+      'import "./globals.css";\n' +
+      'import "design-system/theme.css";\n' +
+      'import { TodoPage } from "../../../../src-gen/fixture/TodoPage";\n' +
+      'import type { JSX } from "react";\n\n' +
+      'const NextJsHxDefault: (props: LayoutProps<"/">) => JSX.Element = TodoPage.render;\n' +
+      "export default NextJsHxDefault;\n",
+  );
+});
+
+test("rejects duplicate layout CSS requests before rendering", () => {
+  const value = planValue();
+  const intent = (value.intents as Array<Record<string, unknown>>)[0];
+  assert(intent !== undefined);
+  intent.sideEffectImports = ["./globals.css", "./globals.css"];
+  expectCliDiagnostic(() => parseAdapterPlan(value), "NXHX-CLI-PLAN-0004");
+});
+
+test("rejects malformed or escaping CSS requests in a corrupted plan", () => {
+  for (const request of ["../globals.css", "./globals.scss", "./globals.css?raw"]) {
+    const value = planValue();
+    const intent = (value.intents as Array<Record<string, unknown>>)[0];
+    assert(intent !== undefined);
+    intent.sideEffectImports = [request];
+    expectCliDiagnostic(() => parseAdapterPlan(value), "NXHX-CLI-PLAN-0004");
+  }
+});
+
+test("rejects a CSS request on a page even if a plan is corrupted", () => {
+  const value = planValue();
+  const intent = (value.intents as Array<Record<string, unknown>>)[0];
+  assert(intent !== undefined);
+  intent.sideEffectImports = ["./globals.css"];
+
+  const plan = parseAdapterPlan(value);
+  expectCliDiagnostic(
+    () => renderAdapterPlan("src/app", plan),
+    "NXHX-CLI-RENDER-0005",
+  );
+});
+
+test("renders module-level page bindings without a synthetic class owner", () => {
+  const value = planValue(
+    '(props: PageProps<"/todos/[id]">) => Promise<JSX.Element>',
+  );
+  const intent = (value.intents as Array<Record<string, unknown>>)[0];
+  assert(intent !== undefined);
+  intent.implementation = {
+    modulePath: "../../../../src-gen/fixture/TodoPage",
+    symbol: "render",
+  };
+  intent.imports = [
+    {
+      modulePath: "../../../../src-gen/fixture/TodoPage",
+      symbol: "generateStaticParams",
+      alias: "NextJsHxGenerateStaticParamsImplementation",
+      typeOnly: false,
+    },
+    {
+      modulePath: "../../../../src-gen/fixture/TodoPage",
+      symbol: "render",
+      alias: null,
+      typeOnly: false,
+    },
+    {
+      modulePath: "react",
+      symbol: "JSX",
+      alias: null,
+      typeOnly: true,
+    },
+  ];
+  intent.exports = [
+    ...(intent.exports as Array<unknown>),
+    {
+      kind: "named",
+      name: "generateStaticParams",
+      sourceField: "generateStaticParams",
+      signature:
+        '() => Array<Awaited<PageProps<"/todos/[id]">["params"]>>',
+    },
+  ];
+
+  const [output] = renderAdapterPlan("src/app", parseAdapterPlan(value));
+  assert(output !== undefined);
+  assert.equal(
+    output.content,
+    "// Generated by NextJsHx from fixture.TodoPage.render.\n\n" +
+      "import { generateStaticParams as NextJsHxGenerateStaticParamsImplementation } from \"../../../../src-gen/fixture/TodoPage\";\n" +
+      "import { render } from \"../../../../src-gen/fixture/TodoPage\";\n" +
+      "import type { JSX } from \"react\";\n\n" +
+      "const NextJsHxDefault: (props: PageProps<\"/todos/[id]\">) => Promise<JSX.Element> = render;\n" +
+      "export default NextJsHxDefault;\n" +
+      "export const generateStaticParams: () => Array<Awaited<PageProps<\"/todos/[id]\">[\"params\"]>> = NextJsHxGenerateStaticParamsImplementation;\n" +
+      "export const runtime = \"nodejs\";\n",
+  );
+  assert(!String(output.content).includes("_Fields_"));
+});
+
+test("aliases direct module metadata before publishing Next's named export", () => {
+  const value = planValue();
+  const intent = (value.intents as Array<Record<string, unknown>>)[0];
+  assert(intent !== undefined);
+  intent.implementation = {
+    modulePath: "../../../../src-gen/fixture/TodoPage",
+    symbol: "render",
+  };
+  intent.imports = [
+    {
+      modulePath: "../../../../src-gen/fixture/TodoPage",
+      symbol: "metadata",
+      alias: "NextJsHxMetadataImplementation",
+      typeOnly: false,
+    },
+    {
+      modulePath: "../../../../src-gen/fixture/TodoPage",
+      symbol: "render",
+      alias: null,
+      typeOnly: false,
+    },
+    {
+      modulePath: "next",
+      symbol: "Metadata",
+      alias: null,
+      typeOnly: true,
+    },
+    {
+      modulePath: "react",
+      symbol: "JSX",
+      alias: null,
+      typeOnly: true,
+    },
+  ];
+  intent.exports = [
+    ...(intent.exports as Array<unknown>),
+    {
+      kind: "named",
+      name: "metadata",
+      sourceField: "metadata",
+      signature: "Metadata",
+    },
+  ];
+
+  const [output] = renderAdapterPlan("src/app", parseAdapterPlan(value));
+  assert(output !== undefined);
+  assert.equal(
+    output.content,
+    "// Generated by NextJsHx from fixture.TodoPage.render.\n\n" +
+      "import { metadata as NextJsHxMetadataImplementation } from \"../../../../src-gen/fixture/TodoPage\";\n" +
+      "import { render } from \"../../../../src-gen/fixture/TodoPage\";\n" +
+      "import type { Metadata } from \"next\";\n" +
+      "import type { JSX } from \"react\";\n\n" +
+      "const NextJsHxDefault: (props: PageProps<\"/todos/[id]\">) => JSX.Element = render;\n" +
+      "export default NextJsHxDefault;\n" +
+      "export const metadata: Metadata = NextJsHxMetadataImplementation;\n" +
+      "export const runtime = \"nodejs\";\n",
+  );
+  assert(!String(output.content).includes("_Fields_"));
 });
 
 test("keeps filesystem topology out of grouped and intercepted public signatures", () => {

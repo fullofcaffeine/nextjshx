@@ -7,6 +7,8 @@ import nextjs.raw.integrations.dndkit.DragEndEvent;
 import nextjs.raw.integrations.dndkit.Sortable.UseSortableResult;
 import nextjshx.integrations.dndkit.DndKitHookBindings;
 
+using genes.js.ArrayCallbacks;
+
 /** Intent-oriented dnd-kit surface for Haxe-authored sortable interfaces. */
 class DndKit {
 	/**
@@ -71,12 +73,10 @@ class DndKit {
 	}
 
 	static function findIndex<Item>(items:Array<Item>, id:String, idOf:Item->String):Int {
-		for (index in 0...items.length) {
-			if (idOf(items[index]) == id) {
-				return index;
-			}
-		}
-		return -1;
+		// Genes exposes Haxe 4.3's missing findIndex as a typed, zero-wrapper
+		// native Array operation. The generated semantic module therefore stays
+		// close to idiomatic TypeScript without an indexed generic assertion.
+		return items.findIndex(item -> idOf(item) == id);
 	}
 
 	static function stringId(id:DndIdentifier):Null<String> {

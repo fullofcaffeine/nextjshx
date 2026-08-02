@@ -81,7 +81,7 @@ const PROXY_ADAPTER_SNAPSHOT = path.join(
 const CLI_BIN = path.join(ROOT, "tools/cli/.tmp/src/cli.js");
 const NEXT_BIN = path.join(ROOT, "node_modules/next/dist/bin/next");
 const TSC_BIN = path.join(ROOT, "node_modules/typescript/bin/tsc6");
-const GENES_COMMIT = "1ead794285d4f43cbbc96078d4eac4a4d8bf6cce";
+const GENES_COMMIT = "0b7a4ca9d10682baeeb6a457ac666a02b7dc2376";
 const TYPESCRIPT_VERSION = "6.0.2";
 const PLAYWRIGHT_VERSION = "1.61.1";
 const EXPECTED_VERSIONS = new Map([
@@ -983,6 +983,13 @@ async function browserNavigationProofs(port) {
       waitUntil: "networkidle",
       timeout: 20_000,
     });
+    assert.equal(
+      await topologyPage.locator("#nextjshx-fixture").evaluate((element) =>
+        getComputedStyle(element).color,
+      ),
+      "rgb(12, 34, 56)",
+      "the CSS requested by the Haxe root layout did not reach the browser through Next",
+    );
     await topologyPage.locator("#feed-page").waitFor({ state: "visible", timeout: 10_000 });
     await topologyPage.locator("#modal-default").waitFor({ state: "visible", timeout: 10_000 });
     assert.equal(
@@ -1016,7 +1023,7 @@ async function browserNavigationProofs(port) {
     );
     await topologyPage.close();
     console.log(
-      "[next-stable] smoke: OK: intercepted photo used a modal on soft navigation and the canonical page after reload",
+      "[next-stable] smoke: OK: native layout CSS reached the browser; intercepted photo used a modal on soft navigation and the canonical page after reload",
     );
 
     const notFoundPage = await browser.newPage();

@@ -13,6 +13,10 @@ export type RootLayoutProps = {
 
 /**
  * Haxe-owned root shell reached through a generated Next-native adapter.
+ *
+ * This fixture deliberately keeps the compatibility class form so it also
+ * protects class-backed layouts. New application layouts should normally use
+ * the module-level function form shown in `docs/pages-and-layouts.md`.
  */
 export class RootLayout {
 	static render(props: RootLayoutProps): JSX.Element {

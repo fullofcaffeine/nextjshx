@@ -16,18 +16,21 @@ class AdapterIntent {
 	public final segmentPath:String;
 	public final targetPath:String;
 	public final implementation:AdapterImplementation;
+	public final sideEffectImports:ReadOnlyArray<String>;
 	public final imports:ReadOnlyArray<AdapterImport>;
 	public final directives:ReadOnlyArray<String>;
 	public final exports:ReadOnlyArray<AdapterExport>;
 	public final config:ReadOnlyArray<AdapterConfig>;
 
 	public function new(kind:AdapterKind, source:AdapterSource, segmentPath:String, targetPath:String, implementation:AdapterImplementation,
-			imports:Array<AdapterImport>, directives:Array<String>, exports:Array<AdapterExport>, config:Array<AdapterConfig>) {
+			sideEffectImports:Array<String>, imports:Array<AdapterImport>, directives:Array<String>, exports:Array<AdapterExport>,
+			config:Array<AdapterConfig>) {
 		this.kind = kind;
 		this.source = source;
 		this.segmentPath = segmentPath;
 		this.targetPath = targetPath;
 		this.implementation = implementation;
+		this.sideEffectImports = sideEffectImports.copy();
 		this.imports = imports.copy();
 		this.directives = directives.copy();
 		this.exports = exports.copy();

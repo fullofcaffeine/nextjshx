@@ -76,11 +76,11 @@
     "genesTs": {
       "name": "genes-ts",
       "version": "1.41.0",
-      "commit": "1ead794285d4f43cbbc96078d4eac4a4d8bf6cce",
+      "commit": "0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
       "gitDescribe": "v1.41.0",
       "haxeVersion": "4.3.7",
       "typescriptSpec": "npm:@typescript/typescript6@6.0.2",
-      "baselineReason": "The exact immutable v1.41.0 release commit preserves the established Haxe-authoritative HXX, direct JSX, module-function, strict null/boundary, declaration, source-map, TypeScript 5/6/7, and classic-JavaScript contracts. It includes framework-neutral React Hook authoring from PR #69, computed dependency snapshots from PR #72, typed context/effect support from PR #74, versioned React 19 Flight values and closed structural validation from PR #78, idiomatic occurrence-local and stored undefinable presence proofs from PRs #86 and #88, and exact pre-erasure type witnesses for directly emitted generic Haxe calls from PR #90. NextJsHx consumes those genes and genes.react capabilities directly while retaining only Next-specific graph, provenance, adapter, and diagnostic policy. The complete Genes hosted matrix and the downstream NextJsHx Hook, Client Component, strict Next build, streamed Flight, hydrated-browser, and Todo action evidence are green on the release source."
+      "baselineReason": "The exact immutable v1.41.0-compatible commit preserves the established Haxe-authoritative HXX, direct JSX, strict null/boundary, declaration, source-map, TypeScript 5/6/7, and classic-JavaScript contracts. It includes framework-neutral React Hook authoring from PR #69, computed dependency snapshots from PR #72, typed context/effect support from PR #74, versioned React 19 Flight values and closed structural validation from PR #78, idiomatic occurrence-local and stored undefinable presence proofs from PRs #86 and #88, exact pre-erasure type witnesses from PR #90, genuine module-level function lowering from PR #96, and direct immutable module values from PR #100. Separate modules may export the same conventional function or value name through collision-safe ESM imports, and an all-direct function/value module omits Haxe's synthetic static owner. NextJsHx consumes those genes and genes.react capabilities directly while retaining only Next-specific graph, provenance, adapter, and diagnostic policy. The complete Genes hosted matrix and downstream Hook, Client Component, page/layout, strict Next build, streamed Flight, hydrated-browser, and Todo action evidence are green."
     }
   },
   "lanes": [
@@ -161,7 +161,7 @@
       "identity": {
         "name": "genes-ts",
         "version": "1.41.0",
-        "commit": "1ead794285d4f43cbbc96078d4eac4a4d8bf6cce",
+        "commit": "0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
         "haxeVersion": "4.3.7",
         "typescriptSpec": "npm:@typescript/typescript6@6.0.2"
       }

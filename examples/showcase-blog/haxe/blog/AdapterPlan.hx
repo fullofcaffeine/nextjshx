@@ -20,7 +20,7 @@ import nextjshx.app.SpecialFileMacro;
  * runtime identity.
  */
 macro function install():Expr {
-	AdapterPlanRegistry.install(".nextjshx/default-plan.json", "0.0.0-development", "4.3.7", "1.41.0+1ead794285d4f43cbbc96078d4eac4a4d8bf6cce", "16.2.12");
+	AdapterPlanRegistry.install(".nextjshx/default-plan.json", "0.0.0-development", "4.3.7", "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376", "16.2.12");
 	PageLayoutMacro.install();
 	SpecialFileMacro.install();
 	return macro null;

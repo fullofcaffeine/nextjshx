@@ -14,12 +14,15 @@ import { chromium } from "playwright-core";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const FIXTURE = path.join(ROOT, "tests/fixtures/next-stable");
 const SOURCE = path.join(FIXTURE, "haxe/app/HaxePage.hx");
+const GLOBAL_CSS = path.join(FIXTURE, "app/globals.css");
 const GENERATED_SOURCE = path.join(FIXTURE, "src-gen/app/HaxePage.tsx");
 const CLI = path.join(ROOT, "tools/cli/.tmp/src/cli.js");
 const LINKED_PACKAGES = ["next", "react", "react-dom", "typescript"];
 const ORIGINAL_MARKER = "This page implementation originated in typed Haxe.";
 const SECOND_MARKER = "DEV-LOOP-TWO";
 const THIRD_MARKER = "DEV-LOOP-THREE";
+const ORIGINAL_CSS_COLOR = "rgb(12, 34, 56)";
+const EDITED_CSS_COLOR = "rgb(67, 89, 101)";
 const GENERATED_ADAPTERS = [
   "app/@modal/(.)photo/[id]/page.tsx",
   "app/@modal/default.tsx",
@@ -264,6 +267,7 @@ async function stopDev(child, exitPromise) {
 }
 
 let originalSource = null;
+let originalCss = null;
 let createdLinks = [];
 let browser = null;
 let dev = null;
@@ -272,7 +276,9 @@ let output = "";
 
 try {
   originalSource = await fs.readFile(SOURCE, "utf8");
+  originalCss = await fs.readFile(GLOBAL_CSS, "utf8");
   assert(originalSource.includes(ORIGINAL_MARKER), "dev fixture marker drifted");
+  assert(originalCss.includes(ORIGINAL_CSS_COLOR), "dev fixture CSS marker drifted");
   await removeGeneratedState();
   createdLinks = await linkDependencies();
   await run(process.execPath, ["tools/cli/scripts/ensure-build.mjs", "runtime"]);
@@ -314,7 +320,29 @@ try {
   const page = await browser.newPage();
   await page.goto(`http://127.0.0.1:${port}/haxe`, { waitUntil: "networkidle", timeout: 20_000 });
   const copy = page.locator("#haxe-page p");
+  const styledHeader = page.locator("#nextjshx-fixture");
   assert.equal(await copy.textContent(), ORIGINAL_MARKER);
+  assert.equal(
+    await styledHeader.evaluate((element) => getComputedStyle(element).color),
+    ORIGINAL_CSS_COLOR,
+    "the initial Haxe-requested stylesheet did not reach Next dev",
+  );
+
+  // Next—not the Haxe compiler—owns this stylesheet edit. Seeing the browser
+  // update proves the annotation produced an ordinary Next CSS import rather
+  // than a copied file or a second style watcher.
+  await fs.writeFile(
+    GLOBAL_CSS,
+    originalCss.replace(ORIGINAL_CSS_COLOR, EDITED_CSS_COLOR),
+    "utf8",
+  );
+  await eventually("browser CSS update through Next dev", async () =>
+    await styledHeader.evaluate((element) => getComputedStyle(element).color) === EDITED_CSS_COLOR,
+  );
+  await fs.writeFile(GLOBAL_CSS, originalCss, "utf8");
+  await eventually("browser CSS restoration through Next dev", async () =>
+    await styledHeader.evaluate((element) => getComputedStyle(element).color) === ORIGINAL_CSS_COLOR,
+  );
 
   const initialAdapters = await adapterDigests();
   const secondSource = originalSource.replace(ORIGINAL_MARKER, SECOND_MARKER);
@@ -411,7 +439,7 @@ try {
   dev = null;
   devExit = null;
   console.log(
-    "[dev-loop] OK: one command handled browser Fast Refresh, retained exact last-good bytes on a Haxe error, recovered, and cleaned up",
+    "[dev-loop] OK: one command handled native CSS updates and Haxe Fast Refresh, retained exact last-good bytes on a Haxe error, recovered, and cleaned up",
   );
 } catch (error) {
   console.error(`[dev-loop] ERROR: ${error.message}\n${output}`);
@@ -419,6 +447,9 @@ try {
 } finally {
   if (originalSource !== null) {
     await fs.writeFile(SOURCE, originalSource, "utf8");
+  }
+  if (originalCss !== null) {
+    await fs.writeFile(GLOBAL_CSS, originalCss, "utf8");
   }
   if (browser !== null) {
     await browser.close();

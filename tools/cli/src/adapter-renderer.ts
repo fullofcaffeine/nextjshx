@@ -350,6 +350,14 @@ function validatePageLayoutIntent(intent: AdapterIntent, nextVersion: string): v
   if (intent.kind !== "page" && intent.kind !== "layout") {
     return;
   }
+  if (intent.kind === "page" && intent.sideEffectImports.length !== 0) {
+    renderFailure(
+      intent,
+      "sideEffectImports",
+      "no global CSS imports on a page; attach them to the owning layout",
+      intent.sideEffectImports.join(", "),
+    );
+  }
   const cache = cacheDirective(intent);
   if (intent.directives.length !== 0 && cache === null) {
     renderFailure(
@@ -1065,29 +1073,44 @@ function renderIntent(
     );
   }
   const localNames = new Set<string>();
+  const importedBindings = new Map<string, string>();
   let implementationLocal: string | null = null;
-  const imports = intent.imports.map((imported) => {
-    const local = imported.alias ?? imported.symbol;
-    if (localNames.has(local)) {
-      renderFailure(
-        intent,
-        "imports",
-        "one unique local identifier per import",
-        local,
-      );
-    }
-    localNames.add(local);
-    if (
-      !imported.typeOnly &&
-      imported.modulePath === intent.implementation.modulePath &&
-      imported.symbol === intent.implementation.symbol
-    ) {
-      implementationLocal = local;
-    }
-    return `${imported.typeOnly ? "import type" : "import"} { ${imported.symbol}` +
-      `${imported.alias === null ? "" : ` as ${imported.alias}`} } from ` +
-      `${JSON.stringify(imported.modulePath)};`;
-  });
+  if (intent.kind !== "layout" && intent.sideEffectImports.length !== 0) {
+    renderFailure(
+      intent,
+      "sideEffectImports",
+      "CSS side-effect imports only on a reviewed layout adapter",
+      intent.sideEffectImports.join(", "),
+    );
+  }
+  const imports = [
+    ...intent.sideEffectImports.map(
+      (modulePath) => `import ${JSON.stringify(modulePath)};`,
+    ),
+    ...intent.imports.map((imported) => {
+      const local = imported.alias ?? imported.symbol;
+      if (localNames.has(local)) {
+        renderFailure(
+          intent,
+          "imports",
+          "one unique local identifier per import",
+          local,
+        );
+      }
+      localNames.add(local);
+      importedBindings.set(`${imported.modulePath}\u0000${imported.symbol}`, local);
+      if (
+        !imported.typeOnly &&
+        imported.modulePath === intent.implementation.modulePath &&
+        imported.symbol === intent.implementation.symbol
+      ) {
+        implementationLocal = local;
+      }
+      return `${imported.typeOnly ? "import type" : "import"} { ${imported.symbol}` +
+        `${imported.alias === null ? "" : ` as ${imported.alias}`} } from ` +
+        `${JSON.stringify(imported.modulePath)};`;
+    }),
+  ];
   if (implementationLocal === null) {
     renderFailure(
       intent,
@@ -1096,6 +1119,25 @@ function renderIntent(
       `${intent.implementation.symbol} from ${intent.implementation.modulePath}`,
     );
   }
+  const directImplementationBinding =
+    intent.implementation.symbol === intent.source.fieldName;
+  const sourceExpression = (sourceField: string): string => {
+    if (!directImplementationBinding) {
+      return `${implementationLocal}.${sourceField}`;
+    }
+    const local = importedBindings.get(
+      `${intent.implementation.modulePath}\u0000${sourceField}`,
+    );
+    if (local === undefined) {
+      renderFailure(
+        intent,
+        "imports",
+        `one direct implementation import for source field ${sourceField}`,
+        "missing",
+      );
+    }
+    return local;
+  };
 
   validateClientComponentIntent(intent, implementationLocal);
   validateReactHookIntent(intent, implementationLocal);
@@ -1261,11 +1303,12 @@ function renderIntent(
       continue;
     }
     if (intent.kind === "server-function") {
+      const source = sourceExpression(exported.sourceField);
       declarations.push(
         `export async function ${exported.name}(` +
-          `...args: Parameters<typeof ${implementationLocal}.${exported.sourceField}>` +
-          `): Promise<Awaited<ReturnType<typeof ${implementationLocal}.${exported.sourceField}>>> {\n` +
-          `  return ${implementationLocal}.${exported.sourceField}(...args);\n` +
+          `...args: Parameters<typeof ${source}>` +
+          `): Promise<Awaited<ReturnType<typeof ${source}>>> {\n` +
+          `  return ${source}(...args);\n` +
           `}`,
       );
       continue;
@@ -1275,12 +1318,13 @@ function renderIntent(
       if (directive === null) {
         renderFailure(intent, "directives", "one reviewed cache directive", "none");
       }
+      const source = sourceExpression(exported.sourceField);
       declarations.push(
         `export async function ${exported.name}(` +
-          `...args: Parameters<typeof ${implementationLocal}.${exported.sourceField}>` +
-          `): Promise<Awaited<ReturnType<typeof ${implementationLocal}.${exported.sourceField}>>> {\n` +
+          `...args: Parameters<typeof ${source}>` +
+          `): Promise<Awaited<ReturnType<typeof ${source}>>> {\n` +
           `  ${JSON.stringify(directive)};\n` +
-          `  return ${implementationLocal}.${exported.sourceField}(...args);\n` +
+          `  return ${source}(...args);\n` +
           `}`,
       );
       continue;
@@ -1293,11 +1337,12 @@ function renderIntent(
         exported.name === "generateStaticParams")
     ) {
       const name = exported.kind === "default" ? "NextJsHxDefault" : exported.name;
+      const source = sourceExpression(exported.sourceField);
       declarations.push(
         `${exported.kind === "default" ? "export default " : "export "}async function ${name}(` +
-          `...args: Parameters<typeof ${implementationLocal}.${exported.sourceField}>` +
-          `): Promise<Awaited<ReturnType<typeof ${implementationLocal}.${exported.sourceField}>>> {\n` +
-          `  return ${implementationLocal}.${exported.sourceField}(...args);\n` +
+          `...args: Parameters<typeof ${source}>` +
+          `): Promise<Awaited<ReturnType<typeof ${source}>>> {\n` +
+          `  return ${source}(...args);\n` +
           `}`,
       );
       continue;
@@ -1305,7 +1350,7 @@ function renderIntent(
     if (exported.kind === "default") {
       declarations.push(
         `const NextJsHxDefault: ${safeSignature(intent, exported)} = ` +
-          `${implementationLocal}.${exported.sourceField};`,
+          `${sourceExpression(exported.sourceField)};`,
         "export default NextJsHxDefault;",
       );
       continue;
@@ -1320,7 +1365,7 @@ function renderIntent(
     }
     declarations.push(
       `export const ${exported.name}: ${safeSignature(intent, exported)} = ` +
-        `${implementationLocal}.${exported.sourceField};`,
+        `${sourceExpression(exported.sourceField)};`,
     );
   }
   for (const config of configByName.values()) {

@@ -14,7 +14,7 @@ Repository status: **foundation-only**. A declared version is a reproducible tar
 | React / React DOM | 19.2.7 / 19.2.7 | React 19 primary lane. |
 | TypeScript | 6.0.2 | Pinned to the exact version shared by the observed genes-ts and Next.js source manifests; Next stable accepts workspace-owned TypeScript. |
 | Haxe | 4.3.7 | Pinned by `.haxerc`. |
-| genes-ts | 1.41.0 at `1ead794285d4f43cbbc96078d4eac4a4d8bf6cce` | The exact immutable v1.41.0 release commit preserves the established Haxe-authoritative HXX, direct JSX, module-function, strict null/boundary, declaration, source-map, TypeScript 5/6/7, and classic-JavaScript contracts. It includes framework-neutral React Hook authoring from PR #69, computed dependency snapshots from PR #72, typed context/effect support from PR #74, versioned React 19 Flight values and closed structural validation from PR #78, idiomatic occurrence-local and stored undefinable presence proofs from PRs #86 and #88, and exact pre-erasure type witnesses for directly emitted generic Haxe calls from PR #90. NextJsHx consumes those genes and genes.react capabilities directly while retaining only Next-specific graph, provenance, adapter, and diagnostic policy. The complete Genes hosted matrix and the downstream NextJsHx Hook, Client Component, strict Next build, streamed Flight, hydrated-browser, and Todo action evidence are green on the release source. |
+| genes-ts | 1.41.0 at `0b7a4ca9d10682baeeb6a457ac666a02b7dc2376` | The exact immutable v1.41.0-compatible commit preserves the established Haxe-authoritative HXX, direct JSX, strict null/boundary, declaration, source-map, TypeScript 5/6/7, and classic-JavaScript contracts. It includes framework-neutral React Hook authoring from PR #69, computed dependency snapshots from PR #72, typed context/effect support from PR #74, versioned React 19 Flight values and closed structural validation from PR #78, idiomatic occurrence-local and stored undefinable presence proofs from PRs #86 and #88, exact pre-erasure type witnesses from PR #90, genuine module-level function lowering from PR #96, and direct immutable module values from PR #100. Separate modules may export the same conventional function or value name through collision-safe ESM imports, and an all-direct function/value module omits Haxe's synthetic static owner. NextJsHx consumes those genes and genes.react capabilities directly while retaining only Next-specific graph, provenance, adapter, and diagnostic policy. The complete Genes hosted matrix and downstream Hook, Client Component, page/layout, strict Next build, streamed Flight, hydrated-browser, and Todo action evidence are green. |
 | Node.js | floor 20.9.0; baseline 20.19.3; current LTS 24.18.0 (Krypton) | CI contract: 20.9.0, 24.18.0. |
 
 ## Evidence lanes
@@ -34,7 +34,7 @@ Planned fixture commands:
 
 Sibling repositories are optional tooling oracles. They are never runtime dependencies and their paths may not be hardcoded in library code.
 
-- **genesTs:** set `NEXTJSHX_GENES_TS_DIR`, or use `../genes`. Expected commit: `1ead794285d4f43cbbc96078d4eac4a4d8bf6cce`.
+- **genesTs:** set `NEXTJSHX_GENES_TS_DIR`, or use `../genes`. Expected commit: `0b7a4ca9d10682baeeb6a457ac666a02b7dc2376`.
 - **nextUpstream:** set `NEXTJSHX_NEXT_UPSTREAM_DIR`, or use `../nextjs` then `../next.js`. Expected commit: `491f78099c3ea23be14e66c6d848b50204590e90`.
 
 Commands:

@@ -26,7 +26,7 @@ function implementationPlan(sourceFile: string): AdapterPlan {
   });
   return Object.freeze({
     $schema: "https://nextjshx.dev/schemas/adapter-plan.schema.json",
-    schemaVersion: 1,
+    schemaVersion: 2,
     boundaries: Object.freeze({}),
     toolchain: Object.freeze({
       nextjshx: "0.0.0-development",
@@ -49,6 +49,7 @@ function implementationPlan(sourceFile: string): AdapterPlan {
         modulePath: "../../src-gen/demo/Page",
         symbol: "Page",
       }),
+      sideEffectImports: Object.freeze([]),
       imports: Object.freeze([]),
       directives: Object.freeze([]),
       exports: Object.freeze([]),

@@ -16,7 +16,7 @@
       "const": "https://nextjshx.dev/schemas/adapter-plan.schema.json"
     },
     "schemaVersion": {
-      "const": 1
+      "const": 2
     },
     "toolchain": {
       "$ref": "#/$defs/toolchain"
@@ -320,6 +320,7 @@
         "segmentPath",
         "targetPath",
         "implementation",
+        "sideEffectImports",
         "imports",
         "directives",
         "exports",
@@ -361,6 +362,13 @@
         },
         "implementation": {
           "$ref": "#/$defs/implementation"
+        },
+        "sideEffectImports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          },
+          "uniqueItems": true
         },
         "imports": {
           "type": "array",

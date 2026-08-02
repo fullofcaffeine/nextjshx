@@ -15,7 +15,7 @@ const OUTPUT_ROOT = path.join(FIXTURE_ROOT, ".tmp");
 const PLAN_PATH = path.join(OUTPUT_ROOT, "plan.json");
 const REJECTED_PATH = path.join(OUTPUT_ROOT, "rejected.json");
 const APPLICATION_PATH = path.join(OUTPUT_ROOT, "application.js");
-const SNAPSHOT_PATH = path.join(ROOT, "tests/snapshots/special-file-plan-v1.json");
+const SNAPSHOT_PATH = path.join(ROOT, "tests/snapshots/special-file-plan-v2.json");
 const SCHEMA_PATH = path.join(ROOT, "schemas/adapter-plan.schema.json");
 const TYPESCRIPT_ROOT = path.join(OUTPUT_ROOT, "typescript");
 const TSC_BIN = path.join(ROOT, "node_modules/typescript/bin/tsc6");
@@ -108,6 +108,39 @@ const NEGATIVE_CASES = [
   },
 ];
 
+const MODULE_NEGATIVE_CASES = [
+  {
+    id: "module-wrong-name",
+    package: "wrong_name",
+    file: "tests/special-files/src/special_files/module_negative/wrong_name/WrongName.hx",
+    line: 6,
+    range: { kind: "lines", start: 6, end: 8 },
+    code: "NXHX-SPECIAL-RENDER-0004",
+    message:
+      "@:next.loading must annotate the module-level render function; found special_files.module_negative.wrong_name.WrongName.fallback.",
+  },
+  {
+    id: "module-direct-marker",
+    package: "direct_marker",
+    file: "tests/special-files/src/special_files/module_negative/direct_marker/DirectMarker.hx",
+    line: 7,
+    range: { kind: "lines", start: 7, end: 9 },
+    code: "NXHX-SPECIAL-MODULE-0010",
+    message:
+      "render must not declare @:genes.moduleFunction directly; NextJsHx derives the native export from the special-file annotation.",
+  },
+  {
+    id: "module-multiple-boundaries",
+    package: "multiple_boundaries",
+    file: "tests/special-files/src/special_files/module_negative/multiple_boundaries/MultipleBoundaries.hx",
+    line: 6,
+    range: { kind: "characters", start: 1, end: 16 },
+    code: "NXHX-SPECIAL-BOUNDARY-0001",
+    message:
+      "Module special_files.module_negative.multiple_boundaries.MultipleBoundaries must declare exactly one App Router boundary annotation on one module-level render function; found 2.",
+  },
+];
+
 function portable(value) {
   return value.split(path.sep).join("/");
 }
@@ -195,7 +228,7 @@ function validatePlan() {
   const plan = JSON.parse(encoded);
   const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
   const validate = new Ajv2020({ allErrors: true, strict: true }).compile(schema);
-  assert(validate(plan), `Special-file plan violates schema v1:\n${JSON.stringify(validate.errors, null, 2)}`);
+  assert(validate(plan), `Special-file plan violates schema v2:\n${JSON.stringify(validate.errors, null, 2)}`);
   if (MODE === "update") {
     fs.writeFileSync(SNAPSHOT_PATH, encoded, "utf8");
   } else {
@@ -210,12 +243,20 @@ function validatePlan() {
     [
       ["default", "proof/@modal", "proof/@modal/default.tsx"],
       ["default", "proof/[id]/@sidebar", "proof/[id]/@sidebar/default.tsx"],
+      ["loading", "proof/class-compat", "proof/class-compat/loading.tsx"],
       ["error", "proof/error", "proof/error/error.tsx"],
       ["loading", "proof/loading", "proof/loading/loading.tsx"],
       ["not-found", "proof/not-found", "proof/not-found/not-found.tsx"],
     ],
   );
   assert(plan.intents.every((intent) => intent.source.fieldName === "render"));
+  assert(
+    plan.intents.every((intent) =>
+      intent.targetPath === "proof/class-compat/loading.tsx"
+        ? intent.implementation.symbol === "ClassCompatibilityView"
+        : intent.implementation.symbol === "render",
+    ),
+  );
   assert(plan.intents.every((intent) => intent.exports.length === 1));
   assert(plan.intents.every((intent) => intent.exports[0].kind === "default"));
   assert(plan.intents.every((intent) => intent.exports[0].sourceField === "render"));
@@ -227,22 +268,25 @@ function validatePlan() {
     ),
     "Special-file plans must import React 19's module-owned JSX type namespace",
   );
-  assert.deepEqual(plan.intents[0].directives, []);
-  assert.deepEqual(plan.intents[1].directives, []);
-  assert.deepEqual(plan.intents[2].directives, ["use client"]);
-  assert.deepEqual(plan.intents[3].directives, []);
-  assert.deepEqual(plan.intents[4].directives, []);
-  assert.equal(plan.intents[0].exports[0].signature, "() => JSX.Element");
+  const intentByTarget = new Map(plan.intents.map((intent) => [intent.targetPath, intent]));
+  assert.deepEqual(intentByTarget.get("proof/@modal/default.tsx").directives, []);
+  assert.deepEqual(intentByTarget.get("proof/[id]/@sidebar/default.tsx").directives, []);
+  assert.deepEqual(intentByTarget.get("proof/class-compat/loading.tsx").directives, []);
+  assert.deepEqual(intentByTarget.get("proof/error/error.tsx").directives, ["use client"]);
+  assert.deepEqual(intentByTarget.get("proof/loading/loading.tsx").directives, []);
+  assert.deepEqual(intentByTarget.get("proof/not-found/not-found.tsx").directives, []);
+  assert.equal(intentByTarget.get("proof/@modal/default.tsx").exports[0].signature, "() => JSX.Element");
   assert.equal(
-    plan.intents[1].exports[0].signature,
+    intentByTarget.get("proof/[id]/@sidebar/default.tsx").exports[0].signature,
     '(props: Pick<LayoutProps<"/proof/[id]">, "params">) => Promise<JSX.Element>',
   );
   assert.equal(
-    plan.intents[2].exports[0].signature,
+    intentByTarget.get("proof/error/error.tsx").exports[0].signature,
     "(props: { error: Error & { digest?: string }; reset: () => void }) => JSX.Element",
   );
-  assert.equal(plan.intents[3].exports[0].signature, "() => Promise<JSX.Element>");
-  assert.equal(plan.intents[4].exports[0].signature, "() => JSX.Element");
+  assert.equal(intentByTarget.get("proof/class-compat/loading.tsx").exports[0].signature, "() => JSX.Element");
+  assert.equal(intentByTarget.get("proof/loading/loading.tsx").exports[0].signature, "() => Promise<JSX.Element>");
+  assert.equal(intentByTarget.get("proof/not-found/not-found.tsx").exports[0].signature, "() => JSX.Element");
   assert(!/\b(?:any|unknown)\b/.test(encoded), "Special-file plan contains a broad TypeScript type");
   assert(!encoded.includes("LOADING-BUSINESS"), "Loading business logic leaked into its adapter plan");
   assert(!encoded.includes("NOT-FOUND-BUSINESS"), "Not-found business logic leaked into its adapter plan");
@@ -259,6 +303,9 @@ function generated(relative) {
 
 function validateGeneratedTypescript() {
   const errorView = generated("special_files/positive/ErrorView.tsx");
+  const classCompatibilityView = generated(
+    "special_files/positive/ClassCompatibilityView.tsx",
+  );
   const loadingView = generated("special_files/positive/LoadingView.tsx");
   const notFoundView = generated("special_files/positive/NotFoundView.tsx");
   const defaultView = generated("special_files/positive/DefaultView.tsx");
@@ -266,15 +313,16 @@ function validateGeneratedTypescript() {
   const defaultProps = generated("nextjs/app/DefaultProps.tsx");
   const errorProps = generated("nextjs/app/ErrorProps.tsx");
 
-  assert(errorView.includes("static render(props: ErrorProps): JSX.Element"));
+  assert(classCompatibilityView.includes("static render(): JSX.Element"));
+  assert(errorView.includes("export function render(props: ErrorProps): JSX.Element"));
   assert(errorView.includes('onClick={props.reset}'));
   assert(errorView.includes("{props.error.message}"));
-  assert(loadingView.includes("static render(): globalThis.Promise<JSX.Element>"));
-  assert(notFoundView.includes("static render(): JSX.Element"));
-  assert(defaultView.includes("static render(props: DefaultProps<DefaultParams>): globalThis.Promise<JSX.Element>"));
+  assert(loadingView.includes("export function render(): globalThis.Promise<JSX.Element>"));
+  assert(notFoundView.includes("export function render(): JSX.Element"));
+  assert(defaultView.includes("export function render(props: DefaultProps<DefaultParams>): globalThis.Promise<JSX.Element>"));
   assert(defaultView.includes("props.params.then(function (params: DefaultParams)"));
   assert(defaultView.includes("params.id"));
-  assert(emptyDefaultView.includes("static render(): JSX.Element"));
+  assert(emptyDefaultView.includes("export function render(): JSX.Element"));
   assert(defaultProps.includes("params: globalThis.Promise<Params>"));
   assert(errorProps.includes("error: Error & { digest?: string }"));
   assert(errorProps.includes("reset: () => void"));
@@ -327,6 +375,23 @@ try {
     assert.equal(fs.existsSync(REJECTED_PATH), false, `${fixture.id} emitted a rejected plan`);
   }
 
+  for (const fixture of MODULE_NEGATIVE_CASES) {
+    fs.rmSync(REJECTED_PATH, { force: true });
+    const output = runHaxe(
+      "tests/special-files/build-module-negative.hxml",
+      1,
+      ["--macro", `include('special_files.module_negative.${fixture.package}')`],
+    );
+    assert.deepEqual(parseDiagnostic(output, fixture.id), {
+      file: fixture.file,
+      line: fixture.line,
+      range: fixture.range,
+      code: fixture.code,
+      message: fixture.message,
+    });
+    assert.equal(fs.existsSync(REJECTED_PATH), false, `${fixture.id} emitted a rejected plan`);
+  }
+
   fs.rmSync(REJECTED_PATH, { force: true });
   const resetArgument = runHaxe(
     "tests/special-files/build-negative.hxml",
@@ -343,7 +408,7 @@ try {
   assert.equal(fs.existsSync(REJECTED_PATH), false, "invalid reset call emitted a rejected plan");
 
   console.log(
-    `special-files: OK: loading/error/not-found/default plans, typed slot params, strict TypeScript, and ${NEGATIVE_CASES.length + 1} exact fail-closed diagnostics`,
+    `special-files: OK: loading/error/not-found/default plans with module owners, typed slot params, strict TypeScript, and ${NEGATIVE_CASES.length + MODULE_NEGATIVE_CASES.length + 1} exact fail-closed diagnostics`,
   );
 } catch (error) {
   console.error(`[special-files] ERROR: ${error.message}`);

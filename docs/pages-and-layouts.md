@@ -12,10 +12,145 @@ or write `app/**`. The later renderer emits a short typed reference to the
 genes-ts implementation, and Next's own route-literal helper remains the
 second oracle.
 
-## Page contract
+## Preferred module-shaped page contract
 
-A page has one `@:next.page(path)` annotation and one public static, non-generic
-`render` function:
+When a route owner needs no construction, inheritance, interface, or runtime
+class identity, put the annotation on a module-level `render` function:
+
+```haxe
+package app.routes;
+
+import genes.react.Element;
+import js.lib.Promise;
+import nextjs.app.PageProps;
+import nextjs.route.SearchParams;
+
+typedef TodoParams = {
+  final id:String;
+}
+
+/**
+ * The annotation gives this ordinary module function one App Router route.
+ * NextJsHx checks the route and props, then asks Genes to emit a normal named
+ * JavaScript module export. It does not introduce a second routing runtime.
+ */
+@:next.page("todos/[id]")
+function render(
+  props:PageProps<TodoParams, SearchParams>
+):Promise<Element> {
+  return props.params.then(params ->
+    <main>Todo {params.id}</main>
+  );
+}
+
+/** Next consumes this as a direct named export from the same module. */
+function generateStaticParams():Array<TodoParams> {
+  return [{id: "first"}];
+}
+```
+
+The generated implementation is an ordinary module rather than a redundant
+all-static class:
+
+```ts
+export function render(
+  props: PageProps<TodoParams, SearchParams>
+): Promise<JSX.Element> {
+  return props.params.then(params => <main>Todo {params.id}</main>);
+}
+
+export function generateStaticParams(): Array<TodoParams> {
+  return [{id: "first"}];
+}
+```
+
+NextJsHx then emits the same narrow convention surface a careful vanilla
+Next.js page would expose:
+
+```tsx
+import {
+  generateStaticParams as generateStaticParamsImplementation,
+  render
+} from "../../../src-gen/app/routes/TodoPage";
+
+const NextJsHxDefault:
+  (props: PageProps<"/todos/[id]">) => Promise<JSX.Element> = render;
+export default NextJsHxDefault;
+
+export async function generateStaticParams() {
+  return generateStaticParamsImplementation();
+}
+```
+
+The Haxe advantage is earlier route-cardinality, Promise-shaped props, HXX,
+and href checking while the runtime, exports, and App Router behavior remain
+ordinary Next.js. In vanilla TypeScript, the equivalent `page.tsx` functions
+are already module functions; NextJsHx deliberately preserves that familiar
+shape instead of asking Haxe authors to create a static namespace class.
+
+The macro also generates a module-level `href`. Import it by field when another
+Haxe module needs the link:
+
+```haxe
+import app.routes.TodoPage.href as todoHref;
+
+final destination = todoHref({id: todo.id});
+```
+
+Static metadata stays module-shaped too:
+
+```haxe
+import nextjs.raw.metadata.Metadata;
+
+/**
+ * NextJsHx validates this against Next's public Metadata type, then asks Genes
+ * to emit a normal `export const`. The annotation does not evaluate metadata or
+ * introduce a second framework runtime.
+ */
+final metadata:Metadata = {
+  title: "Todo ledger",
+  description: "Typed Haxe over ordinary Next.js"
+};
+```
+
+Genes emits the implementation as the direct typed binding native tools expect:
+
+```ts
+export const metadata: import("next").Metadata = {
+  "title": "Todo ledger",
+  "description": "Typed Haxe over ordinary Next.js"
+};
+```
+
+The narrow convention adapter aliases that implementation binding before it
+publishes Next's canonical named export:
+
+```tsx
+import {
+  metadata as NextJsHxMetadataImplementation,
+  render
+} from "../../../src-gen/app/routes/TodoPage";
+import type { Metadata } from "next";
+
+const NextJsHxDefault:
+  (props: PageProps<"/todos/[id]">) => Promise<JSX.Element> = render;
+export default NextJsHxDefault;
+export const metadata: Metadata = NextJsHxMetadataImplementation;
+```
+
+Application code must not declare `@:genes.moduleValue` itself. NextJsHx owns
+the App Router export name, its type, its generated adapter, and the rule that
+keeps it in the compiled program. Genes owns the reusable conversion from an
+immutable Haxe module value to a normal JavaScript `export const`.
+Direct user ownership fails before output with
+`NXHX-PAGE-LAYOUT-MODULE-0011`.
+
+## Compatibility class page contract
+
+A class form remains supported when construction, inheritance, interface
+implementation, class metadata, or runtime class identity makes the class
+meaningful. It has one `@:next.page(path)` annotation and one public static,
+non-generic `render` function:
 
 ```haxe
 package app.routes;
@@ -44,7 +179,7 @@ class TodoPage {
 `params` and `searchParams` are Promises because that is the pinned Next.js
 contract. `TodoParams` is checked against `todos/[id]` by the same exact route
 validator used by route handlers and hrefs. Missing, extra, or wrong-cardinality
-fields fail at the render declaration before any plan is published.
+fields fail at the render declaration before any generated files are published.
 
 The raw `SearchParams` boundary is a readonly
 `Record<string, string | string[] | undefined>` in emitted TypeScript. Haxe
@@ -135,18 +270,77 @@ import nextjs.app.LayoutProps;
 import nextjs.route.NoParams;
 
 @:next.layout("")
-class RootLayout {
-  public static function render(props:LayoutProps<NoParams>):Element {
-    return <html lang="en">
-      <body>{props.children}</body>
-    </html>;
-  }
+function render(props:LayoutProps<NoParams>):Element {
+  return <html lang="en">
+    <body>{props.children}</body>
+  </html>;
 }
 ```
 
 `NoParams` is the discoverable empty shape for a root or fully static route;
 it is not a broad escape type. A nested layout uses every dynamic parameter in
 its annotated ancestor path.
+
+## Native global CSS
+
+A Haxe-owned layout can ask Next.js to load ordinary global or package CSS:
+
+```haxe
+package app;
+
+import genes.react.Element;
+import nextjs.app.LayoutProps;
+import nextjs.route.NoParams;
+
+/**
+ * `@:next.css` emits a normal CSS import in this generated layout file.
+ * Next.js still owns the CSS build, ordering, browser updates, and deployment.
+ */
+@:next.layout("") @:next.css("./globals.css")
+function render(props:LayoutProps<NoParams>):Element {
+  return <html lang="en">
+    <body>{props.children}</body>
+  </html>;
+}
+```
+
+The stylesheet stays beside the generated convention file as
+`app/globals.css`. NextJsHx emits this narrow adapter:
+
+```tsx
+import "./globals.css";
+import { render } from "../src-gen/app/RootLayout";
+import type { JSX } from "react";
+
+const NextJsHxDefault:
+  (props: LayoutProps<"/">) => JSX.Element = render;
+export default NextJsHxDefault;
+```
+
+This is the same CSS mechanism used by an idiomatic vanilla Next.js layout:
+
+```tsx
+import "./globals.css";
+
+export default function RootLayout({ children }: LayoutProps<"/">) {
+  return <html lang="en"><body>{children}</body></html>;
+}
+```
+
+The Haxe layer improves the authoring check without replacing that mechanism.
+The CSS request must be a literal `.css` path, relative files must already
+exist beside the layout, duplicate imports fail at the second annotation, and
+page-owned requests fail with a message directing the author to a layout. That
+means these mistakes are reported at the Haxe annotation before generated
+files are published. Package requests such as
+`@:next.css("design-system/theme.css")` are left for Next.js to resolve against
+the package's public exports.
+
+Repeat `@:next.css(...)` to load more than one stylesheet. Authored order is
+preserved because CSS order can change which rule wins. There is no generated
+public copy, runtime `<link>`, or separate style watcher. When a project needs
+a native placement that this safer layout-only API does not yet support, keep
+that convention file native rather than weakening the typed Haxe contract.
 
 ## Typed parallel slots
 
@@ -164,15 +358,13 @@ typedef RootLayoutProps = {
 }
 
 @:next.layout("")
-class RootLayout {
-  public static function render(props:RootLayoutProps):Element {
-    return <html lang="en">
-      <body>
-        {props.children}
-        <div id="modal-slot">{props.modal}</div>
-      </body>
-    </html>;
-  }
+function render(props:RootLayoutProps):Element {
+  return <html lang="en">
+    <body>
+      {props.children}
+      <div id="modal-slot">{props.modal}</div>
+    </body>
+  </html>;
 }
 ```
 
