@@ -14,7 +14,7 @@ const FIXTURE_ROOT = path.join(ROOT, "tests/proxy");
 const OUTPUT_ROOT = path.join(FIXTURE_ROOT, ".tmp");
 const PLAN_PATH = path.join(OUTPUT_ROOT, "plan.json");
 const NO_CONFIG_PLAN_PATH = path.join(OUTPUT_ROOT, "no-config-plan.json");
-const SNAPSHOT_PATH = path.join(ROOT, "tests/snapshots/proxy-plan-v1.json");
+const SNAPSHOT_PATH = path.join(ROOT, "tests/snapshots/proxy-plan-v2.json");
 const SCHEMA_PATH = path.join(ROOT, "schemas/adapter-plan.schema.json");
 const TSC_BIN = path.join(ROOT, "node_modules/typescript/bin/tsc6");
 const ANSI_ESCAPE = /\x1b\[[0-?]*[ -/]*[@-~]/g;
@@ -162,7 +162,7 @@ const encoded = fs.readFileSync(PLAN_PATH, "utf8");
 const plan = JSON.parse(encoded);
 const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
 const validate = new Ajv2020({ allErrors: true, strict: true }).compile(schema);
-assert(validate(plan), `Proxy plan violates schema v1:\n${JSON.stringify(validate.errors, null, 2)}`);
+assert(validate(plan), `Proxy plan violates schema v2:\n${JSON.stringify(validate.errors, null, 2)}`);
 assert.equal(
   encoded,
   fs.readFileSync(SNAPSHOT_PATH, "utf8"),
@@ -193,7 +193,7 @@ assert.equal(fs.existsSync(path.join(OUTPUT_ROOT, "application.js")), false);
 
 run("haxe", ["tests/proxy/build-no-config.hxml"]);
 const noConfigPlan = JSON.parse(fs.readFileSync(NO_CONFIG_PLAN_PATH, "utf8"));
-assert(validate(noConfigPlan), "No-config proxy plan violates schema v1");
+assert(validate(noConfigPlan), "No-config proxy plan violates schema v2");
 assert.equal(noConfigPlan.intents.length, 1);
 assert.deepEqual(noConfigPlan.intents[0].config, []);
 assert(

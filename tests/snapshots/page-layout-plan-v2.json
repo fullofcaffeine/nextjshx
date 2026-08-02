@@ -1,6 +1,6 @@
 {
   "$schema": "https://nextjshx.dev/schemas/adapter-plan.schema.json",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "toolchain": {
     "nextjshx": "0.0.0-development",
     "haxe": "4.3.7",
@@ -41,6 +41,7 @@
         "modulePath": "../../../../../.tmp/src-gen/page_layouts/positive/GroupedPage",
         "symbol": "GroupedPage"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../../.tmp/src-gen/page_layouts/positive/GroupedPage",
@@ -99,6 +100,7 @@
         "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ParallelPage",
         "symbol": "ParallelPage"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ParallelPage",
@@ -157,6 +159,7 @@
         "modulePath": "../../../../../../.tmp/src-gen/page_layouts/positive/InterceptedPage",
         "symbol": "InterceptedPage"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../../../.tmp/src-gen/page_layouts/positive/InterceptedPage",
@@ -215,6 +218,7 @@
         "modulePath": "../../.tmp/src-gen/page_layouts/positive/RootLayout",
         "symbol": "RootLayout"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../.tmp/src-gen/page_layouts/positive/RootLayout",
@@ -273,6 +277,7 @@
         "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ModuleStaticMetadata",
         "symbol": "render"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ModuleStaticMetadata",
@@ -349,6 +354,7 @@
         "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/ModuleProductPage",
         "symbol": "render"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/ModuleProductPage",
@@ -393,23 +399,23 @@
         "fieldName": "render",
         "typePosition": {
           "file": "tests/page-layouts/src/page_layouts/positive/ModuleRootLayout.hx",
-          "startLine": 15,
+          "startLine": 19,
           "startCharacter": 1,
-          "endLine": 17,
+          "endLine": 21,
           "endCharacter": 2
         },
         "fieldPosition": {
           "file": "tests/page-layouts/src/page_layouts/positive/ModuleRootLayout.hx",
-          "startLine": 15,
+          "startLine": 19,
           "startCharacter": 1,
-          "endLine": 17,
+          "endLine": 21,
           "endCharacter": 2
         },
         "metadataPosition": {
           "file": "tests/page-layouts/src/page_layouts/positive/ModuleRootLayout.hx",
-          "startLine": 14,
+          "startLine": 16,
           "startCharacter": 1,
-          "endLine": 14,
+          "endLine": 16,
           "endCharacter": 14
         }
       },
@@ -419,6 +425,7 @@
         "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ModuleRootLayout",
         "symbol": "render"
       },
+      "sideEffectImports": ["./shell.css", "design-system/theme.css"],
       "imports": [
         {
           "modulePath": "../../../.tmp/src-gen/page_layouts/positive/ModuleRootLayout",
@@ -477,6 +484,7 @@
         "modulePath": "../../.tmp/src-gen/page_layouts/positive/RootPage",
         "symbol": "RootPage"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../.tmp/src-gen/page_layouts/positive/RootPage",
@@ -535,6 +543,7 @@
         "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/NestedLayout",
         "symbol": "NestedLayout"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/NestedLayout",
@@ -593,6 +602,7 @@
         "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/DynamicPage",
         "symbol": "DynamicPage"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../.tmp/src-gen/page_layouts/positive/DynamicPage",

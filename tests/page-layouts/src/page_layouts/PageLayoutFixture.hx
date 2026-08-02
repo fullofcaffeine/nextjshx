@@ -23,6 +23,11 @@ class PageLayoutFixture {
 			return macro null;
 		}
 		final typeName = switch name {
+			case "css-page": "CssOnPage";
+			case "css-nonliteral": "NonliteralCss";
+			case "css-missing": "MissingCss";
+			case "css-escape": "EscapingCss";
+			case "css-duplicate": "DuplicateCss";
 			case "missing-render": "MissingRender";
 			case "page-props": "StructuralPageProps";
 			case "layout-props": "StructuralLayoutProps";

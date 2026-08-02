@@ -2,6 +2,7 @@ package nextjshx.app;
 
 #if macro
 import haxe.crypto.Sha256;
+import haxe.io.Path;
 import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -23,6 +24,7 @@ import nextjshx.route.RoutePatternMacro;
 import nextjshx.route.RoutePatternType;
 import nextjshx.route.QueryFieldBinding.QuerySchemaValidation;
 import nextjshx.route.QuerySchemaValidator;
+import sys.FileSystem;
 
 using StringTools;
 using haxe.macro.TypeTools;
@@ -80,6 +82,7 @@ class PageLayoutMacro {
 	public static inline final APP_ROOT_DEFINE:String = "nextjshx.app-root";
 	public static inline final GENERATED_ROOT_DEFINE:String = "nextjshx.generated-root";
 	static inline final LAYOUT_SLOTS_METADATA:String = ":next.layoutSlots";
+	static inline final CSS_METADATA:String = ":next.css";
 	static inline final MODULE_FUNCTION_METADATA:String = ":genes.moduleFunction";
 	static inline final MODULE_VALUE_METADATA:String = ":genes.moduleValue";
 
@@ -165,6 +168,12 @@ class PageLayoutMacro {
 				}
 			}
 			if (pages.length == 0 && layouts.length == 0) {
+				final css = fields.flatMap(field -> fieldMetadata(field, CSS_METADATA));
+				if (css.length > 0) {
+					fail("NXHX-PAGE-LAYOUT-CSS-0012",
+						'@:next.css must annotate the same module-level function as @:next.layout; no layout boundary was found in ${ownerName(type)}.',
+						css[0].pos);
+				}
 				if (queries.length > 0) {
 					fail("NXHX-ROUTE-QUERY-SCHEMA-0001",
 						'@:next.query on ${ownerName(type)}.${queries[0].field.name} requires the same module-level function to declare @:next.page.',
@@ -189,6 +198,10 @@ class PageLayoutMacro {
 		final layouts = type.meta.get().filter(entry -> entry.name == ":next.layout");
 		final queries = type.meta.get().filter(entry -> entry.name == ":next.query");
 		if (pages.length == 0 && layouts.length == 0) {
+			final css = type.meta.get().filter(entry -> entry.name == CSS_METADATA);
+			if (css.length > 0) {
+				fail("NXHX-PAGE-LAYOUT-CSS-0012", '@:next.css on ${fullTypeName(type)} requires the same type to declare @:next.layout.', css[0].pos);
+			}
 			if (queries.length > 0) {
 				fail("NXHX-ROUTE-QUERY-SCHEMA-0001", '@:next.query on ${fullTypeName(type)} requires the same type to declare @:next.page.', queries[0].pos);
 			}
@@ -231,6 +244,91 @@ class PageLayoutMacro {
 					'@:next.$annotation on ${fullTypeName(type)} requires a compile-time string literal; expressions are not evaluated.',
 					value.metadata.params[0].pos);
 		};
+	}
+
+	/**
+	 * Reads the CSS files that a layout asks Next.js to load.
+	 *
+	 * The paths remain normal ESM module requests in authored order. Relative
+	 * requests are resolved from the generated layout file, so the macro can
+	 * verify the user-owned stylesheet before any adapter plan is published.
+	 * Package CSS requests stay package specifiers and are verified later by the
+	 * real Next build, which owns package export resolution.
+	 */
+	static function cssImports(type:ClassType, declaration:PageLayoutDeclaration, pattern:RoutePattern, fields:Array<Field>):Array<String> {
+		final entries:Array<MetadataEntry> = if (declaration.ownerField == null) {
+			for (field in fields) {
+				final misplaced = fieldMetadata(field, CSS_METADATA);
+				if (misplaced.length > 0) {
+					fail("NXHX-PAGE-LAYOUT-CSS-0012", '@:next.css on a class-owned layout belongs on ${fullTypeName(type)} itself, not field ${field.name}.',
+						misplaced[0].pos);
+				}
+			}
+			type.meta.get().filter(entry -> entry.name == CSS_METADATA);
+		} else {
+			for (field in fields) {
+				if (field != declaration.ownerField) {
+					final misplaced = fieldMetadata(field, CSS_METADATA);
+					if (misplaced.length > 0) {
+						fail("NXHX-PAGE-LAYOUT-CSS-0012",
+							'@:next.css must annotate the same module-level function as @:next.layout; found it on ${field.name}.', misplaced[0].pos);
+					}
+				}
+			}
+			fieldMetadata(declaration.ownerField, CSS_METADATA);
+		};
+		if (entries.length == 0) {
+			return [];
+		}
+		if (declaration.kind != Layout) {
+			fail("NXHX-PAGE-LAYOUT-CSS-0012",
+				'@:next.css is layout-only so global styles have one predictable Next.js owner; attach the import to the nearest @:next.layout.',
+				entries[0].pos);
+		}
+		final result:Array<String> = [];
+		final seen = new Map<String, Bool>();
+		for (entry in entries) {
+			if (entry.params.length != 1) {
+				fail("NXHX-PAGE-LAYOUT-CSS-0013", '@:next.css requires exactly one literal .css module request.', entry.pos);
+			}
+			final value = switch entry.params[0].expr {
+				case EConst(CString(path, _)): path;
+				case _:
+					fail("NXHX-PAGE-LAYOUT-CSS-0013", '@:next.css requires a compile-time string literal; expressions are not evaluated.', entry.params[0].pos);
+			};
+			if (value == "" || value.length > 512 || value != value.trim() || ~/[\x00-\x1f\x7f]/.match(value) || value.indexOf("\\") != -1
+				|| value.indexOf("?") != -1 || value.indexOf("#") != -1 || value.startsWith("/") || ~/^[A-Za-z]:/.match(value) || !value.endsWith(".css")) {
+				fail("NXHX-PAGE-LAYOUT-CSS-0013", 'CSS request "$value" must be a compact .css specifier such as "./globals.css" or "package/styles.css".',
+					entry.params[0].pos);
+			}
+			final relative = value.startsWith("./");
+			if (value.startsWith(".") && !relative) {
+				fail("NXHX-PAGE-LAYOUT-CSS-0013",
+					'CSS request "$value" must not escape the generated layout directory; use a co-located ./ file or a package CSS specifier.',
+					entry.params[0].pos);
+			}
+			final parts = (relative ? value.substr(2) : value).split("/");
+			if (parts.exists(part -> part == "" || part == "." || part == "..")) {
+				fail("NXHX-PAGE-LAYOUT-CSS-0013", 'CSS request "$value" contains an empty, current-directory, or parent-directory segment.',
+					entry.params[0].pos);
+			}
+			if (relative) {
+				final directory = portableDefine(APP_ROOT_DEFINE,
+					entry.params[0].pos).concat(pattern.filesystemPath == "" ? [] : pattern.filesystemPath.split("/"));
+				final file = Path.join([Sys.getCwd()].concat(directory).concat(parts));
+				if (!FileSystem.exists(file) || FileSystem.isDirectory(file)) {
+					fail("NXHX-PAGE-LAYOUT-CSS-0014",
+						'CSS request "$value" must name an existing file beside the generated ${pattern.filesystemPath == "" ? "root " : ""}layout adapter.',
+						entry.params[0].pos);
+				}
+			}
+			if (seen.exists(value)) {
+				fail("NXHX-PAGE-LAYOUT-CSS-0015", 'CSS request "$value" is duplicated; keep one import at its intended cascade position.', entry.pos);
+			}
+			seen.set(value, true);
+			result.push(value);
+		}
+		return result;
 	}
 
 	static function hasAccess(field:Field, access:Access):Bool {
@@ -898,6 +996,7 @@ class PageLayoutMacro {
 		}
 		final path = declarationPath(type, value);
 		final pattern = RoutePatternMacro.parse(path, value.metadata.pos);
+		final sideEffectImports = cssImports(type, value, pattern, fields);
 		final query = queryDeclaration(type, value);
 		final render = renderField(type, value, pattern, fields);
 		final named = validateNamedFields(type, value.kind, pattern, fields);
@@ -1007,6 +1106,7 @@ class PageLayoutMacro {
 			segmentPath: pattern.filesystemPath,
 			targetPath: pattern.filesystemPath == "" ? convention : '${pattern.filesystemPath}/$convention',
 			implementation: new AdapterImplementation(modulePath, implementationSymbol),
+			sideEffectImports: sideEffectImports,
 			imports: imports,
 			directives: cache == null ? [] : [cache.directive],
 			exports: exports,

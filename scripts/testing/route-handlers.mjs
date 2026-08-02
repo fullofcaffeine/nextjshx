@@ -17,7 +17,7 @@ const REJECTED_PATH = path.join(OUTPUT_ROOT, "rejected.json");
 const APPLICATION_PATH = path.join(OUTPUT_ROOT, "application.js");
 const TYPESCRIPT_ROOT = path.join(OUTPUT_ROOT, "typescript");
 const TSC_BIN = path.join(ROOT, "node_modules/typescript/bin/tsc6");
-const SNAPSHOT_PATH = path.join(ROOT, "tests/snapshots/route-handler-plan-v1.json");
+const SNAPSHOT_PATH = path.join(ROOT, "tests/snapshots/route-handler-plan-v2.json");
 const SCHEMA_PATH = path.join(ROOT, "schemas/adapter-plan.schema.json");
 const ANSI_ESCAPE = /\x1b\[[0-?]*[ -/]*[@-~]/g;
 const CHARACTER_DIAGNOSTIC =
@@ -151,7 +151,7 @@ function validatePlan() {
   const plan = JSON.parse(encoded);
   const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
   const validate = new Ajv2020({ allErrors: true, strict: true }).compile(schema);
-  assert(validate(plan), `Route Handler plan violates schema v1:\n${JSON.stringify(validate.errors, null, 2)}`);
+  assert(validate(plan), `Route Handler plan violates schema v2:\n${JSON.stringify(validate.errors, null, 2)}`);
   if (MODE === "update") {
     fs.writeFileSync(SNAPSHOT_PATH, encoded, "utf8");
   } else {

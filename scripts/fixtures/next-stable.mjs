@@ -983,6 +983,13 @@ async function browserNavigationProofs(port) {
       waitUntil: "networkidle",
       timeout: 20_000,
     });
+    assert.equal(
+      await topologyPage.locator("#nextjshx-fixture").evaluate((element) =>
+        getComputedStyle(element).color,
+      ),
+      "rgb(12, 34, 56)",
+      "the CSS requested by the Haxe root layout did not reach the browser through Next",
+    );
     await topologyPage.locator("#feed-page").waitFor({ state: "visible", timeout: 10_000 });
     await topologyPage.locator("#modal-default").waitFor({ state: "visible", timeout: 10_000 });
     assert.equal(
@@ -1016,7 +1023,7 @@ async function browserNavigationProofs(port) {
     );
     await topologyPage.close();
     console.log(
-      "[next-stable] smoke: OK: intercepted photo used a modal on soft navigation and the canonical page after reload",
+      "[next-stable] smoke: OK: native layout CSS reached the browser; intercepted photo used a modal on soft navigation and the canonical page after reload",
     );
 
     const notFoundPage = await browser.newPage();

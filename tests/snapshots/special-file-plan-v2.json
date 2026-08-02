@@ -1,6 +1,6 @@
 {
   "$schema": "https://nextjshx.dev/schemas/adapter-plan.schema.json",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "toolchain": {
     "nextjshx": "0.0.0-development",
     "haxe": "4.3.7",
@@ -41,6 +41,7 @@
         "modulePath": "../../../../.tmp/src-gen/special_files/positive/EmptyDefaultView",
         "symbol": "render"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../.tmp/src-gen/special_files/positive/EmptyDefaultView",
@@ -99,6 +100,7 @@
         "modulePath": "../../../../../.tmp/src-gen/special_files/positive/DefaultView",
         "symbol": "render"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../../.tmp/src-gen/special_files/positive/DefaultView",
@@ -157,6 +159,7 @@
         "modulePath": "../../../../.tmp/src-gen/special_files/positive/ClassCompatibilityView",
         "symbol": "ClassCompatibilityView"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../.tmp/src-gen/special_files/positive/ClassCompatibilityView",
@@ -215,6 +218,7 @@
         "modulePath": "../../../../.tmp/src-gen/special_files/positive/ErrorView",
         "symbol": "render"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../.tmp/src-gen/special_files/positive/ErrorView",
@@ -273,6 +277,7 @@
         "modulePath": "../../../../.tmp/src-gen/special_files/positive/LoadingView",
         "symbol": "render"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../.tmp/src-gen/special_files/positive/LoadingView",
@@ -331,6 +336,7 @@
         "modulePath": "../../../../.tmp/src-gen/special_files/positive/NotFoundView",
         "symbol": "render"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../.tmp/src-gen/special_files/positive/NotFoundView",

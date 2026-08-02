@@ -155,6 +155,7 @@ function intentValue(options: IntentOptions): Record<string, unknown> {
       modulePath,
       symbol: shortName,
     },
+    sideEffectImports: [],
     imports: [
       {
         modulePath,
@@ -207,7 +208,7 @@ function plan(...intents: readonly Record<string, unknown>[]): AdapterPlan {
   );
   return parseAdapterPlan({
     $schema: "https://nextjshx.dev/schemas/adapter-plan.schema.json",
-    schemaVersion: 1,
+    schemaVersion: 2,
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
@@ -249,6 +250,7 @@ function proxyIntentValue(): Record<string, unknown> {
       modulePath: "../src-gen/RequestProxy",
       symbol: "RequestProxy",
     },
+    sideEffectImports: [],
     imports: [
       {
         modulePath: "../src-gen/RequestProxy",

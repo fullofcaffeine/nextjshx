@@ -270,18 +270,77 @@ import nextjs.app.LayoutProps;
 import nextjs.route.NoParams;
 
 @:next.layout("")
-class RootLayout {
-  public static function render(props:LayoutProps<NoParams>):Element {
-    return <html lang="en">
-      <body>{props.children}</body>
-    </html>;
-  }
+function render(props:LayoutProps<NoParams>):Element {
+  return <html lang="en">
+    <body>{props.children}</body>
+  </html>;
 }
 ```
 
 `NoParams` is the discoverable empty shape for a root or fully static route;
 it is not a broad escape type. A nested layout uses every dynamic parameter in
 its annotated ancestor path.
+
+## Native global CSS
+
+A Haxe-owned layout can ask Next.js to load ordinary global or package CSS:
+
+```haxe
+package app;
+
+import genes.react.Element;
+import nextjs.app.LayoutProps;
+import nextjs.route.NoParams;
+
+/**
+ * `@:next.css` emits a normal CSS import in this generated layout file.
+ * Next.js still owns the CSS build, ordering, browser updates, and deployment.
+ */
+@:next.layout("") @:next.css("./globals.css")
+function render(props:LayoutProps<NoParams>):Element {
+  return <html lang="en">
+    <body>{props.children}</body>
+  </html>;
+}
+```
+
+The stylesheet stays beside the generated convention file as
+`app/globals.css`. NextJsHx emits this narrow adapter:
+
+```tsx
+import "./globals.css";
+import { render } from "../src-gen/app/RootLayout";
+import type { JSX } from "react";
+
+const NextJsHxDefault:
+  (props: LayoutProps<"/">) => JSX.Element = render;
+export default NextJsHxDefault;
+```
+
+This is the same CSS mechanism used by an idiomatic vanilla Next.js layout:
+
+```tsx
+import "./globals.css";
+
+export default function RootLayout({ children }: LayoutProps<"/">) {
+  return <html lang="en"><body>{children}</body></html>;
+}
+```
+
+The Haxe layer improves the authoring check without replacing that mechanism.
+The CSS request must be a literal `.css` path, relative files must already
+exist beside the layout, duplicate imports fail at the second annotation, and
+page-owned requests fail with a message directing the author to a layout. That
+means these mistakes are reported at the Haxe annotation before generated
+files are published. Package requests such as
+`@:next.css("design-system/theme.css")` are left for Next.js to resolve against
+the package's public exports.
+
+Repeat `@:next.css(...)` to load more than one stylesheet. Authored order is
+preserved because CSS order can change which rule wins. There is no generated
+public copy, runtime `<link>`, or separate style watcher. When a project needs
+a native placement that this safer layout-only API does not yet support, keep
+that convention file native rather than weakening the typed Haxe contract.
 
 ## Typed parallel slots
 
@@ -299,15 +358,13 @@ typedef RootLayoutProps = {
 }
 
 @:next.layout("")
-class RootLayout {
-  public static function render(props:RootLayoutProps):Element {
-    return <html lang="en">
-      <body>
-        {props.children}
-        <div id="modal-slot">{props.modal}</div>
-      </body>
-    </html>;
-  }
+function render(props:RootLayoutProps):Element {
+  return <html lang="en">
+    <body>
+      {props.children}
+      <div id="modal-slot">{props.modal}</div>
+    </body>
+  </html>;
 }
 ```
 

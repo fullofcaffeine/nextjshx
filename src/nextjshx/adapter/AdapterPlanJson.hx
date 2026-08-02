@@ -243,6 +243,10 @@ class AdapterPlanJson {
 		implementation(buffer, value.implementation, depth + 1);
 		buffer.add(",\n");
 		indent(buffer, depth + 1);
+		buffer.add('"sideEffectImports": ');
+		strings(buffer, value.sideEffectImports, depth + 1);
+		buffer.add(",\n");
+		indent(buffer, depth + 1);
 		buffer.add('"imports": ');
 		imports(buffer, value.imports, depth + 1);
 		buffer.add(",\n");

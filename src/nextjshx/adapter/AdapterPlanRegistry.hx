@@ -25,6 +25,7 @@ typedef AdapterIntentRegistration = {
 	var segmentPath:String;
 	var targetPath:String;
 	var implementation:AdapterImplementation;
+	var ?sideEffectImports:Array<String>;
 	var imports:Array<AdapterImport>;
 	var directives:Array<String>;
 	var exports:Array<AdapterExport>;
@@ -173,6 +174,29 @@ class AdapterPlanRegistry {
 		return result;
 	}
 
+	/**
+	 * Keeps binding-free module requests in authored order.
+	 *
+	 * Unlike named imports, these requests may affect CSS cascade order, so the
+	 * registry validates and copies them without sorting. The Page/Layout macro
+	 * owns the narrower rule that only reviewed CSS requests enter this array.
+	 */
+	static function canonicalSideEffectImports(values:Null<Array<String>>, position:Position):Array<String> {
+		if (values == null) {
+			return [];
+		}
+		final result = values.copy();
+		final seen = new Map<String, Bool>();
+		for (value in result) {
+			requireText(value, "Adapter side-effect import module", position);
+			if (seen.exists(value)) {
+				fail("NXHX-PLAN-SIDE-EFFECT-IMPORT-0001", 'Adapter side-effect import "$value" is duplicated.', position);
+			}
+			seen.set(value, true);
+		}
+		return result;
+	}
+
 	static function canonicalDirectives(values:Array<String>, position:Position):Array<String> {
 		final result = values.copy();
 		final seen = new Map<String, Bool>();
@@ -256,8 +280,9 @@ class AdapterPlanRegistry {
 		return {
 			intent: new AdapterIntent(kind, source, segmentPath, targetPath,
 				new AdapterImplementation(registration.implementation.modulePath, registration.implementation.symbol),
-				canonicalImports(registration.imports, position), canonicalDirectives(registration.directives, position),
-				canonicalExports(registration.exports, position), canonicalConfig(registration.config, position)),
+				canonicalSideEffectImports(registration.sideEffectImports, position), canonicalImports(registration.imports, position),
+				canonicalDirectives(registration.directives, position), canonicalExports(registration.exports, position),
+				canonicalConfig(registration.config, position)),
 			diagnosticPosition: position
 		};
 	}
@@ -348,6 +373,7 @@ class AdapterPlanRegistry {
 			segmentPath: registration.segmentPath,
 			targetPath: registration.targetPath,
 			implementation: registration.implementation,
+			sideEffectImports: registration.sideEffectImports == null ? [] : registration.sideEffectImports.copy(),
 			imports: registration.imports.copy(),
 			directives: registration.directives.copy(),
 			exports: registration.exports.copy(),

@@ -350,6 +350,14 @@ function validatePageLayoutIntent(intent: AdapterIntent, nextVersion: string): v
   if (intent.kind !== "page" && intent.kind !== "layout") {
     return;
   }
+  if (intent.kind === "page" && intent.sideEffectImports.length !== 0) {
+    renderFailure(
+      intent,
+      "sideEffectImports",
+      "no global CSS imports on a page; attach them to the owning layout",
+      intent.sideEffectImports.join(", "),
+    );
+  }
   const cache = cacheDirective(intent);
   if (intent.directives.length !== 0 && cache === null) {
     renderFailure(
@@ -1067,29 +1075,42 @@ function renderIntent(
   const localNames = new Set<string>();
   const importedBindings = new Map<string, string>();
   let implementationLocal: string | null = null;
-  const imports = intent.imports.map((imported) => {
-    const local = imported.alias ?? imported.symbol;
-    if (localNames.has(local)) {
-      renderFailure(
-        intent,
-        "imports",
-        "one unique local identifier per import",
-        local,
-      );
-    }
-    localNames.add(local);
-    importedBindings.set(`${imported.modulePath}\u0000${imported.symbol}`, local);
-    if (
-      !imported.typeOnly &&
-      imported.modulePath === intent.implementation.modulePath &&
-      imported.symbol === intent.implementation.symbol
-    ) {
-      implementationLocal = local;
-    }
-    return `${imported.typeOnly ? "import type" : "import"} { ${imported.symbol}` +
-      `${imported.alias === null ? "" : ` as ${imported.alias}`} } from ` +
-      `${JSON.stringify(imported.modulePath)};`;
-  });
+  if (intent.kind !== "layout" && intent.sideEffectImports.length !== 0) {
+    renderFailure(
+      intent,
+      "sideEffectImports",
+      "CSS side-effect imports only on a reviewed layout adapter",
+      intent.sideEffectImports.join(", "),
+    );
+  }
+  const imports = [
+    ...intent.sideEffectImports.map(
+      (modulePath) => `import ${JSON.stringify(modulePath)};`,
+    ),
+    ...intent.imports.map((imported) => {
+      const local = imported.alias ?? imported.symbol;
+      if (localNames.has(local)) {
+        renderFailure(
+          intent,
+          "imports",
+          "one unique local identifier per import",
+          local,
+        );
+      }
+      localNames.add(local);
+      importedBindings.set(`${imported.modulePath}\u0000${imported.symbol}`, local);
+      if (
+        !imported.typeOnly &&
+        imported.modulePath === intent.implementation.modulePath &&
+        imported.symbol === intent.implementation.symbol
+      ) {
+        implementationLocal = local;
+      }
+      return `${imported.typeOnly ? "import type" : "import"} { ${imported.symbol}` +
+        `${imported.alias === null ? "" : ` as ${imported.alias}`} } from ` +
+        `${JSON.stringify(imported.modulePath)};`;
+    }),
+  ];
   if (implementationLocal === null) {
     renderFailure(
       intent,

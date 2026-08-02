@@ -17,7 +17,7 @@ const REVERSE_PATH = path.join(OUTPUT_ROOT, "reverse.json");
 const OVERRIDE_PATH = path.join(OUTPUT_ROOT, "override.json");
 const DUPLICATE_PATH = path.join(OUTPUT_ROOT, "duplicate.json");
 const APPLICATION_PATH = path.join(OUTPUT_ROOT, "application.js");
-const SNAPSHOT_PATH = path.join(ROOT, "tests/snapshots/adapter-plan-v1.json");
+const SNAPSHOT_PATH = path.join(ROOT, "tests/snapshots/adapter-plan-v2.json");
 const SCHEMA_PATH = path.join(ROOT, "schemas/adapter-plan.schema.json");
 const HAXE_VERSION = "4.3.7";
 const SENTINEL = "existing-plan-must-survive\n";
@@ -81,7 +81,10 @@ function validateSchema(plan, validate) {
 function validateSchemaBoundary(plan, validate) {
   const cases = [
     ["unknown schema version", (value) => {
-      value.schemaVersion = 2;
+      value.schemaVersion = 3;
+    }],
+    ["missing CSS import list", (value) => {
+      delete value.intents[0].sideEffectImports;
     }],
     ["unknown root property", (value) => {
       value.unreviewed = true;
@@ -123,7 +126,7 @@ function validatePosition(position, expectedFile) {
 
 function validatePlanContract(plan, encoded) {
   assert.equal(plan.$schema, "https://nextjshx.dev/schemas/adapter-plan.schema.json");
-  assert.equal(plan.schemaVersion, 1);
+  assert.equal(plan.schemaVersion, 2);
   assert.deepEqual(plan.toolchain, {
     nextjshx: "0.0.0-development",
     haxe: "4.3.7",
@@ -238,7 +241,7 @@ try {
   assert.equal(
     fs.readFileSync(SNAPSHOT_PATH, "utf8"),
     forward,
-    "adapter-plan snapshot drifted; review the generated schema-v1 contract",
+    "adapter-plan snapshot drifted; review the generated schema-v2 contract",
   );
 
   fs.writeFileSync(DUPLICATE_PATH, SENTINEL, "utf8");
@@ -246,7 +249,7 @@ try {
   validateDuplicateDiagnostic(plan, duplicateOutput);
 
   console.log(
-    "adapter-plan: OK: schema v1, CLI output override, canonical bytes, portable positions, duplicate fail-closed behavior",
+    "adapter-plan: OK: schema v2, CLI output override, canonical bytes, portable positions, duplicate fail-closed behavior",
   );
 } catch (error) {
   console.error(`[adapter-plan] ERROR: ${error.message}`);

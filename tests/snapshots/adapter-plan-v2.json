@@ -1,6 +1,6 @@
 {
   "$schema": "https://nextjshx.dev/schemas/adapter-plan.schema.json",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "toolchain": {
     "nextjshx": "0.0.0-development",
     "haxe": "4.3.7",
@@ -41,6 +41,7 @@
         "modulePath": "../../../../src-gen/adapter_plan/PageDeclaration",
         "symbol": "PageDeclaration"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../../src-gen/adapter_plan/PageDeclaration",
@@ -128,6 +129,7 @@
         "modulePath": "../../../src-gen/adapter_plan/ClientDeclaration",
         "symbol": "ClientDeclaration"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../../../src-gen/adapter_plan/ClientDeclaration",

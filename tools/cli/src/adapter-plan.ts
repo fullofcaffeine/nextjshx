@@ -11,7 +11,7 @@ import { validatePortableProjectPath } from "./ownership-path.js";
 
 export const ADAPTER_PLAN_SCHEMA_ID =
   "https://nextjshx.dev/schemas/adapter-plan.schema.json";
-export const ADAPTER_PLAN_SCHEMA_VERSION = 1 as const;
+export const ADAPTER_PLAN_SCHEMA_VERSION = 2 as const;
 
 export type AdapterKind =
   | "page"
@@ -87,6 +87,7 @@ export interface AdapterIntent {
   readonly segmentPath: string;
   readonly targetPath: string;
   readonly implementation: AdapterImplementation;
+  readonly sideEffectImports: readonly string[];
   readonly imports: readonly AdapterImport[];
   readonly directives: readonly string[];
   readonly exports: readonly AdapterExport[];
@@ -112,6 +113,7 @@ const INTENT_KEYS = [
   "imports",
   "kind",
   "segmentPath",
+  "sideEffectImports",
   "source",
   "targetPath",
 ];
@@ -296,6 +298,29 @@ function modulePath(value: unknown, subject: string): string {
   return parsed;
 }
 
+function cssModulePath(value: unknown, subject: string): string {
+  const parsed = stringValue(value, subject, 512);
+  const relative = parsed.startsWith("./");
+  const segments = (relative ? parsed.slice(2) : parsed).split("/");
+  if (
+    !parsed.endsWith(".css") ||
+    parsed.includes("\\") ||
+    parsed.includes("?") ||
+    parsed.includes("#") ||
+    parsed.startsWith("/") ||
+    /^[A-Za-z]:/.test(parsed) ||
+    (parsed.startsWith(".") && !relative) ||
+    segments.some((segment) => segment === "" || segment === "." || segment === "..")
+  ) {
+    planFailure(
+      subject,
+      'a normalized .css request such as "./globals.css" or "package/styles.css"',
+      parsed,
+    );
+  }
+  return parsed;
+}
+
 function implementationValue(value: unknown, subject: string): AdapterImplementation {
   const implementation = objectValue(value, subject);
   exactKeys(implementation, IMPLEMENTATION_KEYS, subject);
@@ -418,6 +443,23 @@ function intentValue(value: unknown, index: number): AdapterIntent {
       `${entry.modulePath}\0${entry.symbol}\0${entry.alias ?? ""}\0${entry.typeOnly}`,
     `${subject}.imports`,
   );
+  if (!Array.isArray(intent.sideEffectImports)) {
+    planFailure(
+      `${subject}.sideEffectImports`,
+      "an array",
+      typeof intent.sideEffectImports,
+    );
+  }
+  const sideEffectImports = intent.sideEffectImports.map((entry, requestIndex) =>
+    cssModulePath(entry, `${subject}.sideEffectImports[${requestIndex}]`),
+  );
+  if (new Set(sideEffectImports).size !== sideEffectImports.length) {
+    planFailure(
+      `${subject}.sideEffectImports`,
+      "unique module requests in authored order",
+      "duplicate request",
+    );
+  }
   if (!Array.isArray(intent.directives)) {
     planFailure(`${subject}.directives`, "an array", typeof intent.directives);
   }
@@ -456,6 +498,7 @@ function intentValue(value: unknown, index: number): AdapterIntent {
       intent.implementation,
       `${subject}.implementation`,
     ),
+    sideEffectImports: Object.freeze(sideEffectImports),
     imports: Object.freeze(imports),
     directives: Object.freeze(directives),
     exports: Object.freeze(exports),

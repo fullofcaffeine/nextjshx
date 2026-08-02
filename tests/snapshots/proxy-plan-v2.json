@@ -1,6 +1,6 @@
 {
   "$schema": "https://nextjshx.dev/schemas/adapter-plan.schema.json",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "toolchain": {
     "nextjshx": "0.0.0-development",
     "haxe": "4.3.7",
@@ -41,6 +41,7 @@
         "modulePath": "../.tmp/src-gen/proxy_fixture/positive/RequestProxy",
         "symbol": "RequestProxy"
       },
+      "sideEffectImports": [],
       "imports": [
         {
           "modulePath": "../.tmp/src-gen/proxy_fixture/positive/RequestProxy",
