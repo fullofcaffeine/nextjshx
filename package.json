@@ -146,7 +146,7 @@
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "react-is": "19.2.7",
-    "recharts": "3.8.1",
+    "recharts": "3.10.1",
     "typescript": "npm:@typescript/typescript6@6.0.2"
   },
   "overrides": {
