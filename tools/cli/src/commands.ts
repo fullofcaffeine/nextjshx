@@ -66,6 +66,17 @@ import {
   type RouteTopology,
 } from "./route-topology.js";
 import { createHaxeWatchPlan } from "./watch-inputs.js";
+import {
+  GENES_TS_IDENTITY,
+  HAXE_VERSION,
+  NEXT_UPSTREAM_COMMIT,
+  NEXT_UPSTREAM_VERSION,
+  NEXT_VERSION,
+  NEXTJSHX_VERSION,
+  REACT_VERSION,
+  TYPESCRIPT_VERSION,
+} from "./toolchain-identities.js";
+import { ensureCompilerToolchain } from "./toolchain.js";
 
 export type {
   RouteInterceptionReport,
@@ -74,14 +85,7 @@ export type {
   RouteTopology,
 } from "./route-topology.js";
 
-export const NEXTJSHX_VERSION = "0.0.0-development";
-const HAXE_VERSION = "4.3.7";
-const NEXT_VERSION = "16.2.12";
-const REACT_VERSION = "19.2.7";
-const TYPESCRIPT_VERSION = "6.0.2";
-const GENES_TS_IDENTITY = "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376";
-const NEXT_UPSTREAM_VERSION = "16.3.0-canary.87";
-const NEXT_UPSTREAM_COMMIT = "491f78099c3ea23be14e66c6d848b50204590e90";
+export { NEXTJSHX_VERSION };
 const PLAN_DEFINE = "nextjshx.adapter-plan-output";
 const BOUNDARY_PLAN_DEFINE = "nextjshx.boundary-plan-output";
 const APP_ROOT_DEFINE = "nextjshx.app-root";
@@ -381,13 +385,18 @@ function projectContext(options: CommandBaseOptions): ProjectContext {
       discovery.packageRoot,
       "a valid schema-v2 config or supported schema-v1 migration input at the package root",
       "config missing after required discovery",
-      "Run nextjshx init or add the documented declarative config.",
+      "Run nextjshx setup or add the documented declarative config.",
     );
   }
+  const toolchain = ensureCompilerToolchain(discovery, {
+    ...(options.runtime?.uuid === undefined
+      ? {}
+      : { uuid: options.runtime.uuid }),
+  });
   return Object.freeze({
     discovery,
     config: discovery.config,
-    hxmlPath: discovery.configuredPaths.hxml,
+    hxmlPath: toolchain.hxmlPath,
     manifestPath: discovery.configuredPaths.manifest,
   });
 }
@@ -679,20 +688,20 @@ function assertSafeHxml(context: ProjectContext): void {
     cliFailure(
       "NXHX-CLI-HAXE-0003",
       "The configured Haxe build file cannot be inspected.",
-      context.config.haxe.hxml,
+      path.relative(context.discovery.packageRoot, context.hxmlPath),
       "an existing regular .hxml file inside the package",
       error instanceof Error ? error.message : "missing or unreadable",
-      "Fix $.haxe.hxml before running Haxe through NextJsHx.",
+      "Run nextjshx setup to regenerate the compiler-owned toolchain.",
     );
   }
   if (stats.isSymbolicLink() || !stats.isFile()) {
     cliFailure(
       "NXHX-CLI-HAXE-0003",
       "The configured Haxe build file is not a real regular file.",
-      context.config.haxe.hxml,
+      path.relative(context.discovery.packageRoot, context.hxmlPath),
       "a non-symlink regular .hxml file",
       stats.isSymbolicLink() ? "symbolic link" : "non-regular entry",
-      "Keep executable build configuration inside the discovered application package.",
+      "Run nextjshx setup; do not replace compiler-owned toolchain files.",
     );
   }
   const real = realpathSync.native(context.hxmlPath);
@@ -700,10 +709,10 @@ function assertSafeHxml(context: ProjectContext): void {
     cliFailure(
       "NXHX-CLI-HAXE-0003",
       "The configured Haxe build resolves outside the application package.",
-      context.config.haxe.hxml,
+      path.relative(context.discovery.packageRoot, context.hxmlPath),
       "a real file contained by the package",
       "symlink or filesystem escape",
-      "Move the Haxe build into the package before executing it.",
+      "Remove the unsafe toolchain entry and rerun nextjshx setup.",
     );
   }
 }
@@ -1031,7 +1040,7 @@ function collectCompilationPlans(
     command: haxe.command,
     args: [
       ...haxe.argsPrefix,
-      context.config.haxe.hxml,
+      path.relative(context.discovery.packageRoot, context.hxmlPath),
       ...effectiveHaxeDefines(context.config).flatMap((define) => ["-D", define]),
       ...(context.config.next.cacheComponents
         ? ["-D", CACHE_COMPONENTS_DEFINE]
@@ -2657,7 +2666,7 @@ function inspectConfiguredPaths(context: ProjectContext): DoctorCheck {
       "NXHX-DOCTOR-APP-ROOT-0005",
       "pass",
       "configured project paths",
-      `app ${context.discovery.appRootRelative}; hxml ${context.config.haxe.hxml}; generated ${generated}`,
+      `app ${context.discovery.appRootRelative}; hxml ${path.relative(context.discovery.packageRoot, context.hxmlPath)} (compiler-owned); generated ${generated}`,
       "No action required.",
     );
   } catch (error) {
@@ -2892,7 +2901,7 @@ export async function runDoctorCommand(
       hasScript
         ? "at least one NextJsHx script configured"
         : "no NextJsHx script configured",
-      "Add explicit generate/typecheck scripts during nextjshx init.",
+      "Add explicit generate/typecheck scripts during nextjshx setup.",
     ),
     ...planDoctorChecks(context, options.runtime),
   );

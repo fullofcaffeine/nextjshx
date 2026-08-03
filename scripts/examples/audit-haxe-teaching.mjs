@@ -13,7 +13,12 @@ async function collectHaxeFiles(directory) {
 	const nested = await Promise.all(entries.map(async entry => {
 		const absolute = path.join(directory, entry.name);
 		if (entry.isDirectory()) {
-			if (entry.name === ".next" || entry.name === "node_modules" || entry.name === "src-gen") {
+			if (
+				entry.name === ".next"
+				|| entry.name === ".nextjshx"
+				|| entry.name === "node_modules"
+				|| entry.name === "src-gen"
+			) {
 				return [];
 			}
 			return collectHaxeFiles(absolute);

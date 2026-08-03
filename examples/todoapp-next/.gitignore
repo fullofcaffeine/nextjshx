@@ -1,0 +1,4 @@
+# NextJsHx generated and transactional output
+.next/
+.nextjshx/
+src-gen/

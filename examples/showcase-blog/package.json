@@ -7,7 +7,9 @@
     "styles": "tailwindcss -i styles/app.css -o public/styles.css --minify",
     "dev": "node ../../scripts/examples/dev-with-styles.mjs",
     "build": "npm run styles && nextjshx build",
-    "start": "next start"
+    "start": "next start",
+    "generate": "nextjshx generate",
+    "typecheck": "nextjshx typecheck"
   },
   "dependencies": {
     "@nextjshx/showcase-ui": "0.0.0",

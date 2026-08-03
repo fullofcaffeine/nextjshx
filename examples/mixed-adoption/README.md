@@ -28,7 +28,7 @@ inference, client directives, and normal ESM identity.
 | Hooks | `native/use-signal.ts` | `HaxeHooks.hx` |
 | pure modules | `native/signal-format.ts` | generated named Haxe export |
 
-`nextjshx init` preserves all existing native bytes. The manifest owns only the
+`nextjshx setup` preserves all existing native bytes. The manifest owns only the
 three generated adapters under `app/_nextjshx` and `app/haxe-lab`.
 
 ## The same boundaries in vanilla TypeScript and Haxe

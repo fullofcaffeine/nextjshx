@@ -1345,8 +1345,8 @@ test("typecheck refuses a profile change until its manifest is published", async
     config.$schema = "https://nextjshx.dev/schemas/config-v2.json";
     config.schemaVersion = 2;
     config.haxe = {
-      ...(config.haxe as Record<string, unknown>),
-      defines: [],
+      sourceRoots: ["haxe"],
+      generatedRoot: "src-gen",
     };
     config.output = {
       ...(config.output as Record<string, unknown>),
@@ -1359,6 +1359,7 @@ test("typecheck refuses a profile change until its manifest is published", async
       jsxRuntime: "automatic",
     };
     writeJson(configPath, config);
+    mkdirSync(path.join(root, "haxe"));
     state.requests.length = 0;
 
     await assert.rejects(

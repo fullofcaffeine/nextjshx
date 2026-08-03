@@ -72,7 +72,6 @@ TODO_APP_ROOT = ROOT / "examples/todoapp-next"
 TODO_APP_PACKAGE = TODO_APP_ROOT / "package.json"
 TODO_APP_CONFIG = TODO_APP_ROOT / "nextjshx.config.json"
 TODO_APP_NEXT_CONFIG = TODO_APP_ROOT / "next.config.mjs"
-TODO_APP_HXML = TODO_APP_ROOT / "nextjshx.hxml"
 TODO_APP_TSCONFIG = TODO_APP_ROOT / "tsconfig.json"
 TODO_APP_SEED = TODO_APP_ROOT / "data/seed.tsv"
 TODO_APP_README = TODO_APP_ROOT / "README.md"
@@ -118,6 +117,17 @@ EXPECTED_BEADS_ARCHIVE_SHA256 = (
 EXPECTED_FORMATTER_VERSION = "1.18.0"
 EXPECTED_HAXE_VERSION = "4.3.7"
 EXPECTED_LIX_VERSION = "17.0.2"
+EXPECTED_NEXTJSHX_OUTPUT = {
+    "manifest": ".nextjshx/manifest.json",
+    "format": "project",
+    "language": "typescript",
+    "intent": "reviewable",
+    "profileVersion": 1,
+    "sourceMaps": "external",
+    "sourcesContent": True,
+    "declarations": "public",
+    "jsxRuntime": "automatic",
+}
 EXPECTED_AJV_VERSION = "8.20.0"
 EXPECTED_ESLINT_VERSION = "10.7.0"
 EXPECTED_REACT_HOOKS_ESLINT_VERSION = "7.1.1"
@@ -1026,6 +1036,8 @@ def validate_package_contract() -> None:
             "dev": "node ../../scripts/examples/dev-with-styles.mjs",
             "build": "npm run styles && nextjshx build",
             "start": "next start",
+            "generate": "nextjshx generate",
+            "typecheck": "nextjshx typecheck",
         }
         or "exports" in todo_package
         or todo_package.get("dependencies")
@@ -1056,25 +1068,21 @@ def validate_package_contract() -> None:
     todo_config = read_json(TODO_APP_CONFIG)
     todo_haxe = todo_config.get("haxe")
     if (
-        todo_config.get("schemaVersion") != 1
+        todo_config.get("schemaVersion") != 2
         or todo_config.get("appRoot") != "app"
         or not isinstance(todo_haxe, dict)
-        or todo_haxe.get("hxml") != "nextjshx.hxml"
+        or todo_haxe.get("sourceRoots")
+        != ["haxe", "../showcase-ui/haxe"]
         or todo_haxe.get("generatedRoot") != "src-gen"
-        or todo_haxe.get("defines")
-        != [
-            "genes.ts",
-            "genes.ts.no_extension",
-            "genes.ts.jsx_import_source=react",
-        ]
+        or "hxml" in todo_haxe
+        or "defines" in todo_haxe
         or todo_config.get("next")
         != {
             "package": "next",
             "typedRoutes": True,
             "cacheComponents": True,
         }
-        or todo_config.get("output")
-        != {"manifest": ".nextjshx/manifest.json", "format": "project"}
+        or todo_config.get("output") != EXPECTED_NEXTJSHX_OUTPUT
     ):
         raise SecurityToolingFailure(
             "todo app lost its closed NextJsHx production-build config"
@@ -1090,22 +1098,14 @@ def validate_package_contract() -> None:
         raise SecurityToolingFailure(
             "todo app lost its exact native Cache Components config"
         )
-    todo_hxml = read_text(TODO_APP_HXML)
-    for fragment in (
-        "-cp ../showcase-ui/haxe",
-        "-cp ../../src",
-        "-js src-gen/index.tsx",
-        "--macro todoapp.AdapterPlan.install()",
-        "--macro include('todoapp.app')",
-        "--macro include('todoapp.actions')",
-        "--macro include('todoapp.client')",
-        "--macro include('todoapp.cache')",
-        "--macro include('todoapp.routes')",
-        "-dce full",
+    for relative in (
+        "nextjshx.hxml",
+        "haxe/TodoAppMain.hx",
+        "haxe/todoapp/AdapterPlan.hx",
     ):
-        if fragment not in todo_hxml:
+        if (TODO_APP_ROOT / relative).exists():
             raise SecurityToolingFailure(
-                f"todo app Haxe build lost required input: {fragment}"
+                f"todo app retains compiler-owned plumbing: {relative}"
             )
 
     seed_lines = read_text(TODO_APP_SEED).splitlines()
@@ -1202,6 +1202,8 @@ def validate_package_contract() -> None:
                 "dev": "node ../../scripts/examples/dev-with-styles.mjs",
                 "build": "npm run styles && nextjshx build",
                 "start": "next start",
+                "generate": "nextjshx generate",
+                "typecheck": "nextjshx typecheck",
             }
             or showcase_package.get("dependencies")
             != {
@@ -1232,37 +1234,37 @@ def validate_package_contract() -> None:
         showcase_config = read_json(showcase_root / "nextjshx.config.json")
         showcase_haxe = showcase_config.get("haxe")
         if (
-            showcase_config.get("schemaVersion") != 1
+            showcase_config.get("schemaVersion") != 2
             or showcase_config.get("appRoot") != "app"
             or not isinstance(showcase_haxe, dict)
-            or showcase_haxe.get("hxml") != "nextjshx.hxml"
+            or showcase_haxe.get("sourceRoots")
+            != ["haxe", "../showcase-ui/haxe"]
             or showcase_haxe.get("generatedRoot") != "src-gen"
-            or showcase_haxe.get("defines")
-            != [
-                "genes.ts",
-                "genes.ts.no_extension",
-                "genes.ts.jsx_import_source=react",
-            ]
+            or "hxml" in showcase_haxe
+            or "defines" in showcase_haxe
             or showcase_config.get("next")
             != {"package": "next", "typedRoutes": True}
-            or showcase_config.get("output")
-            != {"manifest": ".nextjshx/manifest.json", "format": "project"}
+            or showcase_config.get("output") != EXPECTED_NEXTJSHX_OUTPUT
         ):
             raise SecurityToolingFailure(
                 f"{showcase_root.name} lost its closed NextJsHx build config"
             )
 
-        showcase_hxml = read_text(showcase_root / "nextjshx.hxml")
-        for fragment in (
-            "-lib genes-ts",
-            "-cp ../showcase-ui/haxe",
-            "-cp ../../src",
-            "-js src-gen/index.tsx",
-            "-dce full",
+        showcase_legacy_plumbing = {
+            "showcase-blog": ("BlogMain.hx", "blog"),
+            "showcase-commerce": ("CommerceMain.hx", "commerce"),
+            "showcase-field-atlas": ("FieldAtlasMain.hx", "field_atlas"),
+            "showcase-landing": ("LandingMain.hx", "landing"),
+        }
+        main_name, package_name = showcase_legacy_plumbing[showcase_root.name]
+        for relative in (
+            "nextjshx.hxml",
+            f"haxe/{main_name}",
+            f"haxe/{package_name}/AdapterPlan.hx",
         ):
-            if fragment not in showcase_hxml:
+            if (showcase_root / relative).exists():
                 raise SecurityToolingFailure(
-                    f"{showcase_root.name} Haxe build lost required input: {fragment}"
+                    f"{showcase_root.name} retains compiler-owned plumbing: {relative}"
                 )
 
     mixed_package = read_json(MIXED_ADOPTION_ROOT / "package.json")
@@ -1306,28 +1308,31 @@ def validate_package_contract() -> None:
             "mixed-adoption example lost its exact native/Haxe package contract"
         )
     mixed_config = read_json(MIXED_ADOPTION_ROOT / "nextjshx.config.json")
+    mixed_haxe = mixed_config.get("haxe")
     if (
-        mixed_config.get("appRoot") != "app"
+        mixed_config.get("schemaVersion") != 2
+        or mixed_config.get("appRoot") != "app"
+        or not isinstance(mixed_haxe, dict)
+        or mixed_haxe.get("sourceRoots")
+        != ["haxe", "../showcase-ui/haxe"]
+        or mixed_haxe.get("generatedRoot") != "src-gen"
+        or "hxml" in mixed_haxe
+        or "defines" in mixed_haxe
         or mixed_config.get("next")
         != {"package": "next", "typedRoutes": True}
-        or mixed_config.get("output")
-        != {"manifest": ".nextjshx/manifest.json", "format": "project"}
+        or mixed_config.get("output") != EXPECTED_NEXTJSHX_OUTPUT
     ):
         raise SecurityToolingFailure(
             "mixed-adoption example lost its closed NextJsHx config"
         )
-    mixed_hxml = read_text(MIXED_ADOPTION_ROOT / "nextjshx.hxml")
-    for fragment in (
-        "-lib genes-ts",
-        "-cp ../showcase-ui/haxe",
-        "-cp ../../src",
-        "-js src-gen/index.tsx",
-        "--macro mixed_adoption.AdapterPlan.install()",
-        "-dce full",
+    for relative in (
+        "nextjshx.hxml",
+        "haxe/MixedAdoptionMain.hx",
+        "haxe/mixed_adoption/AdapterPlan.hx",
     ):
-        if fragment not in mixed_hxml:
+        if (MIXED_ADOPTION_ROOT / relative).exists():
             raise SecurityToolingFailure(
-                f"mixed-adoption Haxe build lost required input: {fragment}"
+                f"mixed-adoption retains compiler-owned plumbing: {relative}"
             )
 
     package_lock = read_json(PACKAGE_LOCK)
@@ -2605,7 +2610,10 @@ def validate_test_harness() -> None:
             '"nextjshx dev --"',
             '"--no-output"',
             '"NextJsHx Haxe library"',
-            "Publish the package patch last",
+            "rollbackSetupFiles",
+            "Setup cannot roll back across a concurrent file change.",
+            '"before-toolchain"',
+            "ensureCompilerToolchain",
         ),
         "tools/cli/test/init.test.ts": (
             "byte-stable new-app baseline",
@@ -2614,7 +2622,10 @@ def validate_test_harness() -> None:
             "preserves native routes, scripts, executable config, and conflicting files",
             "explicit typed routes creates matching Next and NextJsHx configuration",
             "requires the NextJsHx Haxe library before writing any baseline file",
-            "interrupted init preserves a colliding temporary",
+            "an interrupted setup restores its baseline and preserves a colliding temporary",
+            "setup rolls back all application bytes before the final toolchain transaction",
+            "setup rejects custom legacy AdapterPlan behavior before writing project bytes",
+            "compiler-toolchain publication restores exact previous bytes after an injected crash",
             "generated new-app baseline compiles and publishes through the real Haxe toolchain",
         ),
         "scripts/examples/mixed-adoption.mjs": (
@@ -2653,6 +2664,7 @@ def validate_test_harness() -> None:
             "Server-to-Client",
         ),
         "tools/cli/src/cli.ts": (
+            "nextjshx setup",
             "nextjshx init",
             "nextjshx generate",
             "nextjshx build",

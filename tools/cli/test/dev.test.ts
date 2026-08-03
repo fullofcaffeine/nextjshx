@@ -84,10 +84,10 @@ function projectFixture(root = "/fixture/app"): DevelopmentProject {
     appRoot: "app",
     boundaries: Object.freeze({}),
     haxe: Object.freeze({
-      hxml: "build.hxml",
+      sourceRoots: Object.freeze(["haxe"]),
       generatedRoot: "src-gen",
-      defines: Object.freeze(["genes.ts", "genes.ts.no_extension"]),
       extraInputs: Object.freeze([]),
+      legacyHxml: "build.hxml",
     }),
     next: Object.freeze({
       package: "next",

@@ -526,7 +526,10 @@ function configuredPaths(
   config: NextJsHxConfig,
 ): ConfiguredProjectPaths {
   return Object.freeze({
-    hxml: path.resolve(packageRoot, config.haxe.hxml),
+    hxml: path.resolve(
+      packageRoot,
+      config.haxe.legacyHxml ?? ".nextjshx/toolchain/nextjshx.hxml",
+    ),
     generatedRoot: path.resolve(packageRoot, config.haxe.generatedRoot),
     manifest: path.resolve(packageRoot, config.output.manifest),
     ...(config.next.upstreamDir === undefined
@@ -568,7 +571,7 @@ export function discoverNextProject(
       `No ${CONFIG_FILE_NAME} exists at the package root.`,
       selectedConfigPath,
       `a readable ${CONFIG_FILE_NAME}`,
-      "Create the versioned config, or use discovery with requireConfig false during init.",
+      "Create the versioned config, or use discovery with requireConfig false during setup.",
     );
   }
   const config = configExists ? readNextJsHxConfig(selectedConfigPath) : null;

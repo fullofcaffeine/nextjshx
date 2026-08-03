@@ -204,6 +204,16 @@ function assertNodeVersion(exactNode) {
   );
 }
 
+async function exists(file) {
+  try {
+    await fs.access(file);
+    return true;
+  } catch (error) {
+    if (error.code === "ENOENT") return false;
+    throw error;
+  }
+}
+
 async function sourceProof({ exactNode = false } = {}) {
   assertNodeVersion(exactNode);
   const haxe = run("haxe", ["--version"]).trim();
@@ -250,14 +260,33 @@ async function sourceProof({ exactNode = false } = {}) {
     styles: "tailwindcss -i styles/app.css -o public/styles.css --minify",
     build: "npm run styles && nextjshx build",
     dev: "node ../../scripts/examples/dev-with-styles.mjs",
+    generate: "nextjshx generate",
     start: "next start",
+    typecheck: "nextjshx typecheck",
   });
 
   const config = await readJson(NEXTJSHX_CONFIG);
-  assert.equal(config.schemaVersion, 1, "todo app config schema drifted");
+  assert.equal(config.schemaVersion, 2, "todo app config schema drifted");
   assert.equal(config.appRoot, "app", "todo app App Router root drifted");
-  assert.equal(config.haxe.hxml, "nextjshx.hxml", "todo app hxml drifted");
+  assert.deepEqual(
+    config.haxe.sourceRoots,
+    ["haxe", "../showcase-ui/haxe"],
+    "todo app Haxe source roots drifted",
+  );
   assert.equal(config.haxe.generatedRoot, "src-gen", "todo app generated root drifted");
+  assert.equal("hxml" in config.haxe, false, "todo app config exposes compiler-owned HXML");
+  assert.equal("defines" in config.haxe, false, "todo app config exposes compiler-owned defines");
+  for (const relative of [
+    "nextjshx.hxml",
+    "haxe/TodoAppMain.hx",
+    "haxe/todoapp/AdapterPlan.hx",
+  ]) {
+    assert.equal(
+      await exists(path.join(EXAMPLE, relative)),
+      false,
+      `todo app retains compiler plumbing: ${relative}`,
+    );
+  }
   assert.deepEqual(config.next, {
     package: "next",
     typedRoutes: true,

@@ -147,6 +147,16 @@ function run(command, args, options = {}) {
   return result.stdout;
 }
 
+async function exists(file) {
+  try {
+    await fs.access(file);
+    return true;
+  } catch (error) {
+    if (error.code === "ENOENT") return false;
+    throw error;
+  }
+}
+
 async function readJson(file) {
   return JSON.parse(await fs.readFile(file, "utf8"));
 }
@@ -423,11 +433,42 @@ async function verifySourceContracts() {
     });
 
     const config = await readJson(path.join(showcase.directory, "nextjshx.config.json"));
-    assert.equal(config.schemaVersion, 1, `${showcase.name} config schema drifted`);
+    assert.equal(config.schemaVersion, 2, `${showcase.name} config schema drifted`);
     assert.equal(config.appRoot, "app", `${showcase.name} App Router root drifted`);
-    assert.equal(config.haxe.hxml, "nextjshx.hxml", `${showcase.name} Haxe build drifted`);
+    assert.deepEqual(
+      config.haxe.sourceRoots,
+      ["haxe", "../showcase-ui/haxe"],
+      `${showcase.name} Haxe source roots drifted`,
+    );
     assert.equal(config.haxe.generatedRoot, "src-gen", `${showcase.name} generated root drifted`);
+    assert.equal(
+      "hxml" in config.haxe,
+      false,
+      `${showcase.name} config exposes compiler-owned HXML`,
+    );
+    assert.equal(
+      "defines" in config.haxe,
+      false,
+      `${showcase.name} config exposes compiler-owned defines`,
+    );
     assert.deepEqual(config.next, { package: "next", typedRoutes: true });
+    const legacyMain = {
+      landing: "LandingMain.hx",
+      blog: "BlogMain.hx",
+      commerce: "CommerceMain.hx",
+      "field-atlas": "FieldAtlasMain.hx",
+    }[showcase.name];
+    for (const relative of [
+      "nextjshx.hxml",
+      `haxe/${legacyMain}`,
+      `haxe/${showcase.namespace}/AdapterPlan.hx`,
+    ]) {
+      assert.equal(
+        await exists(path.join(showcase.directory, relative)),
+        false,
+        `${showcase.name} retains compiler plumbing: ${relative}`,
+      );
+    }
   }
 
   const roots = [path.join(ROOT, "examples/showcase-ui"), ...SHOWCASES.map((item) => item.directory)];

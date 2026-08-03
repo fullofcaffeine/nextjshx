@@ -18,9 +18,8 @@ uses this complete shape:
     "maxObservedClientBytes": 65536
   },
   "haxe": {
-    "hxml": "build.hxml",
+    "sourceRoots": ["haxe", "../shared-haxe"],
     "generatedRoot": "src-gen",
-    "defines": ["myapp.feature=enabled"],
     "extraInputs": ["schema/domain.json"]
   },
   "next": {
@@ -64,7 +63,7 @@ The output language and output intent are independent, explicit build policy:
 The CLI uses the same configured profile for development, checking, testing,
 and production builds. It never silently changes intent for production.
 TypeScript plus reviewable output is the schema-v2 default emitted by
-`nextjshx init`. The selected profile deterministically supplies genes-ts
+`nextjshx setup`. The selected profile deterministically supplies genes-ts
 compiler defines; those implementation details are no longer application
 configuration. Use `nextjshx profile show|list|validate` to inspect the selected
 cell, its fingerprint, maturity, and unmet release gates without modifying the
@@ -74,9 +73,19 @@ Schema-v1 files remain readable for a bounded migration window. The loader
 derives an equivalent reviewable TypeScript or JavaScript profile from the
 formerly configured, supported genes-ts defines. Contradictory or custom
 compiler policies fail instead of being guessed. Loading v1 returns a migration
-report that lists compiler-owned defines to remove and preserves only
-application-owned defines. Reading the file does not rewrite it; an explicit
-migration command will own publication in a later tooling slice.
+report that lists compiler-owned defines to remove. Reading the file does not
+rewrite it. `nextjshx setup` migrates only a conventional released plan whose
+effective HXML and AdapterPlan can be proven equivalent; custom defines, macros,
+or compiler behavior fail before any setup-owned bytes are written.
+
+`haxe.sourceRoots` is a non-empty list of Haxe source directories. A source root
+may use parent segments only while remaining inside the discovered workspace,
+which permits an application package to consume a reviewed sibling Haxe
+package. Setup rejects missing roots, symlinks, workspace escapes, and
+default-package application modules that cannot be included safely. It derives
+the compiler HXML, entry point, planner installation, package includes, genes
+defines, output extension, and pinned toolchain identities into the
+manifest-owned `.nextjshx/toolchain/` tree. Those are not user configuration.
 
 `haxe.extraInputs` is optional and defaults to an empty array. It names
 project-relative files or directories that affect Haxe generation but are not
@@ -102,13 +111,14 @@ automatically by the compiler. See the
 [Cache Components reference](cache-components.md) for the boundary and host
 configuration contract.
 
-All other configured paths use portable forward slashes, are relative to the
+Except for the workspace-contained `haxe.sourceRoots` rule above, configured
+paths use portable forward slashes, are relative to the
 application package, and cannot contain absolute, dot, parent, empty, or
 backslash segments. `next.package` is an npm dependency name rather than a
 filesystem path or URL. The ownership manifest remains a JSON control file
-under `.nextjshx/`. Haxe defines use compact `name` or `name=value` syntax and
-must be unique. All `genes.*`, `dts`, and `nextjshx.*` compiler mechanism
-defines are reserved in schema v2. In particular,
+under `.nextjshx/`. Schema v2 exposes no general Haxe-define field. All
+`genes.*`, `dts`, and `nextjshx.*` compiler mechanism defines are derived and
+compiler-owned. In particular,
 `nextjshx.adapter-plan-output`,
 `nextjshx.boundary-plan-output`, `nextjshx.app-root`,
 `nextjshx.generated-root`, `nextjshx.cache-components`,
@@ -138,7 +148,7 @@ absolute paths for:
 - the nearest owning workspace whose standard workspace declaration includes
   that package;
 - the configured or unambiguous App Router root;
-- the Haxe build, generated tree, ownership manifest, and optional upstream
+- the compiler-owned Haxe build, generated tree, ownership manifest, and optional upstream
   checkout; and
 - the declared and, when installed, actual Next.js package version.
 
@@ -147,7 +157,7 @@ lockfile evidence for npm, pnpm, Yarn, or Bun. Conflicting lockfiles, different
 nested package-manager versions, ambiguous App Router roots, an undeclared Next
 package, and an App Router symlink escaping the package all fail closed.
 
-The pre-init call may set `requireConfig` to false. That relaxes only the
+The pre-setup discovery call may set `requireConfig` to false. That relaxes only the
 presence of `nextjshx.config.json`; package, workspace, package-manager, App
 Router, and Next dependency validation still run.
 
