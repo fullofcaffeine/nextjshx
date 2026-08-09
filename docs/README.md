@@ -71,6 +71,9 @@ layer. Choose the shortest path below for the work you are doing.
 - [Genes generator-orchestration decision](genes-generator-orchestration-decision.md):
   the reusable crash-recovery, HXML/watch, and Haxe compiler-server kernels,
   plus the framework policy that must remain local.
+- [Genes tooling distribution](genes-tooling-distribution.md): why the shared
+  tooling package is not on the npm registry yet, the temporary GitHub archive
+  plan, and the exact rules for a safe dependency.
 - [Accepted architecture decisions](adr/README.md)
 
 The repository is pre-release. Treat the

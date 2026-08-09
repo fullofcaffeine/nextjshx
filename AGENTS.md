@@ -307,6 +307,16 @@ bd prime                # Refresh Beads context
   compile time, edit-to-ready p50/p95, burst and edit-during-compile behavior,
   generated-file churn, server recovery, and comparison with an equivalent
   modern JavaScript/TypeScript host workflow before making performance claims.
+- `@genes-ts/tooling` is not published to the npm registry today. The approved
+  temporary delivery plan is a `.tgz` attached to a GitHub release whose
+  immutable-release setting has been verified, pinned by its exact URL, Genes
+  source commit, package version, SHA-256, and lockfile integrity. Until that
+  reviewed archive exists, do not invent its
+  URL, add a registry dependency, run `npm publish`, copy the generic tooling
+  into NextJsHx, or describe a local `file:` dependency as consumer evidence.
+  Read `docs/genes-tooling-distribution.md` before changing this dependency or
+  its release process. The npm registry remains the preferred later source
+  after the public package contract and first real consumer are proven.
 - Do not use `Dynamic`, `Any`, `untyped`, `cast`, `Reflect`, broad `unknown`,
   unchecked TypeScript assertions, or reflection as substitutes for a typed
   design in repository-owned Haxe or generated public APIs. Leverage Haxe's

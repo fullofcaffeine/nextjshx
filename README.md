@@ -185,6 +185,13 @@ The public application bootstrap is still being productized; today these
 commands exercise repository fixtures rather than promise a released
 `create-nextjshx` package.
 
+The reusable `@genes-ts/tooling` package is also not published to the npm
+registry today. NextJsHx plans to use an exact, checksum-verified GitHub package
+archive for the first integration. That archive does not exist yet, so no user
+setup command depends on it. See the
+[Genes tooling distribution status](docs/genes-tooling-distribution.md) before
+changing this dependency or its release process.
+
 ## What is checked today?
 
 The release gates cover positive and negative Haxe compilation, deterministic
@@ -205,6 +212,7 @@ The main authoring references are:
 - [generated ownership and publication](docs/generated-output-ownership.md)
 - [CLI workflow](docs/cli.md)
 - [testing strategy](docs/testing-strategy.md)
+- [Genes tooling distribution status](docs/genes-tooling-distribution.md)
 
 The [documentation map](docs/README.md) links the complete reference and ADR
 set.

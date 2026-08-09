@@ -149,7 +149,9 @@ EXPECTED_REACT_VERSION = "19.2.7"
 EXPECTED_TYPESCRIPT_VERSION = "6.0.2"
 EXPECTED_TYPESCRIPT_SPEC = "npm:@typescript/typescript6@6.0.2"
 EXPECTED_POSTCSS_VERSION = "8.5.23"
-EXPECTED_BRACE_EXPANSION_VERSION = "5.0.8"
+EXPECTED_BRACE_EXPANSION_VERSION = "5.0.9"
+EXPECTED_FAST_URI_VERSION = "3.1.5"
+EXPECTED_NANOID_VERSION = "3.3.17"
 EXPECTED_SHARP_VERSION = "0.35.3"
 EXPECTED_NODE_TYPES_VERSION = "20.19.24"
 EXPECTED_REACT_TYPES_VERSION = "19.2.17"
@@ -962,6 +964,8 @@ def validate_package_contract() -> None:
         "@reduxjs/toolkit": EXPECTED_REDUX_TOOLKIT_VERSION,
         "@typescript/old": f"npm:typescript@{EXPECTED_TYPESCRIPT_VERSION}",
         "brace-expansion": EXPECTED_BRACE_EXPANSION_VERSION,
+        "fast-uri": EXPECTED_FAST_URI_VERSION,
+        "nanoid": EXPECTED_NANOID_VERSION,
         "postcss": EXPECTED_POSTCSS_VERSION,
         "sharp": EXPECTED_SHARP_VERSION,
     }
@@ -1895,6 +1899,8 @@ def validate_package_contract() -> None:
             EXPECTED_REACT_HOOKS_ESLINT_VERSION
         ),
         "node_modules/lix": EXPECTED_LIX_VERSION,
+        "node_modules/fast-uri": EXPECTED_FAST_URI_VERSION,
+        "node_modules/nanoid": EXPECTED_NANOID_VERSION,
         "node_modules/next": EXPECTED_NEXT_VERSION,
         "node_modules/nuqs": EXPECTED_NUQS_VERSION,
         "node_modules/playwright-core": EXPECTED_PLAYWRIGHT_VERSION,

@@ -50,10 +50,15 @@ separately versioned `@genes-ts/tooling` package:
   `--wait` lifecycle with direct-compile fallback.
 
 Version `0.1.0` and its framework-neutral conformance vectors are present in
-the genes source tree, but the first immutable npm publication is still a
-separate release task. NextJsHx must continue using its local implementation
-until it can consume released, pinned package bytes; it must then migrate to
-the shared primitives rather than maintaining competing copies.
+the Genes source tree. They are not published to the npm registry.
+
+NextJsHx has chosen to delay that npm release. The first downstream integration
+will use an exact, checksum-verified `.tgz` archive from a GitHub release. That
+archive does not exist yet. NextJsHx must continue using its current local
+implementation until it can consume reviewed, pinned package bytes. It must
+then migrate to the shared primitives instead of maintaining competing copies.
+See [Genes tooling distribution](genes-tooling-distribution.md) for the package
+source rules and current status.
 
 ## Why this work exists
 
@@ -279,15 +284,19 @@ genes host tooling
   genes.tooling.loop
 ```
 
-A separately versioned npm/ESM distribution is the practical consumption
-target because NextJsHx's CLI is TypeScript while WordPressHx's CLI is authored
-in Haxe and compiled to JavaScript. The host-tooling kernel is currently
-TypeScript, while the generic Haxe-authored publication primitive is implemented
-in [genes-ts PR #65](https://github.com/fullofcaffeine/genes-ts/pull/65): matching
+A separately versioned ESM package is the practical consumption target because
+NextJsHx's CLI is TypeScript while WordPressHx's CLI is authored in Haxe and
+compiled to JavaScript. npm can install this package from the npm registry or
+from an exact `.tgz` archive. NextJsHx will use a checksum-verified GitHub
+archive for the first integration and defer the registry publication.
+
+The host-tooling kernel is currently TypeScript. The generic Haxe-authored
+publication primitive is implemented in
+[genes-ts PR #65](https://github.com/fullofcaffeine/genes-ts/pull/65): matching
 `@:genes.moduleFunction` and `@:expose` publish one genuine typed ESM function
-through its owner and compilation root. Until that compiler capability and the
-tooling package are released, consumers must not depend on private generated
-paths or copy a half-private runtime API.
+through its owner and compilation root. The compiler capability is released.
+Until NextJsHx pins the reviewed tooling archive, consumers must not depend on
+private generated paths or copy a half-private runtime API.
 
 Putting this code directly in `genes.OutputTransaction` would give the compiler
 project locks, durable host journals, host recovery commands, and framework
@@ -464,8 +473,10 @@ framework-specific event names or prose.
    without changing their public manifest or diagnostic contracts.
 4. Migrate one host at a time, preserving byte-for-byte successful output and
    fault-injection behavior.
-5. Release the tooling package and pin its exact version/integrity before
-   NextJsHx depends on it.
+5. Create a tooling package archive on a GitHub release whose immutable-release
+   setting has been verified, then pin its exact source commit, URL, version,
+   and checksums before NextJsHx depends on it. An npm registry release is not
+   required for this first integration.
 6. Only then use the kernel for isolated output-profile comparison and
    transactional profile switching.
 7. Extract HXML/watch/loop and compiler-server primitives as separate changes;
