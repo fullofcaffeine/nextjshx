@@ -11,6 +11,7 @@ app/PhotoPage.tsx
 app/ProductPage.tsx
 app/ProductQuery.tsx
 app/RootLayout.tsx
+app/styles/HaxePageStyles.tsx
 genes/Register.tsx
 haxe/iterators/ArrayIterator.tsx
 index.tsx

@@ -23,6 +23,7 @@ TSX exists.
 | React setters intentionally accept replacements and updater functions | named `.set(value)` and `.update(previous -> next)` remove callable-state ambiguity | native React Hooks and official Hook lint |
 | Next directives define strong boundaries, but application imports can still bypass intended entrypoints | explicit graph classifications and typed boundary references make the legal crossing the discoverable path | RSC, Flight, directives, and Next transport |
 | a layout normally imports global or package CSS directly | `@:next.css("./globals.css")` checks literal placement, file existence, duplicates, and order before emitting that same import | Next CSS bundling, ordering, browser updates, and deployment |
+| a CSS Module type can permit any class name | a processor-made companion gives Haxe exact keys, so `styles.card` works and `styles.missing` fails before TSX exists | the ordinary CSS Module import and Next's real CSS loader |
 | good TypeScript applications validate external data with a schema | exhaustive `Decoded<T> | Rejected` results make rejection handling and the closed domain model part of Haxe control flow | Web `Request`, `FormData`, query, and JSON behavior |
 | generators can collide with hand-owned routes | digest-backed ownership, atomic publication, and exact rollback | ordinary Next convention files and builds |
 

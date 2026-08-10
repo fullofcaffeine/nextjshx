@@ -1091,6 +1091,30 @@ then prove the Haxe layout renders native and generated children, soft
 navigation selects the intercepted modal, and reload selects the canonical
 page plus slot default.
 
+## Closed CSS Module evidence
+
+The stable fixture contains the first Next-specific proof of Genes' closed CSS
+Module support. The expected class names come from a reviewed JSON file, not
+from the companion generator. Pinned Lightning CSS processes the real
+stylesheet and must report the same names.
+
+The runner generates the companion twice and compares all output hashes. It
+then compiles a deliberate `styles.missing` access and requires Haxe's missing
+field error. The valid source continues through Genes, `next typegen`, strict
+TypeScript, and a production Next build.
+
+The native root page imports the same authored CSS Module and exposes Next's sorted
+runtime keys. The HTTP smoke requires those keys to match the processor list.
+Chrome then requires the Haxe page's computed color and dashed-key runtime
+value. This division keeps the expected list, Haxe type, and real Next loader
+as separate checks.
+
+The fixture enables the Haxe import through a separate test-only profile. It
+prepares the staged CSS files before `nextjshx generate`. It does
+not claim that normal setup, `nextjshx build`, or watch mode owns this flow yet.
+Those commands need a later host integration that prepares CSS after safe
+generated-root cleanup.
+
 ## Development-loop evidence
 
 `npm run test:dev` first covers the event loop and process boundaries without

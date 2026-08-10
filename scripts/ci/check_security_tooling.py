@@ -158,6 +158,7 @@ EXPECTED_GENES_TOOLING_INTEGRITY = (
     "FQLX//nlPhRK8Y/vigPx7Cwg6g=="
 )
 EXPECTED_POSTCSS_VERSION = "8.5.23"
+EXPECTED_LIGHTNINGCSS_VERSION = "1.32.0"
 EXPECTED_BRACE_EXPANSION_VERSION = "5.0.9"
 EXPECTED_FAST_URI_VERSION = "3.1.5"
 EXPECTED_NANOID_VERSION = "3.3.17"
@@ -547,6 +548,20 @@ def validate_hook_wiring() -> None:
             raise SecurityToolingFailure(f"pre-push lost required behavior: {fragment}")
     if "--staged" in pre_push:
         raise SecurityToolingFailure("pre-push must scan full history, not staged content")
+
+
+def validate_haxe_format_scope() -> None:
+    guard = read_text(ROOT / "scripts/lint/hx_format_guard.sh")
+    for fragment in (
+        'find "$ROOT_DIR/src" "$ROOT_DIR/test" "$ROOT_DIR/tests" "$ROOT_DIR/examples" "$ROOT_DIR/tools"',
+        "-type f -name '*.hx'",
+        "-not -path '*/.nextjshx/*'",
+        "-not -path '*/src-gen/*'",
+    ):
+        if fragment not in guard:
+            raise SecurityToolingFailure(
+                f"Haxe formatter scope lost its authored/generated boundary: {fragment}"
+            )
 
     for hook_name, repository_hook in (
         ("pre-commit", "scripts/hooks/pre-commit"),
@@ -957,6 +972,7 @@ def validate_package_contract() -> None:
         "eslint": EXPECTED_ESLINT_VERSION,
         "eslint-plugin-react-hooks": EXPECTED_REACT_HOOKS_ESLINT_VERSION,
         "lix": EXPECTED_LIX_VERSION,
+        "lightningcss": EXPECTED_LIGHTNINGCSS_VERSION,
         "next": EXPECTED_NEXT_VERSION,
         "nuqs": EXPECTED_NUQS_VERSION,
         "playwright-core": EXPECTED_PLAYWRIGHT_VERSION,
@@ -1909,6 +1925,7 @@ def validate_package_contract() -> None:
             EXPECTED_REACT_HOOKS_ESLINT_VERSION
         ),
         "node_modules/lix": EXPECTED_LIX_VERSION,
+        "node_modules/lightningcss": EXPECTED_LIGHTNINGCSS_VERSION,
         "node_modules/fast-uri": EXPECTED_FAST_URI_VERSION,
         "node_modules/nanoid": EXPECTED_NANOID_VERSION,
         "node_modules/next": EXPECTED_NEXT_VERSION,
@@ -2735,7 +2752,11 @@ def validate_test_harness() -> None:
             "stable machine JSON",
         ),
         "scripts/fixtures/next-stable.mjs": (
-            '[CLI_BIN, "build", "--", bundlerFlag]',
+            "prepareStableCssModule",
+            "verifyCssModuleMissingField",
+            '[CLI_BIN, "generate", "--config", "nextjshx-css-modules.config.json"]',
+            '[NEXT_BIN, "build", ".", bundlerFlag]',
+            "the typed CSS Module reached Next's real loader and browser",
             'bundlerFlag !== "--turbopack" && bundlerFlag !== "--webpack"',
             "verifyOwnedAdapters",
             "GENERATED_LAYOUT_ADAPTER",
@@ -3679,6 +3700,7 @@ def main() -> int:
         action_count = validate_workflows()
         validate_gitleaks_config()
         validate_hook_wiring()
+        validate_haxe_format_scope()
         scanned_files = validate_ignores_and_tracked_files()
         validate_package_contract()
         validate_haxe_locks()

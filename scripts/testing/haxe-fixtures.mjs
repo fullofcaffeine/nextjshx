@@ -9,6 +9,8 @@ import { fileURLToPath } from "node:url";
 
 import Ajv2020 from "ajv/dist/2020.js";
 
+import { prepareStableCssModule } from "../fixtures/next-stable-css-modules.mjs";
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const CONTRACT_PATH = path.join(ROOT, "tests/haxe/fixtures.json");
 const SCHEMA_PATH = path.join(ROOT, "schemas/haxe-fixtures.schema.json");
@@ -91,9 +93,12 @@ function verifyHaxeVersion() {
   assert.equal(result.stdout.trim(), HAXE_VERSION, `expected Haxe ${HAXE_VERSION}`);
 }
 
-function runPositive(fixtures) {
+async function runPositive(fixtures) {
   for (const fixture of fixtures) {
     console.log(`[haxe-fixtures] positive ${fixture.id}`);
+    if (fixture.id === "next-stable-app-router") {
+      await prepareStableCssModule();
+    }
     const result = runHaxe(fixture.build, "inherit");
     assert.equal(result.status, 0, `${fixture.id} failed to compile`);
   }
@@ -156,13 +161,13 @@ try {
   const mode = process.argv[2] ?? "all";
   switch (mode) {
     case "positive":
-      runPositive(contract.positive);
+      await runPositive(contract.positive);
       break;
     case "negative":
       runNegative(contract.negative);
       break;
     case "all":
-      runPositive(contract.positive);
+      await runPositive(contract.positive);
       runNegative(contract.negative);
       break;
     default:
