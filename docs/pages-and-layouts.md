@@ -342,6 +342,58 @@ public copy, runtime `<link>`, or separate style watcher. When a project needs
 a native placement that this safer layout-only API does not yet support, keep
 that convention file native rather than weakening the typed Haxe contract.
 
+## Closed CSS Module class names
+
+Genes 1.49.0 supplies the framework-neutral CSS Module import. Its tooling
+creates a closed Haxe companion from class names reported by a real processor.
+Closed means that the type contains only the reported names.
+
+```haxe
+import app.styles.HaxePageStyles;
+import genes.css.CssModule.imported;
+
+final styles:HaxePageStyles =
+  imported("./haxe-page.module.css", "styles");
+
+return <main className={styles.card}>{props.children}</main>;
+```
+
+This Haxe access fails before Genes creates TSX:
+
+```haxe
+styles.missing;
+```
+
+The generated implementation uses an ordinary CSS Module import:
+
+```tsx
+import __genes_import_styles from "./haxe-page.module.css";
+import type {HaxePageStyles} from "./styles/HaxePageStyles";
+
+const styles: HaxePageStyles = __genes_import_styles;
+```
+
+Genes does not read CSS syntax or guess class names. The selected CSS processor
+reports the keys. Next.js remains responsible for the CSS build and runtime.
+
+The stable fixture proves the first Next-specific path. It compares a pinned
+processor with a reviewed key list. It then checks these results:
+
+- Haxe rejects an unknown class.
+- Strict TypeScript sees the same exact object.
+- Next's production loader reports the same runtime keys.
+- Chrome observes the expected computed style.
+
+This is an integration proof, not yet the normal project setup. The current
+fixture uses `nextjshx-css-modules.config.json`. This test-only profile prepares
+the companion and staged stylesheet before `nextjshx generate`.
+The public setup and development commands do not yet create or watch these
+files automatically. Keep a CSS Module in native TSX until the host workflow is
+released, unless the project deliberately owns this preparation step.
+
+`@:next.css` remains separate. It places global or package CSS in a layout.
+`CssModule.imported` types the default object exported by one CSS Module.
+
 ## Typed parallel slots
 
 A layout with named parallel routes uses a named anonymous typedef marked with

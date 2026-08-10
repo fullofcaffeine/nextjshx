@@ -1,8 +1,10 @@
 import type {JSX} from "react"
+import __genes_import_styles from "./haxe-page.module.css"
 import {Std} from "../Std"
 import {Register} from "../genes/Register"
 import type {PageProps} from "../nextjs/app/PageProps"
 import type {NoParams} from "../nextjs/route/NoParams"
+import type {HaxePageStyles} from "./styles/HaxePageStyles"
 
 /**
  * Haxe-owned `/haxe` page reached through a generated Next-native adapter.
@@ -10,6 +12,7 @@ import type {NoParams} from "../nextjs/route/NoParams"
 export class HaxePage {
 	declare static metadata: import('next').Metadata;
 	static render(props: PageProps<NoParams, Readonly<Record<string, string | string[] | undefined>>>): JSX.Element {
+		const styles: HaxePageStyles = __genes_import_styles;
 		const preview: boolean | undefined = undefined;
 		const __nextQuery0Value_page: number = 2;
 		const __nextQuery0Value_preview: boolean | undefined = preview;
@@ -34,7 +37,8 @@ export class HaxePage {
 		};
 		const __nextQuery0Encoded: string = __nextQuery0Params.toString();
 		const productHref: import('next').Route<`/products/${string}` | `${Extract<`/products/${string}`, string>}?${string}`> = (__nextQuery0Encoded == "") ? __nextQuery0Href : `${__nextQuery0Href}?${__nextQuery0Encoded}`;
-		return <main id="haxe-page"><p>This page implementation originated in typed Haxe.</p><a id="typed-query-link" href={productHref}>Typed product query</a></main>;
+		const pageCopy: string = "This page implementation originated in typed Haxe.";
+		return <main id="haxe-page" className={styles.card} data-error-class={styles["error-state"]}><p>{pageCopy}</p><a id="typed-query-link" href={productHref}>Typed product query</a></main>;
 	}
 	static href(): import('next').Route<"/haxe"> {
 		return "/haxe";

@@ -16,7 +16,7 @@ const CASES = [
     build: "tests/fixtures/next-stable/build.hxml",
     generated: "tests/fixtures/next-stable/src-gen",
     snapshots: "tests/snapshots/next-stable-generated",
-    extensions: new Set([".ts", ".tsx", ".manifest"]),
+    extensions: new Set([".css", ".ts", ".tsx", ".manifest"]),
   },
 ];
 
@@ -60,6 +60,17 @@ function runHaxe(build) {
     throw result.error;
   }
   assert.equal(result.status, 0, `${build} failed`);
+}
+
+function prepareCssModules() {
+  const result = spawnSync(process.execPath, ["scripts/fixtures/next-stable-css-modules.mjs"], {
+    cwd: ROOT,
+    stdio: "inherit",
+  });
+  if (result.error !== undefined) {
+    throw result.error;
+  }
+  assert.equal(result.status, 0, "CSS Module preparation failed");
 }
 
 function verifyHaxeVersion() {
@@ -149,6 +160,7 @@ try {
     const generatedRoot = path.join(ROOT, testCase.generated);
     const snapshotRoot = path.join(ROOT, testCase.snapshots);
     fs.rmSync(generatedRoot, { recursive: true, force: true });
+    prepareCssModules();
     runHaxe(testCase.build);
     if (mode === "update") {
       writeSnapshots(testCase, generatedRoot, snapshotRoot);

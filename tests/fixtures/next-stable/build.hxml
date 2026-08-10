@@ -1,6 +1,7 @@
 -lib genes-ts
 -cp src
 -cp tests/fixtures/next-stable/haxe
+-cp tests/fixtures/next-stable/.nextjshx/css-modules/haxe
 --main FixtureMain
 
 # genes-ts still compiles on Haxe's JavaScript platform. A .tsx entry selects
@@ -14,6 +15,7 @@
 -D nextjshx.app-root=tests/fixtures/next-stable/app
 -D nextjshx.generated-root=tests/fixtures/next-stable/src-gen
 -D nextjshx.adapter-plan-output=tests/fixtures/next-stable/.nextjshx/snapshot-plan.json
+-D nextjshx_css_module_tracer
 
 # Generated TypeScript adapters cannot make their Haxe modules enter the typed
 # graph. Include the owning package; the declaration macro applies @:keep only

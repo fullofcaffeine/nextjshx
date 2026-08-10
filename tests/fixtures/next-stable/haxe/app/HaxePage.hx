@@ -1,5 +1,9 @@
 package app;
 
+#if nextjshx_css_module_tracer
+import app.styles.HaxePageStyles;
+import genes.css.CssModule.imported;
+#end
 import genes.react.Element;
 import genes.ts.Undefinable;
 import nextjs.app.PageProps;
@@ -25,15 +29,28 @@ class HaxePage {
 	});
 
 	public static function render(props:PageProps<NoParams, SearchParams>):Element {
+		#if nextjshx_css_module_tracer
+		// Genes checks each field against a generated closed type. Next.js still
+		// loads the ordinary CSS Module and decides the final class-name values.
+		final styles:HaxePageStyles = imported("./haxe-page.module.css", "styles");
+		#end
 		final preview:Undefinable<Bool> = Undefinable.absent();
 		final productHref = ProductPage.hrefWithQuery({slug: "first"}, {
 			page: 2,
 			preview: preview,
 			tags: ["haxe next", "typed"]
 		});
-		return <main id={"haxe-page"}>
-      <p>This page implementation originated in typed Haxe.</p>
+		final pageCopy = "This page implementation originated in typed Haxe.";
+		#if nextjshx_css_module_tracer
+		return <main id={"haxe-page"} className={styles.card} data-error-class={styles.errorState}>
+      <p>{pageCopy}</p>
       <a id={"typed-query-link"} href={productHref}>Typed product query</a>
     </main>;
+		#else
+		return <main id={"haxe-page"}>
+      <p>{pageCopy}</p>
+      <a id={"typed-query-link"} href={productHref}>Typed product query</a>
+    </main>;
+		#end
 	}
 }

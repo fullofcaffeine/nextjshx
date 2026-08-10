@@ -34,11 +34,15 @@ if [[ "$MODE" == "tool-only" ]]; then
 fi
 
 sources=()
-for source in src test tests examples tools; do
-  if [[ -d "$ROOT_DIR/$source" ]]; then
-    sources+=("-s" "$ROOT_DIR/$source")
-  fi
-done
+while IFS= read -r -d '' source; do
+  sources+=("-s" "$source")
+done < <(
+  find "$ROOT_DIR/src" "$ROOT_DIR/test" "$ROOT_DIR/tests" "$ROOT_DIR/examples" "$ROOT_DIR/tools" \
+    -type f -name '*.hx' \
+    -not -path '*/.nextjshx/*' \
+    -not -path '*/src-gen/*' \
+    -print0 2>/dev/null
+)
 
 if [[ "${#sources[@]}" -eq 0 ]]; then
   echo "[guard:hx-format] OK: no Haxe source roots found."

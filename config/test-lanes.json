@@ -348,7 +348,7 @@
       "producedOutputs": ["Hydrated production pages, navigation, mutations, recovery, and visible package behavior"],
       "supportedProfiles": ["typescript/optimized", "chromium/production"],
       "requiredEvidence": ["browser", "runtime"],
-      "laneIds": ["client.components", "server.functions", "cli.dev", "example.mixed.full", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"],
+      "laneIds": ["client.components", "server.functions", "cli.dev", "example.mixed.full", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all", "fixture.stable.primary", "fixture.stable.matrix"],
       "oracles": [
         {
           "kind": "manual-expectation",
@@ -371,15 +371,15 @@
       "focusedOwners": [],
       "verticalIntegrationOwners": [],
       "realRuntimeOrSystemOwners": [],
-      "browserE2EOwners": ["client.components", "server.functions", "cli.dev", "example.mixed.full", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"],
+      "browserE2EOwners": ["client.components", "server.functions", "cli.dev", "example.mixed.full", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all", "fixture.stable.primary", "fixture.stable.matrix"],
       "evidenceOwners": [
         {
           "evidence": "browser",
-          "laneIds": ["client.components", "server.functions", "cli.dev", "example.mixed.full", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all"]
+          "laneIds": ["client.components", "server.functions", "cli.dev", "example.mixed.full", "todo.e2e", "showcase.landing", "showcase.blog", "showcase.commerce", "showcase.field-atlas", "showcases.all", "fixture.stable.primary", "fixture.stable.matrix"]
         },
         {
           "evidence": "runtime",
-          "laneIds": ["cli.dev", "todo.e2e"]
+          "laneIds": ["cli.dev", "todo.e2e", "fixture.stable.primary", "fixture.stable.matrix"]
         }
       ],
       "examples": ["mixed-adoption", "showcase-landing", "showcase-blog", "showcase-commerce", "showcase-field-atlas", "todoapp-next"],
@@ -1965,7 +1965,7 @@
       "description": "Require the reviewed generated tree and public adapter snapshots without updating them.",
       "npmScript": "test:snapshots",
       "owners": ["generated snapshots"],
-      "paths": ["tests/snapshots/**", "scripts/testing/snapshots.mjs"],
+      "paths": ["tests/snapshots/**", "scripts/testing/snapshots.mjs", "scripts/fixtures/next-stable-css-modules.mjs"],
       "reverseDependencies": [],
       "evidence": ["snapshot", "determinism"],
       "ring": "R0",
@@ -2367,19 +2367,19 @@
     },
     {
       "id": "fixture.stable.primary",
-      "description": "Required executable-PR vertical canary: Haxe to owned adapters, strict TypeScript/typegen, Turbopack production build, and smoke.",
+      "description": "Required executable-PR path: Haxe, closed CSS Module typing, owned adapters, strict TypeScript, Turbopack build, runtime, and browser.",
       "npmScript": "test:fixture:next-stable:primary",
       "owners": ["primary Next vertical canary"],
-      "paths": ["tests/fixtures/next-stable/**", "scripts/fixtures/next-stable.mjs", "src/nextjshx/**", "src/nextjs/**", "tools/cli/src/**"],
+      "paths": ["tests/fixtures/next-stable/**", "scripts/fixtures/next-stable.mjs", "scripts/fixtures/next-stable-css-modules.mjs", "src/nextjshx/**", "src/nextjs/**", "tools/cli/src/**"],
       "reverseDependencies": [],
-      "evidence": ["haxe-positive", "cli", "ownership", "determinism", "strict-typescript", "next-build", "runtime"],
+      "evidence": ["haxe-positive", "haxe-negative", "cli", "ownership", "determinism", "strict-typescript", "next-build", "runtime", "browser"],
       "ring": "R2",
       "costClass": "large",
       "alwaysRun": false,
       "environments": [{"node": ["20.19.3"], "bundler": ["turbopack"], "profile": ["typescript/optimized"]}],
       "mode": "clean",
       "timeoutSeconds": 900,
-      "mutatingRoots": ["tests/fixtures/next-stable/.next", "tests/fixtures/next-stable/src-gen", "tools/cli/.tmp"],
+      "mutatingRoots": ["tests/fixtures/next-stable/.next", "tests/fixtures/next-stable/.nextjshx", "tests/fixtures/next-stable/src-gen", "tools/cli/.tmp"],
       "isolation": "isolated-process",
       "preparation": ["haxe-libraries", "locked-npm", "cli-runtime"],
       "artifacts": ["tests/fixtures/next-stable/.nextjshx"],
@@ -2389,7 +2389,7 @@
       "hook": false,
       "expansion": "none",
       "quarantine": null,
-      "surfaceIds": ["haxe-generation", "package-cli", "next-runtime", "react-next-semantics", "compatibility-matrices"],
+      "surfaceIds": ["haxe-generation", "package-cli", "next-runtime", "react-next-semantics", "browser-applications", "compatibility-matrices"],
       "exampleIds": []
     },
     {
@@ -2397,16 +2397,16 @@
       "description": "Release owner for every claimed Node and Turbopack/webpack stable-package cell with the same build and smoke contract.",
       "npmScript": "test:fixture:next-stable:matrix",
       "owners": ["stable Node and bundler compatibility matrix"],
-      "paths": ["support_matrix.json", "package.json", "package-lock.json", "tests/fixtures/next-stable/**", "scripts/fixtures/next-stable.mjs"],
+      "paths": ["support_matrix.json", "package.json", "package-lock.json", "tests/fixtures/next-stable/**", "scripts/fixtures/next-stable.mjs", "scripts/fixtures/next-stable-css-modules.mjs"],
       "reverseDependencies": [],
-      "evidence": ["compatibility", "haxe-positive", "cli", "ownership", "strict-typescript", "next-build", "runtime"],
+      "evidence": ["compatibility", "haxe-positive", "haxe-negative", "cli", "ownership", "strict-typescript", "next-build", "runtime", "browser"],
       "ring": "R5",
       "costClass": "xlarge",
       "alwaysRun": false,
       "environments": [{"node": ["20.9.0", "24.18.0"], "bundler": ["turbopack", "webpack"], "profile": ["typescript/optimized"]}],
       "mode": "clean",
       "timeoutSeconds": 1800,
-      "mutatingRoots": ["tests/fixtures/next-stable/.next", "tests/fixtures/next-stable/src-gen", "tools/cli/.tmp"],
+      "mutatingRoots": ["tests/fixtures/next-stable/.next", "tests/fixtures/next-stable/.nextjshx", "tests/fixtures/next-stable/src-gen", "tools/cli/.tmp"],
       "isolation": "isolated-process",
       "preparation": ["haxe-libraries", "locked-npm", "cli-runtime"],
       "artifacts": ["tests/fixtures/next-stable/.nextjshx"],
@@ -2416,7 +2416,7 @@
       "hook": false,
       "expansion": "none",
       "quarantine": null,
-      "surfaceIds": ["package-cli", "next-runtime", "compatibility-matrices"],
+      "surfaceIds": ["package-cli", "next-runtime", "browser-applications", "compatibility-matrices"],
       "exampleIds": []
     }
   ]

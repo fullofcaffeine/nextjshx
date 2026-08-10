@@ -1,0 +1,17 @@
+-lib genes-ts
+-cp haxe
+-cp .nextjshx/css-modules/haxe
+-cp ../../../src
+--main FixtureMain
+
+# This test-only profile adds the generated CSS companion before Haxe typing.
+# Normal build and dev commands do not use this file yet.
+-D nextjshx_css_module_tracer
+-js src-gen/index.tsx
+
+--macro next_stable.AdapterPlan.install()
+--macro include('app')
+--macro include('route_handler_fixture')
+--macro include('request_proxy_fixture')
+--macro include('special_file_fixture')
+-dce full

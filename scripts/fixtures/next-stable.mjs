@@ -11,6 +11,8 @@ import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
 import ts from "typescript";
 
+import { prepareStableCssModule } from "./next-stable-css-modules.mjs";
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const FIXTURE = path.join(ROOT, "tests/fixtures/next-stable");
 const GENERATED = path.join(FIXTURE, "src-gen");
@@ -89,6 +91,7 @@ const EXPECTED_VERSIONS = new Map([
   ["react", "19.2.7"],
   ["react-dom", "19.2.7"],
   ["typescript", TYPESCRIPT_VERSION],
+  ["lightningcss", "1.32.0"],
   ["postcss", "8.5.23"],
   ["@types/node", "20.19.24"],
   ["@types/react", "19.2.17"],
@@ -163,6 +166,61 @@ function capture(command, args) {
       );
     });
   });
+}
+
+function captureExpectedFailure(command, args, options = {}) {
+  const cwd = options.cwd ?? ROOT;
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd,
+      env: COMMAND_ENV,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let output = "";
+    for (const stream of [child.stdout, child.stderr]) {
+      stream.setEncoding("utf8");
+      stream.on("data", (chunk) => {
+        output += chunk;
+      });
+    }
+    child.once("error", reject);
+    child.once("exit", (code, signal) => {
+      if (signal !== null) {
+        reject(new Error(`${command} ended with signal ${signal}`));
+        return;
+      }
+      if (code === 0) {
+        reject(new Error(`${command} unexpectedly succeeded`));
+        return;
+      }
+      resolve(output);
+    });
+  });
+}
+
+async function verifyCssModuleMissingField() {
+  const output = await captureExpectedFailure("haxe", [
+    "-lib",
+    "genes-ts",
+    "-cp",
+    "tests/fixtures/next-stable/haxe-negative-css",
+    "-cp",
+    "tests/fixtures/next-stable/.nextjshx/css-modules/haxe",
+    "--main",
+    "app.HaxePage",
+    "-js",
+    "tests/fixtures/next-stable/.nextjshx/css-modules/negative.js",
+    "-D",
+    "genes.ts",
+    "-D",
+    "genes.ts.no_extension",
+  ]);
+  assert.match(
+    output,
+    /HaxePageStyles has no field missing/u,
+    `the CSS Module negative failed for the wrong reason:\n${output}`,
+  );
+  console.log("[next-stable] css-modules: OK: Haxe rejected styles.missing");
 }
 
 async function readJson(file) {
@@ -343,6 +401,10 @@ async function verifyGeneratedOutput() {
   );
 
   const haxePage = await fs.readFile(path.join(GENERATED, "app/HaxePage.tsx"), "utf8");
+  const haxePageStyles = await fs.readFile(
+    path.join(GENERATED, "app/styles/HaxePageStyles.tsx"),
+    "utf8",
+  );
   const productPage = await fs.readFile(path.join(GENERATED, "app/ProductPage.tsx"), "utf8");
   const feedPage = await fs.readFile(path.join(GENERATED, "app/FeedPage.tsx"), "utf8");
   const photoPage = await fs.readFile(path.join(GENERATED, "app/PhotoPage.tsx"), "utf8");
@@ -381,7 +443,23 @@ async function verifyGeneratedOutput() {
     haxePage.includes('import type {JSX} from "react"'),
     "HaxePage lost the explicit React 19 JSX type import",
   );
-  assert(haxePage.includes('<main id="haxe-page">'), "HaxePage lost its TSX markup");
+  assert(haxePage.includes('<main id="haxe-page"'), "HaxePage lost its TSX markup");
+  assert.equal(
+    haxePage.split('from "./haxe-page.module.css"').length - 1,
+    1,
+    "HaxePage must contain one ordinary CSS Module import",
+  );
+  assert(
+    haxePage.includes("className={styles.card}") &&
+      haxePage.includes('data-error-class={styles["error-state"]}'),
+    "HaxePage lost its closed CSS Module field access",
+  );
+  assert(
+    haxePageStyles.includes("export type HaxePageStyles") &&
+      haxePageStyles.includes("card: string") &&
+      haxePageStyles.includes('"error-state": string'),
+    "the generated CSS Module companion lost its exact fields",
+  );
   assert(
     haxePage.includes("static href(): import('next').Route<\"/haxe\">"),
     "HaxePage lost its generated typed href companion",
@@ -507,8 +585,9 @@ async function verifyGeneratedOutput() {
     const source = await fs.readFile(file, "utf8");
     const relativeImports = [...source.matchAll(/\bfrom\s+["'](\.{1,2}\/[^"']+)["']/g)];
     for (const match of relativeImports) {
+      const isCssModule = match[1].endsWith(".module.css");
       assert(
-        path.posix.extname(match[1]) === "",
+        path.posix.extname(match[1]) === "" || isCssModule,
         `${path.relative(ROOT, file)} emitted an extension-bearing relative import ${match[1]}`,
       );
     }
@@ -830,18 +909,29 @@ async function verifyBuild(bundlerFlag) {
   await removeGeneratedState();
   await verifyToolchain();
   await verifyAuthoredTypes();
+  const firstCssPreparation = await prepareStableCssModule();
+  const repeatedCssPreparation = await prepareStableCssModule();
+  assert.deepEqual(
+    repeatedCssPreparation,
+    firstCssPreparation,
+    "the CSS Module preparation changed bytes without an input change",
+  );
+  await verifyCssModuleMissingField();
   await run(process.execPath, ["tools/cli/scripts/ensure-build.mjs", "runtime"]);
   const createdLinks = await linkWorkspaceDependencies();
   try {
     await run(
       process.execPath,
-      [CLI_BIN, "build", "--", bundlerFlag],
+      [CLI_BIN, "generate", "--config", "nextjshx-css-modules.config.json"],
       { cwd: FIXTURE },
     );
+    await run(process.execPath, [NEXT_BIN, "build", ".", bundlerFlag], {
+      cwd: FIXTURE,
+    });
     await verifyGeneratedOutput();
     await verifyOwnedAdapters();
     await fs.access(path.join(FIXTURE, ".next/BUILD_ID"));
-    console.log(`[next-stable] nextjshx build (${bundlerFlag}): OK`);
+    console.log(`[next-stable] generated and built with Next (${bundlerFlag}): OK`);
   } finally {
     await removeCliOwnedSourceState();
     await removeFixtureLinks(createdLinks);
@@ -978,6 +1068,28 @@ async function browserNavigationProofs(port) {
     args: ["--disable-dev-shm-usage", "--no-sandbox"],
   });
   try {
+    const cssModulePage = await browser.newPage();
+    await cssModulePage.goto(`http://127.0.0.1:${port}/haxe`, {
+      waitUntil: "networkidle",
+      timeout: 20_000,
+    });
+    assert.equal(
+      await cssModulePage.locator("#haxe-page").evaluate((element) =>
+        getComputedStyle(element).color,
+      ),
+      "rgb(18, 52, 86)",
+      "Next did not apply the CSS Module imported from typed Haxe",
+    );
+    assert.match(
+      (await cssModulePage.locator("#haxe-page").getAttribute("data-error-class")) ?? "",
+      /\S/u,
+      "the dashed CSS Module key did not produce a runtime class name",
+    );
+    await cssModulePage.close();
+    console.log(
+      "[next-stable] smoke: OK: the typed CSS Module reached Next's real loader and browser",
+    );
+
     const topologyPage = await browser.newPage();
     await topologyPage.goto(`http://127.0.0.1:${port}/feed`, {
       waitUntil: "networkidle",
@@ -1136,6 +1248,10 @@ async function smoke() {
         assert(
           html.includes("This root page remains native TypeScript."),
           "/ lost its native TypeScript page content",
+        );
+        assert(
+          html.includes('data-css-module-keys="card,error-state"'),
+          "Next's real CSS Module export keys disagree with the checked manifest",
         );
       } else if (route === "/haxe") {
         assert(html.includes('id="haxe-page"'), "/haxe lost its generated Haxe page child");

@@ -1,0 +1,8 @@
+.card {
+	color: rgb(18, 52, 86);
+	padding: 12px;
+}
+
+.error-state {
+	font-weight: 700;
+}

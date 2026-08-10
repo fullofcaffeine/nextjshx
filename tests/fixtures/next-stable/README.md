@@ -13,6 +13,13 @@ drive the special-file runtime states. The Haxe-owned `/feed`, canonical
 `/photo/[id]`, and `@modal/(.)photo/[id]` views form a real parallel/intercepted
 route rather than a source-only topology fixture.
 
+A test-only `/haxe` profile imports a CSS Module through Genes' closed
+companion. Lightning CSS reports the exact keys before Haxe compiles. A
+reviewed JSON file provides a separate expected list. The fixture proves that
+Haxe rejects `styles.missing`. Next reports the same runtime keys, and Chrome
+observes the expected color. Next still owns CSS processing and final class
+values. The normal development profile does not enable this import yet.
+
 The build selects genes-ts's generic `genes.ts.jsx_import_source=react`
 profile because React 19 exposes the `JSX` type namespace from its module
 rather than relying on an ambient global.
@@ -27,13 +34,12 @@ typing. The `/haxe` render also calls the product page's generated
 exact `/products/first?page=2&tag=haxe+next&tag=typed` link without retaining
 the ProductPage implementation or a helper runtime.
 
-The verification commands build the CLI, provide package-local links to the
-already lockfile-installed workspace dependencies, and run `nextjshx build`
-once with `--turbopack` and once with `--webpack`. Each command performs
-doctor, safe generated-root cleanup, Haxe generation, transactional adapter
-publication, `next typegen`, strict
-TypeScript, the native Next production build with type errors enabled, and
-fresh plan/manifest verification. The fixture checks the generated modules,
+The verification commands build the CLI and provide package-local links to the
+lockfile-installed dependencies. The runner first removes prior generated
+state. It then prepares the CSS companion and runs `nextjshx generate`.
+Finally, it runs the native Next production build with `--turbopack` or
+`--webpack`. The generation command performs Haxe compilation, transactional
+adapter publication, `next typegen`, and strict TypeScript. The fixture checks the generated modules,
 all twelve adapters, reviewed adapter snapshots, and the ownership manifest. The
 smoke command starts that production build on an ephemeral loopback port,
 proves the Haxe root layout supplies `<html>`, `<body>`, and children around
@@ -44,8 +50,8 @@ Haxe proxy response header, executes the Haxe-authored GET, POST, and DELETE met
 observes a streamed Haxe loading fallback, receives a Haxe not-found view with
 HTTP 404, and uses a real browser to prove soft navigation retains `/feed`
 behind an open Haxe-authored dialog while reloading `/photo/42` selects the
-canonical Haxe page and `@modal/default`. The same browser then triggers and
-resets the Haxe error boundary.
+canonical Haxe page and `@modal/default`. The browser also checks the CSS Module
+style, then triggers and resets the Haxe error boundary.
 
 ```sh
 npx --no-install lix download
@@ -72,3 +78,9 @@ compiled `.next` output for the separate smoke command. Native proof pages stay
 application-owned; the root layout, `/haxe`, `/feed`, `/photo/[id]`, intercepted
 photo, `/products/[slug]`, four special-file adapters, API route, and exact root
 `proxy.ts` are generated and manifest-owned.
+
+The separate prepare step records a current limitation. `nextjshx build`
+cleans `src-gen` before Haxe compiles, as a safe production build must. The
+future CSS host integration must prepare its private companion and staged CSS
+after that clean step. The fixture makes this order visible and does not claim
+that normal project setup or watch mode owns it yet.
