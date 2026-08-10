@@ -113,11 +113,9 @@ admission, ownership policy, and framework diagnostics layered over those
 primitives. Require executable evidence for capability claims, including warm
 edit-loop latency and generated-file churn before making performance claims.
 
-`@genes-ts/tooling` is not published to the npm registry today. The temporary
-plan uses a `.tgz` from a GitHub release whose immutable-release setting has
-been verified, with its exact source commit, URL, version, SHA-256, and lockfile
-integrity recorded here. Until that reviewed archive exists, do not invent its
-URL, add a registry dependency, run `npm publish`, copy Genes tooling into this
-repository, or treat a local `file:` dependency as clean consumer evidence. Read
-`docs/genes-tooling-distribution.md` before changing this dependency or its
-release process.
+`@genes-ts/tooling` is not published to the npm registry today. NextJsHx uses
+the exact GitHub Release archive recorded in `support_matrix.json`. The record
+includes its source commit, URL, version, SHA-256, and lockfile integrity. Do
+not replace it with a registry version, moving Git reference, local `file:`
+dependency, or copied source. Read `docs/genes-tooling-distribution.md` before
+changing this dependency or its release process.

@@ -49,16 +49,16 @@ separately versioned `@genes-ts/tooling` package:
 - `@genes-ts/tooling/haxe-server` owns a compatible project-local Haxe
   `--wait` lifecycle with direct-compile fallback.
 
-Version `0.1.0` and its framework-neutral conformance vectors are present in
-the Genes source tree. They are not published to the npm registry.
+Version `0.1.0` and its framework-neutral conformance vectors are available in
+the immutable GitHub Release archive recorded in
+[Genes tooling distribution](genes-tooling-distribution.md). The package is not
+published to the npm registry.
 
-NextJsHx has chosen to delay that npm release. The first downstream integration
-will use an exact, checksum-verified `.tgz` archive from a GitHub release. That
-archive does not exist yet. NextJsHx must continue using its current local
-implementation until it can consume reviewed, pinned package bytes. It must
-then migrate to the shared primitives instead of maintaining competing copies.
-See [Genes tooling distribution](genes-tooling-distribution.md) for the package
-source rules and current status.
+NextJsHx has chosen to delay that npm release. It now installs the exact,
+checksum-verified `.tgz` archive from the GitHub Release. The first downstream
+integration can now migrate to shared primitives without copying their source.
+See [Genes tooling distribution](genes-tooling-distribution.md) for the exact
+package identity and source rules.
 
 ## Why this work exists
 

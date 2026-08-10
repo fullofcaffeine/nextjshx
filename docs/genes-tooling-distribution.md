@@ -4,17 +4,27 @@
 
 NextJsHx will not depend on an npm-registry release of `@genes-ts/tooling` yet.
 
-The package source exists in the Genes repository. However, the npm registry
-does not contain a public `@genes-ts/tooling` release today. NextJsHx must not
-claim that users can install it by package name.
+The package source exists in the Genes repository. The npm registry does not
+contain a public `@genes-ts/tooling` release. NextJsHx installs the package from
+an exact GitHub Release archive instead.
 
-The temporary plan is to install a package archive from a GitHub release whose
+The current setup installs a package archive from a GitHub release whose
 immutable-release setting has been checked. That setting prevents the `.tgz`
 asset from being replaced after projects start to use it. The recorded SHA-256
 checksum provides a second, independent check of the downloaded bytes.
 
-The archive is not available yet. Typed CSS Modules and other work that needs
-this package remain blocked until Genes creates and reviews that archive.
+The reviewed archive is now available:
+
+- package: `@genes-ts/tooling` version `0.1.0`;
+- Genes source commit: `96627ea68a4e684923661c4bf83e3681505ac90e`;
+- release: [`tooling-v0.1.0`](https://github.com/fullofcaffeine/genes-ts/releases/tag/tooling-v0.1.0);
+- archive: [`genes-ts-tooling-0.1.0.tgz`](https://github.com/fullofcaffeine/genes-ts/releases/download/tooling-v0.1.0/genes-ts-tooling-0.1.0.tgz);
+- SHA-256: `691723279c6efbefba069b808d6862afdd56559854e2ffd9039054a2332c420a`;
+- npm integrity: `sha512-M27JPINXokiWw5k6ECpghvoVrnVUHuuFI88XzfKRDqExLw8T9ajzV4LxVyftFQLX//nlPhRK8Y/vigPx7Cwg6g==`.
+
+GitHub marks this release as immutable. This means that GitHub does not permit
+changes to the release or its files. The lockfile also checks the archive bytes
+during each clean npm install.
 
 ## Why we are delaying the npm release
 
@@ -40,21 +50,20 @@ bytes.
 - `npm` can also install a local folder, a local archive, a remote archive, or
   a Git repository.
 
-The temporary dependency will use a remote archive URL. It will not use a
+The dependency uses a remote archive URL. It does not use a
 registry version such as `@genes-ts/tooling@0.1.0`.
 
-For example, the final dependency will have this general shape:
+The dependency has this exact form:
 
 ```json
 {
   "devDependencies": {
-    "@genes-ts/tooling": "https://github.com/fullofcaffeine/genes-ts/releases/download/<release>/<archive>.tgz"
+    "@genes-ts/tooling": "https://github.com/fullofcaffeine/genes-ts/releases/download/tooling-v0.1.0/genes-ts-tooling-0.1.0.tgz"
   }
 }
 ```
 
-This example contains placeholders. Do not copy it into `package.json` until
-the reviewed release asset exists.
+Do not replace this URL with a branch, a moving tag, or a registry version.
 
 ## Required record for the archive
 
@@ -75,8 +84,8 @@ or a URL whose bytes can change.
 
 | Package source | Current use | Reason |
 | --- | --- | --- |
-| GitHub release `.tgz` with immutable-release protection and an exact checksum | Planned temporary source | It gives every machine the same reviewed package bytes without an npm registry release. |
-| npm registry package | Deferred | It is the preferred long-term source after the public package contract is ready. |
+| GitHub release `.tgz` with immutable-release protection and an exact checksum | Current source | It gives every machine the same reviewed package bytes without an npm registry release. |
+| npm registry package | Deferred | It can become the long-term source after the public package contract is ready. |
 | Local `file:../genes/tooling` dependency | Local Genes experiments only | It depends on one developer's directory layout and cannot prove a clean consumer installation. |
 | Git branch or moving tag | Not allowed | The same dependency text can produce different package bytes later. |
 | Git repository subdirectory | Not used | The supported npm 10 environment cannot reliably install this package from its repository subdirectory. |
@@ -84,20 +93,16 @@ or a URL whose bytes can change.
 
 ## What users and agents must do
 
-Until this document names a real archive:
-
 1. Do not run `npm publish` for `@genes-ts/tooling`.
 2. Do not add `@genes-ts/tooling@0.1.0` as a registry dependency.
-3. Do not invent a GitHub archive URL.
+3. Do not change the exact archive URL without a reviewed release update.
 4. Do not copy the Genes tooling implementation into this repository.
-5. Keep the existing NextJsHx implementation where it still owns current
-   behavior.
+5. Keep NextJsHx-specific behavior in NextJsHx.
 6. Use a local `file:` dependency only for an explicitly marked experiment.
-7. Do not treat a local experiment as clean consumer or release evidence.
+7. Do not treat a local experiment as clean consumer evidence.
 
-After the archive exists, update this document and the support matrix with its
-exact identity. Then prove installation from a clean checkout before using it
-in maintained examples or public setup commands.
+`support_matrix.json` is the source of truth for this package identity. The
+support-matrix check compares that record with `package.json` and the lockfile.
 
 ## Later npm release
 

@@ -61,7 +61,8 @@
       "required": [
         "node",
         "haxe",
-        "typescript"
+        "typescript",
+        "genesTooling"
       ],
       "properties": {
         "node": {
@@ -147,6 +148,30 @@
               "type": "string",
               "minLength": 40
             }
+          }
+        },
+        "genesTooling": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "version",
+            "sourceCommit",
+            "releaseUrl",
+            "archiveUrl",
+            "sha256",
+            "npmIntegrity",
+            "registryStatus"
+          ],
+          "properties": {
+            "name": { "const": "@genes-ts/tooling" },
+            "version": { "$ref": "#/$defs/semver" },
+            "sourceCommit": { "$ref": "#/$defs/commit" },
+            "releaseUrl": { "type": "string", "pattern": "^https://github\\.com/fullofcaffeine/genes-ts/releases/tag/tooling-v[0-9]+\\.[0-9]+\\.[0-9]+$" },
+            "archiveUrl": { "type": "string", "pattern": "^https://github\\.com/fullofcaffeine/genes-ts/releases/download/tooling-v[0-9]+\\.[0-9]+\\.[0-9]+/genes-ts-tooling-[0-9]+\\.[0-9]+\\.[0-9]+\\.tgz$" },
+            "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "npmIntegrity": { "type": "string", "pattern": "^sha512-[A-Za-z0-9+/]+={0,2}$" },
+            "registryStatus": { "const": "not-published" }
           }
         }
       }
