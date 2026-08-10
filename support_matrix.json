@@ -85,12 +85,12 @@
     },
     "genesTs": {
       "name": "genes-ts",
-      "version": "1.41.0",
-      "commit": "0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
-      "gitDescribe": "v1.41.0",
+      "version": "1.49.0",
+      "commit": "19c9fb7197b38b5035ef286786dec71f74fabb2c",
+      "gitDescribe": "v1.49.0",
       "haxeVersion": "4.3.7",
       "typescriptSpec": "npm:@typescript/typescript6@6.0.2",
-      "baselineReason": "The exact immutable v1.41.0-compatible commit preserves the established Haxe-authoritative HXX, direct JSX, strict null/boundary, declaration, source-map, TypeScript 5/6/7, and classic-JavaScript contracts. It includes framework-neutral React Hook authoring from PR #69, computed dependency snapshots from PR #72, typed context/effect support from PR #74, versioned React 19 Flight values and closed structural validation from PR #78, idiomatic occurrence-local and stored undefinable presence proofs from PRs #86 and #88, exact pre-erasure type witnesses from PR #90, genuine module-level function lowering from PR #96, and direct immutable module values from PR #100. Separate modules may export the same conventional function or value name through collision-safe ESM imports, and an all-direct function/value module omits Haxe's synthetic static owner. NextJsHx consumes those genes and genes.react capabilities directly while retaining only Next-specific graph, provenance, adapter, and diagnostic policy. The complete Genes hosted matrix and downstream Hook, Client Component, page/layout, strict Next build, streamed Flight, hydrated-browser, and Todo action evidence are green."
+      "baselineReason": "The exact immutable v1.49.0 commit preserves Haxe-checked HXX, direct JSX, strict boundary types, declarations, source maps, TypeScript 5/6/7, and classic JavaScript. It adds generic closed CSS Module imports, direct module-level React components, safer HXX cleanup, typed indexed access, correct byte-buffer runtime types, direct closed module values for metadata-style data, and a typed Array.findIndex extension that emits the native JavaScript method. It also contains the released Genes development-session tools that NextJsHx now consumes separately. Earlier Hook, context, effect, Flight, type-witness, and module-function support remains available. NextJsHx consumes these generic capabilities and keeps only Next.js graph, adapter, route, and error policy here. The Genes release suite is green. NextJsHx also checks the exact pin through Haxe, strict TypeScript, production Next builds, server behavior, and browser behavior."
     }
   },
   "lanes": [
@@ -105,7 +105,7 @@
         "reactDom": "19.2.7",
         "typescript": "6.0.2",
         "haxe": "4.3.7",
-        "genesTs": "1.41.0",
+        "genesTs": "1.49.0",
         "node": [
           "20.9.0",
           "24.18.0"
@@ -139,7 +139,7 @@
         "reactDom": "19.2.7",
         "typescript": "6.0.2",
         "haxe": "4.3.7",
-        "genesTs": "1.41.0",
+        "genesTs": "1.49.0",
         "node": [
           "24.18.0"
         ],
@@ -170,8 +170,8 @@
       ],
       "identity": {
         "name": "genes-ts",
-        "version": "1.41.0",
-        "commit": "0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
+        "version": "1.49.0",
+        "commit": "19c9fb7197b38b5035ef286786dec71f74fabb2c",
         "haxeVersion": "4.3.7",
         "typescriptSpec": "npm:@typescript/typescript6@6.0.2"
       }

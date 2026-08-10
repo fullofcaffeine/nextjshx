@@ -354,7 +354,7 @@ nextjshx doctor [--json] [--config <path>]
 plan. It reports stable `NXHX-DOCTOR-*` checks for:
 
 - the Node engine and exact Haxe 4.3.7 compiler;
-- genes-ts 1.41.0 at the exact stable-release GitHub commit and the required `genes.ts`
+- genes-ts 1.49.0 at the exact stable-release GitHub commit and the required `genes.ts`
   and `genes.ts.no_extension` defines;
 - installed Next 16.2.12, React/React DOM 19.2.7, and TypeScript 6.0.2;
 - the configured App Router root, Haxe build, generated root, and package
