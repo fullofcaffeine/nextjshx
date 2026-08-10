@@ -1,7 +1,7 @@
 {
   "$schema": "./schemas/support-matrix.schema.json",
   "schemaVersion": 1,
-  "updated": "2026-07-26",
+  "updated": "2026-08-10",
   "releaseStatus": "foundation-only",
   "evidencePolicy": {
     "stablePackageLane": "required",
@@ -30,6 +30,16 @@
     "typescript": {
       "version": "6.0.2",
       "selection": "Pinned to the exact version shared by the observed genes-ts and Next.js source manifests; Next stable accepts workspace-owned TypeScript."
+    },
+    "genesTooling": {
+      "name": "@genes-ts/tooling",
+      "version": "0.1.0",
+      "sourceCommit": "96627ea68a4e684923661c4bf83e3681505ac90e",
+      "releaseUrl": "https://github.com/fullofcaffeine/genes-ts/releases/tag/tooling-v0.1.0",
+      "archiveUrl": "https://github.com/fullofcaffeine/genes-ts/releases/download/tooling-v0.1.0/genes-ts-tooling-0.1.0.tgz",
+      "sha256": "691723279c6efbefba069b808d6862afdd56559854e2ffd9039054a2332c420a",
+      "npmIntegrity": "sha512-M27JPINXokiWw5k6ECpghvoVrnVUHuuFI88XzfKRDqExLw8T9ajzV4LxVyftFQLX//nlPhRK8Y/vigPx7Cwg6g==",
+      "registryStatus": "not-published"
     }
   },
   "framework": {

@@ -148,6 +148,15 @@ EXPECTED_PLAYWRIGHT_VERSION = "1.61.1"
 EXPECTED_REACT_VERSION = "19.2.7"
 EXPECTED_TYPESCRIPT_VERSION = "6.0.2"
 EXPECTED_TYPESCRIPT_SPEC = "npm:@typescript/typescript6@6.0.2"
+EXPECTED_GENES_TOOLING_VERSION = "0.1.0"
+EXPECTED_GENES_TOOLING_URL = (
+    "https://github.com/fullofcaffeine/genes-ts/releases/download/"
+    "tooling-v0.1.0/genes-ts-tooling-0.1.0.tgz"
+)
+EXPECTED_GENES_TOOLING_INTEGRITY = (
+    "sha512-M27JPINXokiWw5k6ECpghvoVrnVUHuuFI88XzfKRDqExLw8T9ajzV4LxVyft"
+    "FQLX//nlPhRK8Y/vigPx7Cwg6g=="
+)
 EXPECTED_POSTCSS_VERSION = "8.5.23"
 EXPECTED_BRACE_EXPANSION_VERSION = "5.0.9"
 EXPECTED_FAST_URI_VERSION = "3.1.5"
@@ -938,6 +947,7 @@ def validate_package_contract() -> None:
     expected_dev_dependencies = {
         "@dnd-kit/helpers": EXPECTED_DND_KIT_HELPERS_VERSION,
         "@dnd-kit/react": EXPECTED_DND_KIT_REACT_VERSION,
+        "@genes-ts/tooling": EXPECTED_GENES_TOOLING_URL,
         "@playwright/test": EXPECTED_PLAYWRIGHT_VERSION,
         "@types/node": EXPECTED_NODE_TYPES_VERSION,
         "@types/react": EXPECTED_REACT_TYPES_VERSION,
@@ -1926,6 +1936,17 @@ def validate_package_contract() -> None:
             raise SecurityToolingFailure(
                 f"package-lock did not resolve {path} to exact version {version}"
             )
+
+    genes_tooling_lock = packages.get("node_modules/@genes-ts/tooling")
+    if (
+        not isinstance(genes_tooling_lock, dict)
+        or genes_tooling_lock.get("version") != EXPECTED_GENES_TOOLING_VERSION
+        or genes_tooling_lock.get("resolved") != EXPECTED_GENES_TOOLING_URL
+        or genes_tooling_lock.get("integrity") != EXPECTED_GENES_TOOLING_INTEGRITY
+    ):
+        raise SecurityToolingFailure(
+            "package-lock lost the exact Genes tooling archive identity"
+        )
 
     typescript_lock = packages.get("node_modules/typescript")
     if (
