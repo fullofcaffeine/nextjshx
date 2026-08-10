@@ -17,8 +17,8 @@ const NEXT_OUTPUT = path.join(NEXT_APP, ".next");
 const NEXT_BIN = path.join(ROOT, "node_modules/next/dist/bin/next");
 const TSC_BIN = path.join(ROOT, "node_modules/typescript/bin/tsc6");
 const HAXE_VERSION = "4.3.7";
-const GENES_VERSION = "1.41.0";
-const GENES_COMMIT = "0b7a4ca9d10682baeeb6a457ac666a02b7dc2376";
+const GENES_VERSION = "1.49.0";
+const GENES_COMMIT = "19c9fb7197b38b5035ef286786dec71f74fabb2c";
 const DIAGNOSTIC_SOURCE = "tests/route-hrefs/src/route_href_fixture/NegativeDeclarations.hx";
 const ANSI_ESCAPE = /\x1b\[[0-?]*[ -/]*[@-~]/g;
 

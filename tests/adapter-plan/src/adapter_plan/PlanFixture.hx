@@ -101,7 +101,7 @@ class PlanFixture {
 	}
 
 	public static macro function emit(outputPath:String, order:String):Expr {
-		AdapterPlanRegistry.install(outputPath, "0.0.0-development", "4.3.7", "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376", "16.2.12");
+		AdapterPlanRegistry.install(outputPath, "0.0.0-development", "4.3.7", "1.49.0+19c9fb7197b38b5035ef286786dec71f74fabb2c", "16.2.12");
 
 		final page = pageRegistration(requireClass("adapter_plan.PageDeclaration"));
 		final client = clientRegistration(requireClass("adapter_plan.ClientDeclaration"), order == "duplicate");

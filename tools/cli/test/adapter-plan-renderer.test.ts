@@ -36,7 +36,7 @@ function planValue(
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
-      genesTs: "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
+      genesTs: "1.49.0+19c9fb7197b38b5035ef286786dec71f74fabb2c",
       next: "16.2.12",
     },
     intents: [
@@ -99,7 +99,7 @@ function proxyPlanValue(
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
-      genesTs: "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
+      genesTs: "1.49.0+19c9fb7197b38b5035ef286786dec71f74fabb2c",
       next: "16.2.12",
     },
     intents: [
@@ -176,7 +176,7 @@ function clientComponentPlanValue(): Record<string, unknown> {
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
-      genesTs: "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
+      genesTs: "1.49.0+19c9fb7197b38b5035ef286786dec71f74fabb2c",
       next: "16.2.12",
     },
     intents: [
@@ -232,7 +232,7 @@ function reactHookPlanValue(): Record<string, unknown> {
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
-      genesTs: "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
+      genesTs: "1.49.0+19c9fb7197b38b5035ef286786dec71f74fabb2c",
       next: "16.2.12",
     },
     intents: [
@@ -282,7 +282,7 @@ function mdxComponentsPlanValue(): Record<string, unknown> {
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
-      genesTs: "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
+      genesTs: "1.49.0+19c9fb7197b38b5035ef286786dec71f74fabb2c",
       next: "16.2.12",
     },
     intents: [
@@ -332,7 +332,7 @@ function serverFunctionPlanValue(): Record<string, unknown> {
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
-      genesTs: "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
+      genesTs: "1.49.0+19c9fb7197b38b5035ef286786dec71f74fabb2c",
       next: "16.2.12",
     },
     intents: [
@@ -392,7 +392,7 @@ function cacheFunctionPlanValue(
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
-      genesTs: "1.41.0+0b7a4ca9d10682baeeb6a457ac666a02b7dc2376",
+      genesTs: "1.49.0+19c9fb7197b38b5035ef286786dec71f74fabb2c",
       next: "16.2.12",
     },
     intents: [
