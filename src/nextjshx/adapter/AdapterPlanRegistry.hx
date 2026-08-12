@@ -6,6 +6,9 @@ import haxe.io.Bytes;
 import haxe.macro.Context;
 import haxe.macro.Expr.Position;
 import haxe.macro.PositionTools;
+#if nextjshx_genes_compiler_data
+import genes.tooling.CompilerData.writeUtf8;
+#end
 import nextjshx.adapter.AdapterConfig.AdapterConfigValue;
 import nextjshx.adapter.AdapterExport.AdapterExportKind;
 import nextjshx.boundary.EnvironmentBoundaryMacro;
@@ -58,6 +61,8 @@ private typedef RegisteredIntent = {
 class AdapterPlanRegistry {
 	#if macro
 	public static inline final OUTPUT_DEFINE:String = "nextjshx.adapter-plan-output";
+	public static inline final COMPILER_DATA_ID:String = "nextjshx.adapter-plan";
+	static inline final COMPILER_DATA_DEFINE:String = "genes.tooling.compiler-data";
 
 	static var installed:Bool = false;
 	static var registrations:Array<AdapterIntentRegistration> = [];
@@ -352,7 +357,17 @@ class AdapterPlanRegistry {
 		});
 		Context.onAfterGenerate(() -> {
 			if (prepared != null && currentGeneration == generation) {
+				#if nextjshx_genes_compiler_data
+				if (Context.defined(COMPILER_DATA_DEFINE)) {
+					// The shared Genes session keeps these bytes private until the
+					// NextJsHx host validates the complete generated application.
+					writeUtf8(COMPILER_DATA_ID, prepared);
+				} else {
+					writePlan(portableOutput, prepared);
+				}
+				#else
 				writePlan(portableOutput, prepared);
+				#end
 			}
 		});
 	}

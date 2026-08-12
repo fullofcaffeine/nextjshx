@@ -17,6 +17,9 @@ const REVERSE_PATH = path.join(OUTPUT_ROOT, "reverse.json");
 const OVERRIDE_PATH = path.join(OUTPUT_ROOT, "override.json");
 const DUPLICATE_PATH = path.join(OUTPUT_ROOT, "duplicate.json");
 const APPLICATION_PATH = path.join(OUTPUT_ROOT, "application.js");
+const COMPILER_DATA_DESCRIPTOR = path.join(OUTPUT_ROOT, "compiler-data.descriptor");
+const COMPILER_DATA_ADAPTER = path.join(OUTPUT_ROOT, "compiler-data-adapter.json");
+const COMPILER_DATA_BOUNDARY = path.join(OUTPUT_ROOT, "compiler-data-boundary.json");
 const SNAPSHOT_PATH = path.join(ROOT, "tests/snapshots/adapter-plan-v2.json");
 const SCHEMA_PATH = path.join(ROOT, "schemas/adapter-plan.schema.json");
 const HAXE_VERSION = "4.3.7";
@@ -41,6 +44,24 @@ function repositoryRelative(file) {
 
 function readJson(file) {
   return JSON.parse(fs.readFileSync(file, "utf8"));
+}
+
+function compilerDataDescriptor() {
+  const fields = [
+    ["nextjshx.adapter-plan", COMPILER_DATA_ADAPTER],
+    ["nextjshx.boundary-plan", COMPILER_DATA_BOUNDARY],
+  ];
+  return [
+    "genes.tooling.compiler-data-request-v1",
+    ...fields.map(([id, file]) =>
+      [
+        Buffer.from(id, "utf8").toString("base64"),
+        String(8 * 1024 * 1024),
+        Buffer.from(file, "utf8").toString("base64"),
+      ].join("\t"),
+    ),
+    "",
+  ].join("\n");
 }
 
 function runHaxe(build, expectedStatus = 0, extraArgs = []) {
@@ -130,7 +151,7 @@ function validatePlanContract(plan, encoded) {
   assert.deepEqual(plan.toolchain, {
     nextjshx: "0.0.0-development",
     haxe: "4.3.7",
-    genesTs: "1.49.0+19c9fb7197b38b5035ef286786dec71f74fabb2c",
+    genesTs: "1.50.0+603ed8349775f86438a8b5be99cafa1a36544644",
     next: "16.2.12",
   });
   assert.deepEqual(
@@ -215,6 +236,29 @@ try {
   fs.rmSync(OUTPUT_ROOT, { recursive: true, force: true });
   fs.mkdirSync(OUTPUT_ROOT, { recursive: true });
 
+  fs.writeFileSync(COMPILER_DATA_DESCRIPTOR, compilerDataDescriptor(), {
+    encoding: "utf8",
+    flag: "wx",
+    mode: 0o600,
+  });
+  runHaxe("tests/adapter-plan/build-forward.hxml", 0, [
+    "-lib",
+    "genes-ts",
+    "-D",
+    "nextjshx_genes_compiler_data",
+    "-D",
+    `genes.tooling.compiler-data=${COMPILER_DATA_DESCRIPTOR}`,
+  ]);
+  assert.equal(
+    fs.existsSync(FORWARD_PATH),
+    false,
+    "the compiler-data build also wrote the legacy adapter-plan file",
+  );
+  const compilerDataAdapter = fs.readFileSync(COMPILER_DATA_ADAPTER, "utf8");
+  const compilerDataBoundary = readJson(COMPILER_DATA_BOUNDARY);
+  assert.equal(compilerDataBoundary.schemaVersion, 1);
+  assert.deepEqual(compilerDataBoundary.boundaries, []);
+
   runHaxe("tests/adapter-plan/build-forward.hxml", 0, [
     "-D",
     "nextjshx.adapter-plan-output=tests/adapter-plan/.tmp/override.json",
@@ -227,6 +271,11 @@ try {
 
   const forward = fs.readFileSync(FORWARD_PATH, "utf8");
   const reverse = fs.readFileSync(REVERSE_PATH, "utf8");
+  assert.equal(
+    compilerDataAdapter,
+    forward,
+    "the private compiler-data plan differs from the reviewed file-plan contract",
+  );
   assert.equal(
     fs.readFileSync(OVERRIDE_PATH, "utf8"),
     forward,
@@ -249,7 +298,7 @@ try {
   validateDuplicateDiagnostic(plan, duplicateOutput);
 
   console.log(
-    "adapter-plan: OK: schema v2, CLI output override, canonical bytes, portable positions, duplicate fail-closed behavior",
+    "adapter-plan: OK: private compiler data, schema v2, CLI output override, canonical bytes, portable positions, duplicate fail-closed behavior",
   );
 } catch (error) {
   console.error(`[adapter-plan] ERROR: ${error.message}`);

@@ -212,7 +212,7 @@ function plan(...intents: readonly Record<string, unknown>[]): AdapterPlan {
     toolchain: {
       nextjshx: "0.0.0-development",
       haxe: "4.3.7",
-      genesTs: "1.49.0+19c9fb7197b38b5035ef286786dec71f74fabb2c",
+      genesTs: "1.50.0+603ed8349775f86438a8b5be99cafa1a36544644",
       next: "16.2.12",
     },
     intents: sorted,

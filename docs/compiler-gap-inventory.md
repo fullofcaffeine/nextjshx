@@ -4,8 +4,8 @@ This inventory reduces the compiler-facing seams exposed by the stable fixture
 to ordinary Haxe-to-TypeScript/JavaScript contracts. The repro source contains
 no Next.js, React, route, adapter, or project-specific names.
 
-The evidence is pinned to genes-ts `1.49.0` at commit
-`19c9fb7197b38b5035ef286786dec71f74fabb2c`, Haxe `4.3.7`, and both supported
+The evidence is pinned to genes-ts `1.50.0` at commit
+`603ed8349775f86438a8b5be99cafa1a36544644`, Haxe `4.3.7`, and both supported
 genes output profiles. Run it with:
 
 ```sh
@@ -85,7 +85,7 @@ public static macro function accept(value:Expr):Expr {
 }
 ```
 
-For a `TodoPriority` value, genes-ts v1.49.0 emits
+For a `TodoPriority` value, genes-ts v1.50.0 emits
 `Decode.acceptTyped<"P0" | "P1" | "P2">(...)`; classic JavaScript emits the
 ordinary value call with no witness or runtime helper. The upstream fixture is
 framework-neutral, rejects aliases and unmarked callables that have lost their

@@ -16,7 +16,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..")
 const CLI_BIN = path.join(ROOT, "tools/cli/.tmp/src/cli.js");
 const NEXT_BIN = path.join(ROOT, "node_modules/next/dist/bin/next");
 const TSC_BIN = path.join(ROOT, "node_modules/typescript/bin/tsc6");
-const GENES_COMMIT = "19c9fb7197b38b5035ef286786dec71f74fabb2c";
+const GENES_COMMIT = "603ed8349775f86438a8b5be99cafa1a36544644";
 const SUPPORTED_NODE_VERSIONS = new Set(["20.19.3", "24.18.0"]);
 const VIEWPORTS = Object.freeze([
   Object.freeze({ name: "desktop", width: 1440, height: 1000 }),
@@ -536,7 +536,7 @@ async function readOwnedOutputs(showcase, options = {}) {
   if (options.allowStaleCompilerIdentity !== true) {
     assert.equal(
       manifest.genesVersion,
-      `1.49.0+${GENES_COMMIT}`,
+      `1.50.0+${GENES_COMMIT}`,
       `${showcase.name} manifest genes identity drifted`,
     );
   }

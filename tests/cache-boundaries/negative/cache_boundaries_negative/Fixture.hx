@@ -10,7 +10,7 @@ import nextjshx.cache.CacheFunctionMacro;
 class Fixture {
 	public static macro function install():Expr {
 		AdapterPlanRegistry.install("tests/cache-boundaries/.tmp/rejected-plan.json", "0.0.0-development", "4.3.7",
-			"1.49.0+19c9fb7197b38b5035ef286786dec71f74fabb2c", "16.2.12");
+			"1.50.0+603ed8349775f86438a8b5be99cafa1a36544644", "16.2.12");
 		PageLayoutMacro.install();
 		CacheFunctionMacro.install();
 		final name = Context.definedValue("cache_boundary_case");

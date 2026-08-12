@@ -126,6 +126,7 @@ function projectFixture(root = "/fixture/app"): DevelopmentProject {
     discovery,
     projectRoot: root,
     hxmlPath: `${root}/build.hxml`,
+    sessionHxmlPath: `${root}/session.hxml`,
     manifestPath: `${root}/.nextjshx/manifest.json`,
     haxeCommand: Object.freeze({ command: "haxe", argsPrefix: Object.freeze([]) }),
     nextCommand: Object.freeze({ command: process.execPath, argsPrefix: Object.freeze(["next-bin.js"]) }),
