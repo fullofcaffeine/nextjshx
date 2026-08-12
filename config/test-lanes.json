@@ -81,8 +81,8 @@
       "oracles": [
         {
           "kind": "pinned-differential",
-          "source": "Pinned Haxe 4.3.7 and Genes 1.49.0 contracts recorded by support_matrix.json",
-          "pin": "Haxe 4.3.7; genes-ts 1.49.0"
+          "source": "Pinned Haxe 4.3.7 and Genes 1.50.0 contracts recorded by support_matrix.json",
+          "pin": "Haxe 4.3.7; genes-ts 1.50.0"
         },
         {
           "kind": "real-consumer",
@@ -481,7 +481,7 @@
         {
           "kind": "pinned-differential",
           "source": "Installed public declarations, package exports, exact integrity records, and support_matrix.json",
-          "pin": "Haxe 4.3.7; Genes 1.49.0; TypeScript 6.0.2; Next 16.2.12; React 19.2.7"
+          "pin": "Haxe 4.3.7; Genes 1.50.0; TypeScript 6.0.2; Next 16.2.12; React 19.2.7"
         },
         {
           "kind": "real-consumer",

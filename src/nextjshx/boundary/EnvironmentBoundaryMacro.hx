@@ -10,6 +10,9 @@ import haxe.macro.Expr;
 import haxe.macro.PositionTools;
 import haxe.macro.Type;
 import haxe.macro.TypedExprTools;
+#if nextjshx_genes_compiler_data
+import genes.tooling.CompilerData.writeUtf8;
+#end
 import sys.FileSystem;
 import sys.io.File;
 
@@ -64,6 +67,8 @@ private typedef BoundaryReferenceRegistration = {
 class EnvironmentBoundaryMacro {
 	#if macro
 	public static inline final OUTPUT_DEFINE:String = "nextjshx.boundary-plan-output";
+	public static inline final COMPILER_DATA_ID:String = "nextjshx.boundary-plan";
+	static inline final COMPILER_DATA_DEFINE:String = "genes.tooling.compiler-data";
 
 	static final SERVER_APIS = ["nextjs.raw.Cache", "nextjs.raw.Headers", "nextjs.raw.Server"];
 	static var installed:Bool = false;
@@ -524,11 +529,24 @@ class EnvironmentBoundaryMacro {
 		Compiler.addGlobalMetadata("", "@:build(nextjshx.boundary.EnvironmentBoundaryMacro.build())", true, true, false);
 		Context.onAfterTyping(audit);
 		Context.onAfterGenerate(() -> {
+			#if nextjshx_genes_compiler_data
+			if (Context.defined(COMPILER_DATA_DEFINE)) {
+				// The host receives a byte copy, not a writable path. NextJsHx does
+				// not replace the last working generated files until it checks the
+				// complete new result.
+				writeUtf8(COMPILER_DATA_ID, encodedPlan());
+			} else if (outputPath != null) {
+				final absolute = Path.join([projectRoot, outputPath]);
+				ensureDirectory(Path.directory(absolute));
+				File.saveContent(absolute, encodedPlan());
+			}
+			#else
 			if (outputPath != null) {
 				final absolute = Path.join([projectRoot, outputPath]);
 				ensureDirectory(Path.directory(absolute));
 				File.saveContent(absolute, encodedPlan());
 			}
+			#end
 		});
 		#end
 	}

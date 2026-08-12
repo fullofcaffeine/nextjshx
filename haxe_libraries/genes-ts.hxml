@@ -1,7 +1,7 @@
-# @install: lix --silent download "gh://github.com/fullofcaffeine/genes-ts#19c9fb7197b38b5035ef286786dec71f74fabb2c" into genes-ts/1.49.0/github/19c9fb7197b38b5035ef286786dec71f74fabb2c
+# @install: lix --silent download "gh://github.com/fullofcaffeine/genes-ts#603ed8349775f86438a8b5be99cafa1a36544644" into genes-ts/1.50.0/github/603ed8349775f86438a8b5be99cafa1a36544644
 -lib helder.set
--cp ${HAXE_LIBCACHE}/genes-ts/1.49.0/github/19c9fb7197b38b5035ef286786dec71f74fabb2c/src
--D genes-ts=1.49.0
+-cp ${HAXE_LIBCACHE}/genes-ts/1.50.0/github/603ed8349775f86438a8b5be99cafa1a36544644/src
+-D genes-ts=1.50.0
 -D js-es=6
 --macro genes.Generator.use()
 --macro genes.js.Async.enable()

@@ -150,6 +150,7 @@ export interface DevelopmentProject {
   readonly discovery: NextProjectDiscovery;
   readonly projectRoot: string;
   readonly hxmlPath: string;
+  readonly sessionHxmlPath: string | null;
   readonly manifestPath: string;
   readonly haxeCommand: ToolCommand;
   readonly nextCommand: ToolCommand;
@@ -348,6 +349,7 @@ interface ProjectContext {
   readonly discovery: NextProjectDiscovery;
   readonly config: NonNullable<NextProjectDiscovery["config"]>;
   readonly hxmlPath: string;
+  readonly sessionHxmlPath: string | null;
   readonly manifestPath: string;
 }
 
@@ -397,6 +399,7 @@ function projectContext(options: CommandBaseOptions): ProjectContext {
     discovery,
     config: discovery.config,
     hxmlPath: toolchain.hxmlPath,
+    sessionHxmlPath: toolchain.sessionHxmlPath,
     manifestPath: discovery.configuredPaths.manifest,
   });
 }
@@ -1041,20 +1044,31 @@ function collectCompilationPlans(
     args: [
       ...haxe.argsPrefix,
       path.relative(context.discovery.packageRoot, context.hxmlPath),
-      ...effectiveHaxeDefines(context.config).flatMap((define) => ["-D", define]),
-      ...(context.config.next.cacheComponents
-        ? ["-D", CACHE_COMPONENTS_DEFINE]
+      ...(context.sessionHxmlPath === null
+        ? [
+            ...effectiveHaxeDefines(context.config).flatMap((define) => [
+              "-D",
+              define,
+            ]),
+            ...(context.config.next.cacheComponents
+              ? ["-D", CACHE_COMPONENTS_DEFINE]
+              : []),
+            ...(context.config.next.experimentalCacheDirectives.includes(
+              "private",
+            )
+              ? ["-D", PRIVATE_CACHE_DEFINE]
+              : []),
+            ...(context.config.next.experimentalCacheDirectives.includes(
+              "remote",
+            )
+              ? ["-D", REMOTE_CACHE_DEFINE]
+              : []),
+            "-D",
+            `${APP_ROOT_DEFINE}=${context.discovery.appRootRelative}`,
+            "-D",
+            `${GENERATED_ROOT_DEFINE}=${context.config.haxe.generatedRoot}`,
+          ]
         : []),
-      ...(context.config.next.experimentalCacheDirectives.includes("private")
-        ? ["-D", PRIVATE_CACHE_DEFINE]
-        : []),
-      ...(context.config.next.experimentalCacheDirectives.includes("remote")
-        ? ["-D", REMOTE_CACHE_DEFINE]
-        : []),
-      "-D",
-      `${APP_ROOT_DEFINE}=${context.discovery.appRootRelative}`,
-      "-D",
-      `${GENERATED_ROOT_DEFINE}=${context.config.haxe.generatedRoot}`,
       "-D",
       `${PLAN_DEFINE}=${relativePlan}`,
       "-D",
@@ -1244,6 +1258,7 @@ export function resolveDevelopmentProject(
     discovery: context.discovery,
     projectRoot: context.discovery.packageRoot,
     hxmlPath: context.hxmlPath,
+    sessionHxmlPath: context.sessionHxmlPath,
     manifestPath: context.manifestPath,
     haxeCommand: tool(runtime, "haxeCommand", () => ({
       command: "haxe",

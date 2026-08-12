@@ -1,4 +1,11 @@
 export {
+  ADAPTER_PLAN_COMPILER_DATA_ID,
+  BOUNDARY_PLAN_COMPILER_DATA_ID,
+  parseCompilerDataPlans,
+  type CompilerDataPlans,
+} from "./compiler-data-plans.js";
+
+export {
   CONFIG_FILE_NAME,
   CONFIG_SCHEMA_ID,
   CONFIG_SCHEMA_VERSION,

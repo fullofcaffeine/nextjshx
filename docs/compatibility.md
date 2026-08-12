@@ -14,8 +14,8 @@ Repository status: **foundation-only**. A declared version is a reproducible tar
 | React / React DOM | 19.2.7 / 19.2.7 | React 19 primary lane. |
 | TypeScript | 6.0.2 | Pinned to the exact version shared by the observed genes-ts and Next.js source manifests; Next stable accepts workspace-owned TypeScript. |
 | Haxe | 4.3.7 | Pinned by `.haxerc`. |
-| genes-ts | 1.49.0 at `19c9fb7197b38b5035ef286786dec71f74fabb2c` | The exact immutable v1.49.0 commit preserves Haxe-checked HXX, direct JSX, strict boundary types, declarations, source maps, TypeScript 5/6/7, and classic JavaScript. It adds generic closed CSS Module imports, direct module-level React components, safer HXX cleanup, typed indexed access, correct byte-buffer runtime types, direct closed module values for metadata-style data, and a typed Array.findIndex extension that emits the native JavaScript method. It also contains the released Genes development-session tools that NextJsHx now consumes separately. Earlier Hook, context, effect, Flight, type-witness, and module-function support remains available. NextJsHx consumes these generic capabilities and keeps only Next.js graph, adapter, route, and error policy here. The Genes release suite is green. NextJsHx also checks the exact pin through Haxe, strict TypeScript, production Next builds, server behavior, and browser behavior. |
-| @genes-ts/tooling | 0.1.0 from [GitHub Release](https://github.com/fullofcaffeine/genes-ts/releases/tag/tooling-v0.1.0) | npm installs the exact archive. It is not published to the npm registry. SHA-256: `691723279c6efbefba069b808d6862afdd56559854e2ffd9039054a2332c420a`. |
+| genes-ts | 1.50.0 at `603ed8349775f86438a8b5be99cafa1a36544644` | The exact immutable v1.50.0 commit preserves Haxe-checked HXX, direct JSX, strict boundary types, declarations, source maps, TypeScript 5/6/7, and classic JavaScript. It adds a small compiler-data helper that lets trusted macros return private bytes to a development host before publication. It also retains the generic closed CSS Module imports, module-level React components, typed JavaScript Array operations, and other compiler improvements from earlier releases. NextJsHx consumes these generic capabilities and keeps only Next.js graph, adapter, route, and error policy here. The full Genes release suite passed on the exact release commit. NextJsHx also checks the exact pin through Haxe, strict TypeScript, production Next builds, server behavior, and browser behavior. |
+| @genes-ts/tooling | 0.2.0 from [GitHub Release](https://github.com/fullofcaffeine/genes-ts/releases/tag/tooling-v0.2.0) | npm installs the exact archive. It is not published to the npm registry. SHA-256: `7ac3754cedc24f4aaf75d30e29fc9972f593c998af2a3e0fda8dd2c234eb76e6`. |
 | Node.js | floor 20.9.0; baseline 20.19.3; current LTS 24.18.0 (Krypton) | CI contract: 20.9.0, 24.18.0. |
 
 ## Evidence lanes
@@ -35,7 +35,7 @@ Planned fixture commands:
 
 Sibling repositories are optional tooling oracles. They are never runtime dependencies and their paths may not be hardcoded in library code.
 
-- **genesTs:** set `NEXTJSHX_GENES_TS_DIR`, or use `../genes`. Expected commit: `19c9fb7197b38b5035ef286786dec71f74fabb2c`.
+- **genesTs:** set `NEXTJSHX_GENES_TS_DIR`, or use `../genes`. Expected commit: `603ed8349775f86438a8b5be99cafa1a36544644`.
 - **nextUpstream:** set `NEXTJSHX_NEXT_UPSTREAM_DIR`, or use `../nextjs` then `../next.js`. Expected commit: `491f78099c3ea23be14e66c6d848b50204590e90`.
 
 Commands:

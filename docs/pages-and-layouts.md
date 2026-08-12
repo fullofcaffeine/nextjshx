@@ -344,7 +344,7 @@ that convention file native rather than weakening the typed Haxe contract.
 
 ## Closed CSS Module class names
 
-Genes 1.49.0 supplies the framework-neutral CSS Module import. Its tooling
+Genes 1.50.0 supplies the framework-neutral CSS Module import. Its tooling
 creates a closed Haxe companion from class names reported by a real processor.
 Closed means that the type contains only the reported names.
 

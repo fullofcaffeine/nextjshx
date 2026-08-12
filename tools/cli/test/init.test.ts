@@ -127,6 +127,7 @@ test("init creates a byte-stable new-app baseline without changing the lockfile"
       ".gitignore",
       "haxe/nextjshx_app/HomePage.hx",
       ".nextjshx/toolchain/nextjshx.hxml",
+      ".nextjshx/toolchain/nextjshx.session.hxml",
       ".nextjshx/toolchain/src/nextjshx_toolchain/Main.hx",
       ".nextjshx/toolchain/src/nextjshx_toolchain/AdapterPlan.hx",
       ".nextjshx/toolchain/manifest.json",
@@ -142,13 +143,30 @@ test("init creates a byte-stable new-app baseline without changing the lockfile"
       lockBefore,
     );
     assert.equal(statSync(path.join(root, "package.json")).mode & 0o777, 0o640);
+    const hxml = readFileSync(
+      path.join(root, ".nextjshx/toolchain/nextjshx.hxml"),
+      "utf8",
+    );
+    const sessionHxml = readFileSync(
+      path.join(root, ".nextjshx/toolchain/nextjshx.session.hxml"),
+      "utf8",
+    );
     assert.match(
-      readFileSync(
-        path.join(root, ".nextjshx/toolchain/nextjshx.hxml"),
-        "utf8",
-      ),
+      hxml,
+      /^\.nextjshx\/toolchain\/nextjshx\.session\.hxml$/mu,
+    );
+    assert.match(hxml, /^-js src-gen\/index\.tsx$/mu);
+    assert.doesNotMatch(sessionHxml, /^(?:-js|--js)(?:\s|$)/mu);
+    assert.match(
+      sessionHxml,
       /--macro nextjshx_toolchain\.AdapterPlan\.install\(\)/,
     );
+    assert.match(sessionHxml, /^-D genes\.ts$/mu);
+    assert.match(sessionHxml, /^-D nextjshx_genes_compiler_data$/mu);
+    assert.match(sessionHxml, /^-D genes\.ts\.no_extension$/mu);
+    assert.match(sessionHxml, /^-D genes\.ts\.jsx_import_source=react$/mu);
+    assert.match(sessionHxml, /^-D nextjshx\.app-root=src\/app$/mu);
+    assert.match(sessionHxml, /^-D nextjshx\.generated-root=src-gen$/mu);
     assert.equal(existsSync(path.join(root, "nextjshx.hxml")), false);
     assert.equal(existsSync(path.join(root, "haxe/NextJsHxMain.hx")), false);
     assert.equal(
@@ -254,6 +272,8 @@ test("setup supports a workspace-contained sibling Haxe source root without clai
       next: {
         package: "next",
         typedRoutes: false,
+        cacheComponents: true,
+        experimentalCacheDirectives: ["private", "remote"],
       },
       output: {
         manifest: ".nextjshx/manifest.json",
@@ -275,12 +295,17 @@ test("setup supports a workspace-contained sibling Haxe source root without clai
     });
     assert.equal(first.action, "initialized");
     const hxml = readFileSync(
-      path.join(root, ".nextjshx/toolchain/nextjshx.hxml"),
+      path.join(root, ".nextjshx/toolchain/nextjshx.session.hxml"),
       "utf8",
     );
     assert.match(hxml, /-cp haxe/);
     assert.match(hxml, /-cp \.\.\/shared-haxe/);
     assert.match(hxml, /--macro include\('shared'\)/);
+    assert.match(hxml, /^-D nextjshx\.app-root=app$/mu);
+    assert.match(hxml, /^-D nextjshx\.generated-root=src-gen$/mu);
+    assert.match(hxml, /^-D nextjshx\.cache-components$/mu);
+    assert.match(hxml, /^-D nextjshx\.experimental\.cache-private$/mu);
+    assert.match(hxml, /^-D nextjshx\.experimental\.cache-remote$/mu);
     assert.equal(existsSync(path.join(workspace, ".nextjshx")), false);
     assert.equal(existsSync(path.join(workspace, ".gitignore")), false);
 
@@ -736,7 +761,7 @@ function writeLegacyProject(root: string, customMacro = false): void {
       "import nextjshx.app.PageLayoutMacro;",
       "class AdapterPlan {",
       "public static macro function install():Expr {",
-      'AdapterPlanRegistry.install(".nextjshx/default-plan.json", "0.0.0-development", "4.3.7", "1.49.0+19c9fb7197b38b5035ef286786dec71f74fabb2c", "16.2.12");',
+      'AdapterPlanRegistry.install(".nextjshx/default-plan.json", "0.0.0-development", "4.3.7", "1.50.0+603ed8349775f86438a8b5be99cafa1a36544644", "16.2.12");',
       "PageLayoutMacro.install();",
       "return macro null;",
       "}",
@@ -994,6 +1019,7 @@ test("compiler-toolchain publication restores exact previous bytes after an inje
     const toolchain = path.join(root, ".nextjshx/toolchain");
     const before = projectBytes(root, [
       ".nextjshx/toolchain/nextjshx.hxml",
+      ".nextjshx/toolchain/nextjshx.session.hxml",
       ".nextjshx/toolchain/src/nextjshx_toolchain/Main.hx",
       ".nextjshx/toolchain/src/nextjshx_toolchain/AdapterPlan.hx",
       ".nextjshx/toolchain/manifest.json",

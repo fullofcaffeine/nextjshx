@@ -48,17 +48,27 @@ separately versioned `@genes-ts/tooling` package:
   one newest-state follow-up;
 - `@genes-ts/tooling/haxe-server` owns a compatible project-local Haxe
   `--wait` lifecycle with direct-compile fallback.
+- `@genes-ts/tooling/session` combines these parts. It builds into a private
+  directory, asks the host to check the complete result, and replaces the last
+  working files only after that check passes.
 
-Version `0.1.0` and its framework-neutral conformance vectors are available in
-the immutable GitHub Release archive recorded in
+Version `0.2.0` and its framework-neutral test data are available in the
+immutable GitHub Release archive recorded in
 [Genes tooling distribution](genes-tooling-distribution.md). The package is not
 published to the npm registry.
 
-NextJsHx has chosen to delay that npm release. It now installs the exact,
-checksum-verified `.tgz` archive from the GitHub Release. The first downstream
-integration can now migrate to shared primitives without copying their source.
-See [Genes tooling distribution](genes-tooling-distribution.md) for the exact
-package identity and source rules.
+NextJsHx now installs the exact, checksum-verified `.tgz` archive from that
+release. Setup creates a target-free HXML file, and the macros can return their
+plans as private compiler data. This is the safe bridge into the shared
+session.
+
+The current `dev` command still uses its existing tested loop. The first shared
+session accepts only one external Haxe library and requires its inputs to be
+inside the application root. A normal installed application needs both
+`genes-ts` and `nextjshx`, usually outside that root. Genes owns the reusable
+fix. NextJsHx will switch its `dev` command after a released session supports
+that normal layout. See [Genes tooling distribution](genes-tooling-distribution.md)
+for the exact package identity and source rules.
 
 ## Why this work exists
 

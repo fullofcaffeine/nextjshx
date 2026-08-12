@@ -49,11 +49,16 @@ NextJsHx Haxe-library capabilities, then creates or validates:
 - missing `dev`, `generate`, and `typecheck` package scripts.
 
 Application config contains source roots, Next capabilities, and output policy;
-it cannot override compiler-owned genes defines, planner installation, output
-extensions, or pinned toolchain identities. The generated HXML, empty compiler
-entry point, and complete released planner installer are private implementation
-files. Commands regenerate them deterministically from config and verify their
-manifest before compiling. Do not check them in or edit them.
+it cannot override compiler-owned Genes defines, planner installation, output
+extensions, or pinned toolchain identities. Setup creates two HXML files. One
+contains the source roots, libraries, macros, and stable defines. It does not
+name a JavaScript or TypeScript output file. This makes it suitable for the
+shared Genes development session, which creates its own private output before
+it replaces the last working files. The second HXML file includes the first and
+adds the output file for a normal one-shot build. These files, the empty
+compiler entry point, and the released planner installer are private
+implementation files. Commands regenerate them from config and verify their
+manifest before compilation. Do not check them in or edit them.
 
 Every existing application path is preserved. A byte-identical setup file is reported
 unchanged; different bytes, symbolic links, executable Next config, native
@@ -354,7 +359,7 @@ nextjshx doctor [--json] [--config <path>]
 plan. It reports stable `NXHX-DOCTOR-*` checks for:
 
 - the Node engine and exact Haxe 4.3.7 compiler;
-- genes-ts 1.49.0 at the exact stable-release GitHub commit and the required `genes.ts`
+- genes-ts 1.50.0 at the exact stable-release GitHub commit and the required `genes.ts`
   and `genes.ts.no_extension` defines;
 - installed Next 16.2.12, React/React DOM 19.2.7, and TypeScript 6.0.2;
 - the configured App Router root, Haxe build, generated root, and package
@@ -426,6 +431,22 @@ classification fails with `NXHX-CLI-BUILD-0009`. A single symlink inside
 ```sh
 nextjshx dev [--config <path>] [-- <Next dev flags>]
 ```
+
+### Shared Genes session status
+
+Setup now prepares the target-free HXML input that the shared Genes development
+session needs. NextJsHx macros can also return adapter and boundary plans as
+private compiler data. These plans are bytes that only the host can read while
+it checks one new generated result.
+
+The current `dev` command does not yet use that session. It keeps the existing
+tested watcher, Haxe server, and generated-file update path. The first Genes
+session release accepts only one external Haxe library and requires that
+library's inputs to be inside the application root. A normal installed
+NextJsHx application needs both `genes-ts` and `nextjshx`, usually outside that
+root. Genes owns the reusable fix. NextJsHx will adopt it after a released
+session supports this normal library layout. The framework does not add a
+private workaround or silently use a weaker file check in the meantime.
 
 `dev` is the single long-running owner for Haxe generation and one native
 `next dev` process. It performs an initial generation before starting Next,

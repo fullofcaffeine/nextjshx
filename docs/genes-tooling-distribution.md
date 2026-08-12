@@ -15,12 +15,12 @@ checksum provides a second, independent check of the downloaded bytes.
 
 The reviewed archive is now available:
 
-- package: `@genes-ts/tooling` version `0.1.0`;
-- Genes source commit: `96627ea68a4e684923661c4bf83e3681505ac90e`;
-- release: [`tooling-v0.1.0`](https://github.com/fullofcaffeine/genes-ts/releases/tag/tooling-v0.1.0);
-- archive: [`genes-ts-tooling-0.1.0.tgz`](https://github.com/fullofcaffeine/genes-ts/releases/download/tooling-v0.1.0/genes-ts-tooling-0.1.0.tgz);
-- SHA-256: `691723279c6efbefba069b808d6862afdd56559854e2ffd9039054a2332c420a`;
-- npm integrity: `sha512-M27JPINXokiWw5k6ECpghvoVrnVUHuuFI88XzfKRDqExLw8T9ajzV4LxVyftFQLX//nlPhRK8Y/vigPx7Cwg6g==`.
+- package: `@genes-ts/tooling` version `0.2.0`;
+- Genes source commit: `603ed8349775f86438a8b5be99cafa1a36544644`;
+- release: [`tooling-v0.2.0`](https://github.com/fullofcaffeine/genes-ts/releases/tag/tooling-v0.2.0);
+- archive: [`genes-ts-tooling-0.2.0.tgz`](https://github.com/fullofcaffeine/genes-ts/releases/download/tooling-v0.2.0/genes-ts-tooling-0.2.0.tgz);
+- SHA-256: `7ac3754cedc24f4aaf75d30e29fc9972f593c998af2a3e0fda8dd2c234eb76e6`;
+- npm integrity: `sha512-A5fg4R6xoU/G8Z44vVO6yLzAXPYwKz+GjVnTpRCLQHqbkPuh5A+N0OSuK+iNm0o3dPBfxyMbntgh+ku4KOWQOQ==`.
 
 GitHub marks this release as immutable. This means that GitHub does not permit
 changes to the release or its files. The lockfile also checks the archive bytes
@@ -51,14 +51,14 @@ bytes.
   a Git repository.
 
 The dependency uses a remote archive URL. It does not use a
-registry version such as `@genes-ts/tooling@0.1.0`.
+registry version such as `@genes-ts/tooling@0.2.0`.
 
 The dependency has this exact form:
 
 ```json
 {
   "devDependencies": {
-    "@genes-ts/tooling": "https://github.com/fullofcaffeine/genes-ts/releases/download/tooling-v0.1.0/genes-ts-tooling-0.1.0.tgz"
+    "@genes-ts/tooling": "https://github.com/fullofcaffeine/genes-ts/releases/download/tooling-v0.2.0/genes-ts-tooling-0.2.0.tgz"
   }
 }
 ```
@@ -94,7 +94,7 @@ or a URL whose bytes can change.
 ## What users and agents must do
 
 1. Do not run `npm publish` for `@genes-ts/tooling`.
-2. Do not add `@genes-ts/tooling@0.1.0` as a registry dependency.
+2. Do not add `@genes-ts/tooling@0.2.0` as a registry dependency.
 3. Do not change the exact archive URL without a reviewed release update.
 4. Do not copy the Genes tooling implementation into this repository.
 5. Keep NextJsHx-specific behavior in NextJsHx.
