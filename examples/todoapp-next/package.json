@@ -16,7 +16,7 @@
     "@dnd-kit/react": "0.5.0",
     "@nextjshx/showcase-ui": "0.0.0",
     "next": "16.2.12",
-    "nuqs": "2.9.1",
+    "nuqs": "2.10.1",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "react-is": "19.2.7",
